@@ -15,7 +15,6 @@
 ---
 
 ## Eslogan
-> [!IMPORTANT]
 > El futuro se fabrica aquí.
 
 ---
