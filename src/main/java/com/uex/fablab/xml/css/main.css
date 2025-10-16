@@ -37,3 +37,23 @@ body {
 header {
   border-bottom: 1px solid #eaeaea;
 }
+
+/* === Calendario de reservas (movido desde index.html) === */
+.fabcal .day {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0 auto;
+  user-select: none;
+}
+.fabcal .day:hover {
+  background: #ffc107;
+}
+.fabcal .day.selected {
+  border: 2px solid #ffc107;
+  background: #ffc107;
+}

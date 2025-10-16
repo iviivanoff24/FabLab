@@ -72,26 +72,56 @@
           <div class="col-sm-6">
             <h1>Bienvenido al Fablab Mérida</h1>
             <p>Tu espacio de fabricación digital en la Universidad de Mérida</p>
-            <button type="button" class="btn btn-primary btn-lg">
+            <button type="button" class="btn btn-warning btn-lg">
               Ver Disponibilidad
             </button>
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 text-center">
             <img
               src="img/3d.png"
               alt="Impresora 3D"
-              width="100%"
-              height="100%"
+              class="d-block mx-auto img-fluid"
+              style="max-width: 80%"
             />
           </div>
         </div>
-        <br>
+
+        <br />
+        <br />
+
         <div class="row">
           <div class="col-sm-6">
             <h2>Reservar Maquinaria</h2>
           </div>
           <div class="col-sm-4">
+            <div class="fabcal card p-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <button class="btn btn-lg" id="fabcalPrev">‹</button>
+                <div class="fw-semibold" id="fabcalMonth"></div>
+                <button class="btn btn-lg" id="fabcalNext">›</button>
+              </div>
 
+              <div
+                class="text-secondary small d-grid mb-1"
+                style="grid-template-columns: repeat(7, 1fr); gap: 0.25rem"
+              >
+                <div class="text-center">L</div>
+                <div class="text-center">M</div>
+                <div class="text-center">X</div>
+                <div class="text-center">J</div>
+                <div class="text-center">V</div>
+                <div class="text-center">S</div>
+                <div class="text-center">D</div>
+              </div>
+
+              <div
+                id="fabcalDays"
+                class="d-grid"
+                style="grid-template-columns: repeat(7, 1fr); gap: 0.25rem"
+              ></div>
+            </div>
           </div>
         </div>
       </div>
