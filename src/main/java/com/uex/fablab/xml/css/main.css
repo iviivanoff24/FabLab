@@ -1,0 +1,39 @@
+/* Reset de estilos básicos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Variables CSS (opcional) */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --font-main: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Estilos generales del body */
+body {
+    font-family: var(--font-main);
+    background-color: #ffffff;
+    color: #222;
+    line-height: 1.6;
+}
+
+.nav-underline .nav-link {
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+}
+
+.nav-underline .nav-link:hover {
+  color: #0d6efd;
+}
+
+.nav-underline .nav-link.active {
+  color: #0d6efd !important;
+  border-bottom: 2px solid #0d6efd;
+}
+
+header {
+  border-bottom: 1px solid #eaeaea;
+}
