@@ -39,16 +39,32 @@ header {
 }
 
 /* === Calendario de reservas === */
+.fabcal {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden; /* recorta cualquier posible desbordamiento dentro de la tarjeta */
+}
+.fabcal .d-grid {
+  /* Permite que las 7 columnas se contraigan sin desbordar */
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  min-width: 0; /* importante para cálculos de min-content en grid */
+  width: 100%;
+}
 .fabcal .day {
-  width: 2.4rem;
-  height: 2.4rem;
+  /* El día se adapta al ancho de su celda de grid */
+  width: 100%;
+  max-width: 2.4rem;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin: 0 auto;
+  margin: 0;
   user-select: none;
+  min-width: 0; /* evita desbordes por contenido */
+  place-self: center; /* centra dentro de su celda de grid */
 }
 .fabcal .day:hover {
   background: #ffc107;
@@ -57,3 +73,25 @@ header {
   border: 2px solid #ffc107;
   background: #ffc107;
 }
+
+/* Afinado para pantallas pequeñas */
+@media (max-width: 420px) {
+  .fabcal.card {
+    padding: 0.75rem !important;
+  }
+  #fabcalMonth {
+    font-size: 0.95rem;
+  }
+  .fabcal .d-grid {
+    gap: 0.2rem !important;
+  }
+}
+
+/* Evita que los botones de navegación impongan anchos excesivos */
+#fabcalPrev, #fabcalNext {
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+/* Si aún hay riesgo de cálculo distinto por el navegador, recorta discretamente */
+#fabcalDays { width: 100%; min-width: 0; overflow-x: clip; }
