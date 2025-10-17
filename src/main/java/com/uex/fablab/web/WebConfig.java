@@ -1,0 +1,18 @@
+package com.uex.fablab.web;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String basePath = "classpath:/com/uex/fablab/xml/";
+        registry.addResourceHandler("/css/**").addResourceLocations(basePath + "css/");
+        registry.addResourceHandler("/js/**").addResourceLocations(basePath + "js/");
+        registry.addResourceHandler("/img/**").addResourceLocations(basePath + "img/");
+        // fallback para otros recursos estáticos directamente en xml/
+        registry.addResourceHandler("/xml/**").addResourceLocations(basePath);
+    }
+}
