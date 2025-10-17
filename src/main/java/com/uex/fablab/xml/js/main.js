@@ -1,5 +1,6 @@
 // Inicialización del calendario de reservas (movido desde index.html)
-(() => {
+// Aseguramos que el DOM esté listo antes de buscar elementos
+document.addEventListener('DOMContentLoaded', () => {
 	const monthEl = document.getElementById('fabcalMonth');
 	const daysEl = document.getElementById('fabcalDays');
 	const prevBtn = document.getElementById('fabcalPrev');
@@ -15,7 +16,8 @@
 
 	let view = new Date();
 	view.setDate(1);
-	let selected = null;
+	// Selección por defecto: hoy
+	let selected = new Date();
 
 	function sameDay(a, b) {
 		return (
@@ -64,5 +66,5 @@
 	});
 
 	render();
-})();
+});
 

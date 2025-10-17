@@ -38,7 +38,7 @@ header {
   border-bottom: 1px solid #eaeaea;
 }
 
-/* === Calendario de reservas (movido desde index.html) === */
+/* === Calendario de reservas === */
 .fabcal .day {
   width: 2.4rem;
   height: 2.4rem;

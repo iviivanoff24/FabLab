@@ -14,5 +14,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/img/**").addResourceLocations(basePath + "img/");
         // fallback para otros recursos estáticos directamente en xml/
         registry.addResourceHandler("/xml/**").addResourceLocations(basePath);
+
+        // Permitir servir las páginas HTML directamente desde la raíz, p.ej. /machines.html
+        registry.addResourceHandler("/*.html").addResourceLocations(basePath);
+        // Y también soportar subrutas si en el futuro hay carpetas
+        //registry.addResourceHandler("/**/*.html").addResourceLocations(basePath);
     }
 }
