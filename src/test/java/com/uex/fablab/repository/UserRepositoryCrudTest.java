@@ -1,10 +1,9 @@
 package com.uex.fablab.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import com.uex.fablab.model.User;
 
-@DataJpaTest(properties = {
-    "spring.jpa.hibernate.ddl-auto=create-drop",
-    "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect"
-})
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserRepositoryCrudTest {
 
     @Autowired
@@ -72,8 +68,9 @@ class UserRepositoryCrudTest {
     void uniqueEmailConstraint() {
         userRepository.save(newUser("Dana", "dana@example.com", "secret", false));
         // Segundo usuario con el mismo email debe fallar por unique=true
-        assertThrows(DataIntegrityViolationException.class, () -> {
+        DataIntegrityViolationException ex = assertThrows(DataIntegrityViolationException.class, () -> {
             userRepository.saveAndFlush(newUser("Dany", "dana@example.com", "secret", false));
         });
+        assertThat(ex).isNotNull();
     }
 }
