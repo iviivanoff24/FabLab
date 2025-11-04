@@ -2,6 +2,7 @@ package com.uex.fablab.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,7 +11,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "machines")
+@Table(name = "Maquina")
 public class Machine {
 
     @Id
@@ -18,14 +19,19 @@ public class Machine {
     private Long id;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(name = "nombre_m", nullable = false)
     private String name;
 
     @Lob
+    @Column(name = "descripcion_m")
     private String description;
 
-    @Column(nullable = false)
-    private Integer stock = 1;
+    @Column(name = "ubicacion")
+    private String location;
+
+    @Enumerated(jakarta.persistence.EnumType.STRING)
+    @Column(name = "estado_m", nullable = false)
+    private MachineStatus status = MachineStatus.Disponible;
 
     public Long getId() {
         return id;
@@ -51,11 +57,19 @@ public class Machine {
         this.description = description;
     }
 
-    public Integer getStock() {
-        return stock;
+    public String getLocation() {
+        return location;
     }
 
-    public void setStock(Integer stock) {
-        this.stock = stock;
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public MachineStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MachineStatus status) {
+        this.status = status;
     }
 }

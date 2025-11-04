@@ -1,33 +1,46 @@
 package com.uex.fablab.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 @Entity
-@Table(name = "users")
+@Table(name = "Usuario")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(name = "nombre_u", nullable = false)
     private String name;
 
     @Email
     @NotBlank
-    @Column(nullable = false, unique = true)
+    @Column(name = "email_u", nullable = false, unique = true)
     private String email;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(name = "contrasena_u", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean admin;
+    // El esquema original tiene "rol" varchar. Guardamos el rol y exponemos isAdmin()/setAdmin(boolean)
+    @Column(name = "rol")
+    private String role;
+
+    @Column(name = "telefono")
+    private String telefono;
+
+    @Column(name = "fecha_registro")
+    private java.time.LocalDate fechaRegistro;
 
     public User() {}
 
@@ -64,10 +77,34 @@ public class User {
     }
 
     public boolean isAdmin() {
-        return admin;
+        return "ADMIN".equalsIgnoreCase(this.role);
     }
 
     public void setAdmin(boolean admin) {
-        this.admin = admin;
+        this.role = admin ? "ADMIN" : "USER";
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public java.time.LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(java.time.LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
     }
 }

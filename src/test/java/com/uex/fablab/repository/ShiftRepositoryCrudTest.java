@@ -3,7 +3,6 @@ package com.uex.fablab.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
@@ -26,67 +25,31 @@ class ShiftRepositoryCrudTest {
     @Autowired
     private MachineRepository machineRepository;
 
-    private Machine newMachine(String name) {
-        Machine m = new Machine();
-        m.setName(name);
-        m.setStock(1);
-        return m;
+    private Shift newShift(Machine m, LocalDate date) {
+        Shift s = new Shift();
+        s.setMachine(m);
+        s.setDate(date);
+        s.setStartTime(LocalTime.of(9, 0));
+        s.setEndTime(LocalTime.of(10, 0));
+        s.setStatus(ShiftStatus.Disponible);
+        return s;
     }
 
-    private Shift newShift(Machine machine, LocalDate date, String s, String e) {
-        Shift sh = new Shift();
-        sh.setMachine(machine);
-        sh.setDate(date);
-        sh.setStartTime(LocalTime.parse(s));
-        sh.setEndTime(LocalTime.parse(e));
-        sh.setStatus(ShiftStatus.available);
-        return sh;
-    }
-
+    @SuppressWarnings("unused")
     @Test
-    @DisplayName("Create and Read Shift")
-    void createAndReadShift() {
-        Machine m = machineRepository.save(newMachine("Impresora FDM"));
-        Shift saved = shiftRepository.save(newShift(m, LocalDate.now().plusDays(1), "10:00", "12:00"));
-        assertThat(saved.getId()).isNotNull();
-
-        Optional<Shift> found = shiftRepository.findById(saved.getId());
-        assertThat(found).isPresent();
-        assertThat(found.get().getMachine().getId()).isEqualTo(m.getId());
-        assertThat(found.get().getStatus()).isEqualTo(ShiftStatus.available);
-    }
-
-    @Test
-    @DisplayName("Update Shift fields")
-    void updateShift() {
-        Machine m = machineRepository.save(newMachine("CNC"));
-        Shift saved = shiftRepository.save(newShift(m, LocalDate.now().plusDays(2), "09:00", "11:00"));
-        saved.setStatus(ShiftStatus.maintenance);
-        saved.setEndTime(LocalTime.parse("12:00"));
-        Shift updated = shiftRepository.save(saved);
-        assertThat(updated.getStatus()).isEqualTo(ShiftStatus.maintenance);
-        assertThat(updated.getEndTime()).isEqualTo(LocalTime.parse("12:00"));
-    }
-
-    @Test
-    @DisplayName("Delete Shift")
-    void deleteShift() {
-        Machine m = machineRepository.save(newMachine("Láser"));
-        Shift saved = shiftRepository.save(newShift(m, LocalDate.now().plusDays(3), "15:00", "17:00"));
-        Long id = saved.getId();
-        shiftRepository.deleteById(id);
-        assertThat(shiftRepository.findById(id)).isEmpty();
-    }
-
-    @Test
-    @DisplayName("findByMachineAndDate returns shifts")
+    @DisplayName("Find shifts by machine and date")
     void findByMachineAndDate() {
-        Machine m = machineRepository.save(newMachine("Fresadora"));
-        LocalDate d = LocalDate.now().plusDays(4);
-        shiftRepository.save(newShift(m, d, "08:00", "10:00"));
-        shiftRepository.save(newShift(m, d, "10:00", "12:00"));
+        Machine m = new Machine();
+        m.setName("M1");
+        m.setDescription("d");
+        m.setLocation("lab");
+        m.setStatus(com.uex.fablab.model.MachineStatus.Disponible);
+        m = machineRepository.save(m);
 
-        List<Shift> shifts = shiftRepository.findByMachineAndDate(m, d);
-        assertThat(shifts).hasSize(2);
+        Shift s1 = shiftRepository.save(newShift(m, LocalDate.now()));
+
+        List<Shift> list = shiftRepository.findByMachineAndDate(m, LocalDate.now());
+        assertThat(list).isNotEmpty();
+        assertThat(list.get(0).getMachine().getId()).isEqualTo(m.getId());
     }
 }

@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "courses")
+@Table(name = "Curso")
 public class Course {
 
     @Id
@@ -21,22 +21,29 @@ public class Course {
     private Long id;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(name = "nombre_c", nullable = false)
     private String name;
 
     @Lob
+    @Column(name = "descripcion_c")
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "capacidad_c", nullable = false)
     private Integer capacity = 0;
 
     @NotNull
-    @Column(name = "s_date", nullable = false)
+    @Column(name = "fecha_ini", nullable = false)
     private LocalDate startDate;
 
     @NotNull
-    @Column(name = "e_date", nullable = false)
+    @Column(name = "fecha_fin", nullable = false)
     private LocalDate endDate;
+
+    @Column(name = "precio", nullable = false)
+    private Double precio = 0.0;
+
+    @Column(name = "estado_c")
+    private String estado = "Activo";
 
     public Long getId() {
         return id;
@@ -84,5 +91,21 @@ public class Course {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public Double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(Double precio) {
+        this.precio = precio;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

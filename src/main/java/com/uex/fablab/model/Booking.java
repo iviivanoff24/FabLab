@@ -1,5 +1,7 @@
 package com.uex.fablab.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,7 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "booking")
+@Table(name = "Reserva")
 public class Booking {
 
     @Id
@@ -17,12 +19,18 @@ public class Booking {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "id_u", nullable = false)
     private User user;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "shift_id", nullable = false)
+    @JoinColumn(name = "id_turno", nullable = false)
     private Shift shift;
+
+    @jakarta.persistence.Column(name = "fecha_reserva", nullable = false)
+    private java.time.LocalDate fechaReserva;
+
+    @jakarta.persistence.Column(name = "estado_reserva")
+    private String estado = "Pendiente";
 
     public Long getId() {
         return id;
@@ -46,5 +54,21 @@ public class Booking {
 
     public void setShift(Shift shift) {
         this.shift = shift;
+    }
+
+    public LocalDate getFechaReserva() {
+        return fechaReserva;
+    }
+
+    public void setFechaReserva(LocalDate fechaReserva) {
+        this.fechaReserva = fechaReserva;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

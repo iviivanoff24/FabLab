@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "shifts")
+@Table(name = "Turno")
 public class Shift {
 
     @Id
@@ -24,24 +24,24 @@ public class Shift {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "machine_id", nullable = false)
+    @JoinColumn(name = "id_m", nullable = false)
     private Machine machine;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "fecha_turno", nullable = false)
     private LocalDate date;
 
     @NotNull
-    @Column(name = "s_time", nullable = false)
+    @Column(name = "hora_ini", nullable = false)
     private LocalTime startTime;
 
     @NotNull
-    @Column(name = "e_time", nullable = false)
+    @Column(name = "hora_fin", nullable = false)
     private LocalTime endTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ShiftStatus status = ShiftStatus.available;
+    @Column(name = "estado_turno", nullable = false)
+    private ShiftStatus status = ShiftStatus.Disponible;
 
     public Long getId() {
         return id;

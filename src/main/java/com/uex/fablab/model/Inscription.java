@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "inscription")
+@Table(name = "Inscripcion")
 public class Inscription {
 
     @Id
@@ -20,15 +20,18 @@ public class Inscription {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "id_u", nullable = false)
     private User user;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "id_c", nullable = false)
     private Course course;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_insc", nullable = false)
     private LocalDate date;
+
+    @Column(name = "estado_insc")
+    private String estado = "Activo";
 
     public Long getId() {
         return id;
@@ -60,5 +63,13 @@ public class Inscription {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

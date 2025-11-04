@@ -67,9 +67,10 @@ class UserRepositoryCrudTest {
     @DisplayName("Unique email constraint")
     void uniqueEmailConstraint() {
         userRepository.save(newUser("Dana", "dana@example.com", "secret", false));
-        // Segundo usuario con el mismo email debe fallar por unique=true
+        String email = "dana" + System.nanoTime() + "@example.com";
+        userRepository.save(newUser("Dana", email, "secret", false));
         DataIntegrityViolationException ex = assertThrows(DataIntegrityViolationException.class, () -> {
-            userRepository.saveAndFlush(newUser("Dany", "dana@example.com", "secret", false));
+            userRepository.saveAndFlush(newUser("Dany", email, "secret", false));
         });
         assertThat(ex).isNotNull();
     }
