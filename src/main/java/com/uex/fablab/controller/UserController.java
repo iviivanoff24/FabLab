@@ -1,11 +1,18 @@
-package com.uex.fablab.web;
+package com.uex.fablab.controller;
 
 import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.uex.fablab.model.User;
 import com.uex.fablab.repository.UserRepository;
@@ -13,7 +20,7 @@ import com.uex.fablab.repository.UserRepository;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @Validated
 public class UserController {
     private final UserRepository repo;
@@ -33,7 +40,7 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
         User saved = repo.save(user);
-        return ResponseEntity.created(URI.create("/api/users/" + saved.getId())).body(saved);
+        return ResponseEntity.created(URI.create("/users/" + saved.getId())).body(saved);
     }
 
     @GetMapping("/{id}")

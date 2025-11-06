@@ -1,4 +1,4 @@
-package com.uex.fablab.web;
+package com.uex.fablab.controller;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -12,7 +12,7 @@ public class HomeController {
 
     @GetMapping("/")
     public ResponseEntity<Resource> index() {
-        Resource resource = new ClassPathResource("com/uex/fablab/xml/index.html");
+        Resource resource = new ClassPathResource("xml/index.html");
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.TEXT_HTML)
