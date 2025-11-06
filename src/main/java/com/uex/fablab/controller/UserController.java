@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uex.fablab.data.model.User;
-import com.uex.fablab.data.repository.UserRepository;
+import com.uex.fablab.data.services.UserService;
 
 import jakarta.validation.Valid;
 
@@ -23,50 +23,42 @@ import jakarta.validation.Valid;
 @RequestMapping("/users")
 @Validated
 public class UserController {
-    private final UserRepository repo;
+    private final UserService userService;
 
-    public UserController(UserRepository repo) {
-        this.repo = repo;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
     public List<User> all() {
-        return repo.findAll();
+        return userService.listAll();
     }
 
     @PostMapping
     public ResponseEntity<User> create(@Valid @RequestBody User user) {
-        if (repo.existsByEmail(user.getEmail())) {
+        try {
+            User saved = userService.create(user);
+            return ResponseEntity.created(URI.create("/users/" + saved.getId())).body(saved);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
-        User saved = repo.save(user);
-        return ResponseEntity.created(URI.create("/users/" + saved.getId())).body(saved);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> one(@PathVariable Long id) {
-        return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return userService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<User> update(@PathVariable Long id, @Valid @RequestBody User input) {
-        return repo.findById(id)
-                .map(u -> {
-                    u.setName(input.getName());
-                    u.setEmail(input.getEmail());
-                    // Si se incluye password en la actualización, se actualiza
-                    if (input.getPassword() != null && !input.getPassword().isBlank()) {
-                        u.setPassword(input.getPassword());
-                    }
-                    return ResponseEntity.ok(repo.save(u));
-                })
+        return userService.update(id, input)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (!repo.existsById(id)) return ResponseEntity.notFound().build();
-        repo.deleteById(id);
+        if (!userService.delete(id)) return ResponseEntity.notFound().build();
         return ResponseEntity.noContent().build();
     }
 }
