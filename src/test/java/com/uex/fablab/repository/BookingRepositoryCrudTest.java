@@ -11,11 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import com.uex.fablab.model.Booking;
-import com.uex.fablab.model.Machine;
-import com.uex.fablab.model.Shift;
-import com.uex.fablab.model.ShiftStatus;
-import com.uex.fablab.model.User;
+import com.uex.fablab.data.model.Booking;
+import com.uex.fablab.data.model.Machine;
+import com.uex.fablab.data.model.Shift;
+import com.uex.fablab.data.model.ShiftStatus;
+import com.uex.fablab.data.model.User;
+import com.uex.fablab.data.repository.BookingRepository;
+import com.uex.fablab.data.repository.MachineRepository;
+import com.uex.fablab.data.repository.ShiftRepository;
+import com.uex.fablab.data.repository.UserRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -56,7 +60,7 @@ class BookingRepositoryCrudTest {
         m.setName("M2");
         m.setDescription("d");
         m.setLocation("lab");
-        m.setStatus(com.uex.fablab.model.MachineStatus.Disponible);
+        m.setStatus(com.uex.fablab.data.model.MachineStatus.Disponible);
         m = machineRepository.save(m);
 
         Shift s = new Shift();

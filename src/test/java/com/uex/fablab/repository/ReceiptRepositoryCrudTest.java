@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import com.uex.fablab.model.PaymentMethod;
-import com.uex.fablab.model.Receipt;
-import com.uex.fablab.model.User;
+import com.uex.fablab.data.model.PaymentMethod;
+import com.uex.fablab.data.model.Receipt;
+import com.uex.fablab.data.model.User;
+import com.uex.fablab.data.repository.ReceiptRepository;
+import com.uex.fablab.data.repository.UserRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

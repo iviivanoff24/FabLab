@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.uex.fablab.model.User;
-import com.uex.fablab.repository.UserRepository;
+import com.uex.fablab.data.model.User;
+import com.uex.fablab.data.repository.UserRepository;
 
 import jakarta.validation.Valid;
 

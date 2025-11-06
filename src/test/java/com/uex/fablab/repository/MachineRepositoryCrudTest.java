@@ -7,8 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import com.uex.fablab.model.Machine;
-import com.uex.fablab.model.MachineStatus;
+import com.uex.fablab.data.model.Machine;
+import com.uex.fablab.data.model.MachineStatus;
+import com.uex.fablab.data.repository.MachineRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

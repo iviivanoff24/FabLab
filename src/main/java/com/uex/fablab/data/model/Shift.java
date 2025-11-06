@@ -1,4 +1,4 @@
-package com.uex.fablab.model;
+package com.uex.fablab.data.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

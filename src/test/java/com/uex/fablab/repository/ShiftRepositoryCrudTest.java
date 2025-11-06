@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import com.uex.fablab.model.Machine;
-import com.uex.fablab.model.Shift;
-import com.uex.fablab.model.ShiftStatus;
+import com.uex.fablab.data.model.Machine;
+import com.uex.fablab.data.model.Shift;
+import com.uex.fablab.data.model.ShiftStatus;
+import com.uex.fablab.data.repository.MachineRepository;
+import com.uex.fablab.data.repository.ShiftRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -43,7 +45,7 @@ class ShiftRepositoryCrudTest {
         m.setName("M1");
         m.setDescription("d");
         m.setLocation("lab");
-        m.setStatus(com.uex.fablab.model.MachineStatus.Disponible);
+        m.setStatus(com.uex.fablab.data.model.MachineStatus.Disponible);
         m = machineRepository.save(m);
 
         Shift s1 = shiftRepository.save(newShift(m, LocalDate.now()));

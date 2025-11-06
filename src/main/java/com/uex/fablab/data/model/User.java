@@ -1,4 +1,4 @@
-package com.uex.fablab.model;
+package com.uex.fablab.data.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -9,9 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import com.uex.fablab.model.Course;
-import com.uex.fablab.model.Inscription;
-import com.uex.fablab.model.User;
+import com.uex.fablab.data.model.Course;
+import com.uex.fablab.data.model.Inscription;
+import com.uex.fablab.data.model.User;
+import com.uex.fablab.data.repository.CourseRepository;
+import com.uex.fablab.data.repository.InscriptionRepository;
+import com.uex.fablab.data.repository.UserRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

@@ -12,7 +12,7 @@ public class HomeController {
 
     @GetMapping("/")
     public ResponseEntity<Resource> index() {
-        Resource resource = new ClassPathResource("xml/index.html");
+        Resource resource = new ClassPathResource("templates/index.html");
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.TEXT_HTML)

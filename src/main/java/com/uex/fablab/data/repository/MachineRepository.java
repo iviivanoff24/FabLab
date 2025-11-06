@@ -1,8 +1,8 @@
-package com.uex.fablab.repository;
+package com.uex.fablab.data.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.uex.fablab.model.Machine;
+import com.uex.fablab.data.model.Machine;
 
 public interface MachineRepository extends JpaRepository<Machine, Long> {
 }

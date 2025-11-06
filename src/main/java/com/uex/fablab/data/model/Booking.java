@@ -1,8 +1,7 @@
-package com.uex.fablab.model;
+package com.uex.fablab.data.model;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,8 +11,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Inscripcion")
-public class Inscription {
+@Table(name = "Reserva")
+public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,14 +23,14 @@ public class Inscription {
     private User user;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "id_c", nullable = false)
-    private Course course;
+    @JoinColumn(name = "id_turno", nullable = false)
+    private Shift shift;
 
-    @Column(name = "fecha_insc", nullable = false)
-    private LocalDate date;
+    @jakarta.persistence.Column(name = "fecha_reserva", nullable = false)
+    private java.time.LocalDate fechaReserva;
 
-    @Column(name = "estado_insc")
-    private String estado = "Activo";
+    @jakarta.persistence.Column(name = "estado_reserva")
+    private String estado = "Pendiente";
 
     public Long getId() {
         return id;
@@ -49,20 +48,20 @@ public class Inscription {
         this.user = user;
     }
 
-    public Course getCourse() {
-        return course;
+    public Shift getShift() {
+        return shift;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public void setShift(Shift shift) {
+        this.shift = shift;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getFechaReserva() {
+        return fechaReserva;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setFechaReserva(LocalDate fechaReserva) {
+        this.fechaReserva = fechaReserva;
     }
 
     public String getEstado() {

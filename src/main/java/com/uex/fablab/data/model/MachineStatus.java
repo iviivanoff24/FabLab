@@ -1,4 +1,4 @@
-package com.uex.fablab.model;
+package com.uex.fablab.data.model;
 
 public enum MachineStatus {
     Disponible,
