@@ -1,6 +1,8 @@
 package com.uex.fablab.data.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -44,6 +47,9 @@ public class Course {
 
     @Column(name = "estado_c")
     private String estado = "Activo";
+
+    @OneToMany(mappedBy = "course")
+    private List<Inscription> inscriptions = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -107,5 +113,9 @@ public class Course {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public List<Inscription> getInscriptions() {
+        return inscriptions;
     }
 }

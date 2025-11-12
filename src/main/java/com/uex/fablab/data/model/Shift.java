@@ -2,6 +2,11 @@ package com.uex.fablab.data.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
@@ -25,6 +31,7 @@ public class Shift {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_m", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Machine machine;
 
     @NotNull
@@ -42,6 +49,9 @@ public class Shift {
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_turno", nullable = false)
     private ShiftStatus status = ShiftStatus.Disponible;
+
+    @OneToMany(mappedBy = "shift")
+    private List<Booking> bookings = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -89,5 +99,9 @@ public class Shift {
 
     public void setStatus(ShiftStatus status) {
         this.status = status;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
     }
 }

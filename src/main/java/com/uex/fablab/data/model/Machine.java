@@ -1,5 +1,8 @@
 package com.uex.fablab.data.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -7,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -32,6 +36,9 @@ public class Machine {
     @Enumerated(jakarta.persistence.EnumType.STRING)
     @Column(name = "estado_m", nullable = false)
     private MachineStatus status = MachineStatus.Disponible;
+
+    @OneToMany(mappedBy = "machine")
+    private List<Shift> shifts = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -71,5 +78,9 @@ public class Machine {
 
     public void setStatus(MachineStatus status) {
         this.status = status;
+    }
+
+    public List<Shift> getShifts() {
+        return shifts;
     }
 }

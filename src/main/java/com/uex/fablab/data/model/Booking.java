@@ -2,6 +2,9 @@ package com.uex.fablab.data.model;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,10 +23,12 @@ public class Booking {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_u", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_turno", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Shift shift;
 
     @jakarta.persistence.Column(name = "fecha_reserva", nullable = false)

@@ -2,6 +2,9 @@ package com.uex.fablab.data.model;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,10 +24,12 @@ public class Inscription {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_u", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_c", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Course course;
 
     @Column(name = "fecha_insc", nullable = false)

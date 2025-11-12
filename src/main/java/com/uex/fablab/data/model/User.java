@@ -1,5 +1,8 @@
 package com.uex.fablab.data.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -7,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -41,6 +45,16 @@ public class User {
 
     @Column(name = "fecha_registro")
     private java.time.LocalDate fechaRegistro;
+
+    // Relaciones inversas para cascada en borrado
+    @OneToMany(mappedBy = "user")
+    private List<Booking> bookings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Inscription> inscriptions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Receipt> receipts = new ArrayList<>();
 
     public User() {}
 
@@ -106,5 +120,17 @@ public class User {
 
     public void setFechaRegistro(java.time.LocalDate fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public List<Inscription> getInscriptions() {
+        return inscriptions;
+    }
+
+    public List<Receipt> getReceipts() {
+        return receipts;
     }
 }
