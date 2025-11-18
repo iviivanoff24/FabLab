@@ -19,6 +19,7 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @jakarta.persistence.Column(name = "id_reserva")
     private Long id;
 
     @ManyToOne(optional = false)
@@ -34,8 +35,9 @@ public class Booking {
     @jakarta.persistence.Column(name = "fecha_reserva", nullable = false)
     private java.time.LocalDate fechaReserva;
 
-    @jakarta.persistence.Column(name = "estado_reserva")
-    private String estado = "Pendiente";
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @jakarta.persistence.Column(name = "estado_reserva", nullable = false)
+    private BookingStatus estado = BookingStatus.Pendiente;
 
     public Long getId() {
         return id;
@@ -69,11 +71,11 @@ public class Booking {
         this.fechaReserva = fechaReserva;
     }
 
-    public String getEstado() {
+    public BookingStatus getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(BookingStatus estado) {
         this.estado = estado;
     }
 }

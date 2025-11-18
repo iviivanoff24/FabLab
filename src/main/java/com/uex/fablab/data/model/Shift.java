@@ -27,6 +27,7 @@ public class Shift {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_turno")
     private Long id;
 
     @ManyToOne(optional = false)

@@ -21,6 +21,7 @@ public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_c")
     private Long id;
 
     @NotBlank
@@ -45,8 +46,9 @@ public class Course {
     @Column(name = "precio", nullable = false)
     private Double precio = 0.0;
 
-    @Column(name = "estado_c")
-    private String estado = "Activo";
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @Column(name = "estado_c", nullable = false)
+    private CourseStatus estado = CourseStatus.Activo;
 
     @OneToMany(mappedBy = "course")
     private List<Inscription> inscriptions = new ArrayList<>();
@@ -107,11 +109,11 @@ public class Course {
         this.precio = precio;
     }
 
-    public String getEstado() {
+    public CourseStatus getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(CourseStatus estado) {
         this.estado = estado;
     }
 

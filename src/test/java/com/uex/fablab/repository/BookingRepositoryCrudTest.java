@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.uex.fablab.data.model.Booking;
+import com.uex.fablab.data.model.BookingStatus;
 import com.uex.fablab.data.model.Machine;
 import com.uex.fablab.data.model.Shift;
 import com.uex.fablab.data.model.ShiftStatus;
@@ -42,7 +43,7 @@ class BookingRepositoryCrudTest {
         b.setUser(u);
         b.setShift(s);
         b.setFechaReserva(LocalDate.now());
-        b.setEstado("Confirmada");
+        b.setEstado(BookingStatus.Confirmada);
         return b;
     }
 

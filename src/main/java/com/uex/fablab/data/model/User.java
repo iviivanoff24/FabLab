@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -20,6 +21,7 @@ import jakarta.validation.constraints.NotBlank;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_u")
     private Long id;
 
     @NotBlank
@@ -47,13 +49,13 @@ public class User {
     private java.time.LocalDate fechaRegistro;
 
     // Relaciones inversas para cascada en borrado
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.REMOVE, orphanRemoval = true)
     private List<Booking> bookings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.REMOVE, orphanRemoval = true)
     private List<Inscription> inscriptions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.REMOVE, orphanRemoval = true)
     private List<Receipt> receipts = new ArrayList<>();
 
     public User() {}
@@ -132,5 +134,15 @@ public class User {
 
     public List<Receipt> getReceipts() {
         return receipts;
+    }
+
+    @PrePersist
+    void prePersist() {
+        if (this.fechaRegistro == null) {
+            this.fechaRegistro = java.time.LocalDate.now();
+        }
+        if (this.role == null || this.role.isBlank()) {
+            this.role = "USER";
+        }
     }
 }

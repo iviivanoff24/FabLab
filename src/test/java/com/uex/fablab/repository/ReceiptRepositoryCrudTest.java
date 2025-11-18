@@ -1,6 +1,6 @@
 package com.uex.fablab.repository;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
@@ -28,8 +28,8 @@ class ReceiptRepositoryCrudTest {
     private Receipt newReceipt(User u) {
         Receipt r = new Receipt();
         r.setUser(u);
-        r.setTotalPrice(new BigDecimal("12.34"));
-        r.setDate(java.time.LocalDateTime.now());
+        r.setTotalPrice(12.34);
+        r.setFechaEmision(LocalDate.now());
         r.setMetodoPago(PaymentMethod.Efectivo);
         r.setConcepto("test");
         return r;

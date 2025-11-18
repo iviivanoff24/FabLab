@@ -20,6 +20,7 @@ public class Inscription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_insc")
     private Long id;
 
     @ManyToOne(optional = false)
@@ -35,8 +36,9 @@ public class Inscription {
     @Column(name = "fecha_insc", nullable = false)
     private LocalDate date;
 
-    @Column(name = "estado_insc")
-    private String estado = "Activo";
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @Column(name = "estado_insc", nullable = false)
+    private InscriptionStatus estado = InscriptionStatus.Activo;
 
     public Long getId() {
         return id;
@@ -70,11 +72,11 @@ public class Inscription {
         this.date = date;
     }
 
-    public String getEstado() {
+    public InscriptionStatus getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(InscriptionStatus estado) {
         this.estado = estado;
     }
 }

@@ -1,8 +1,6 @@
 package com.uex.fablab.usecases;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -20,8 +18,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.uex.fablab.data.model.Booking;
+import com.uex.fablab.data.model.BookingStatus;
 import com.uex.fablab.data.model.Course;
+import com.uex.fablab.data.model.CourseStatus;
 import com.uex.fablab.data.model.Inscription;
+import com.uex.fablab.data.model.InscriptionStatus;
 import com.uex.fablab.data.model.Machine;
 import com.uex.fablab.data.model.MachineStatus;
 import com.uex.fablab.data.model.PaymentMethod;
@@ -99,7 +100,7 @@ class FablabUseCasesTest {
         c.setStartDate(start);
         c.setEndDate(end);
         c.setPrecio(25.0);
-        c.setEstado("Activo");
+        c.setEstado(CourseStatus.Activo);
         return c;
     }
 
@@ -156,13 +157,13 @@ class FablabUseCasesTest {
         b.setUser(u);
         b.setShift(s);
         b.setFechaReserva(LocalDate.now());
-        b.setEstado("Pendiente");
+        b.setEstado(BookingStatus.Pendiente);
         bookingRepository.save(b);
 
         Booking found = bookingRepository.findByUserAndShift(u, s).orElse(null);
         assertThat(found).isNotNull();
         assertThat(found.getId()).isNotNull();
-        assertThat(found.getEstado()).isEqualTo("Pendiente");
+        assertThat(found.getEstado()).isEqualTo(BookingStatus.Pendiente);
     }
 
     @Test
@@ -181,14 +182,14 @@ class FablabUseCasesTest {
         b1.setUser(u);
         b1.setShift(s1);
         b1.setFechaReserva(LocalDate.now());
-        b1.setEstado("Confirmada");
+        b1.setEstado(BookingStatus.Confirmada);
         bookingRepository.save(b1);
 
         Booking b2 = new Booking();
         b2.setUser(u);
         b2.setShift(s2);
         b2.setFechaReserva(LocalDate.now());
-        b2.setEstado("Pendiente");
+        b2.setEstado(BookingStatus.Pendiente);
         bookingRepository.save(b2);
 
         List<Booking> reservas = bookingRepository.findByUser(u);
@@ -208,7 +209,7 @@ class FablabUseCasesTest {
         b.setUser(u);
         b.setShift(s);
         b.setFechaReserva(LocalDate.now());
-        b.setEstado("Pendiente");
+        b.setEstado(BookingStatus.Pendiente);
         b = bookingRepository.save(b);
         Long bookingId = b.getId();
 
@@ -234,7 +235,7 @@ class FablabUseCasesTest {
         ins.setUser(u);
         ins.setCourse(c);
         ins.setDate(LocalDate.now());
-        ins.setEstado("Activo");
+        ins.setEstado(InscriptionStatus.Activo);
         Inscription saved = inscriptionRepository.save(ins);
 
         assertThat(saved.getId()).isNotNull();
@@ -250,8 +251,8 @@ class FablabUseCasesTest {
         User u = userRepository.save(newUser("Eva", "eva@example.com"));
         Receipt r = new Receipt();
         r.setUser(u);
-        r.setTotalPrice(new BigDecimal("49.90"));
-        r.setDate(LocalDateTime.now());
+        r.setTotalPrice(49.90);
+        r.setFechaEmision(LocalDate.now());
         r.setMetodoPago(PaymentMethod.Tarjeta);
         r.setConcepto("Pago curso básico");
         r.setEstadoRecibo(ReceiptStatus.Pendiente);
@@ -269,8 +270,8 @@ class FablabUseCasesTest {
         User u = userRepository.save(newUser("Fran", "fran@example.com"));
         Receipt r = new Receipt();
         r.setUser(u);
-        r.setTotalPrice(new BigDecimal("10.00"));
-        r.setDate(LocalDateTime.now());
+        r.setTotalPrice(10.00);
+        r.setFechaEmision(LocalDate.now());
         r.setMetodoPago(PaymentMethod.Efectivo);
         r.setEstadoRecibo(ReceiptStatus.Pendiente);
         r = receiptRepository.save(r);
@@ -319,7 +320,7 @@ class FablabUseCasesTest {
         b.setUser(u);
         b.setShift(s);
         b.setFechaReserva(LocalDate.now());
-        b.setEstado("Pendiente");
+        b.setEstado(BookingStatus.Pendiente);
         b = bookingRepository.save(b);
         Long bId = b.getId();
 
@@ -342,7 +343,7 @@ class FablabUseCasesTest {
         ins.setUser(u);
         ins.setCourse(c);
         ins.setDate(LocalDate.now());
-        ins.setEstado("Activo");
+        ins.setEstado(InscriptionStatus.Activo);
         ins = inscriptionRepository.save(ins);
         Long insId = ins.getId();
 
@@ -365,13 +366,13 @@ class FablabUseCasesTest {
         ins.setUser(u);
         ins.setCourse(c);
         ins.setDate(LocalDate.now());
-        ins.setEstado("Activo");
+        ins.setEstado(InscriptionStatus.Activo);
         ins = inscriptionRepository.save(ins);
         Long insId = ins.getId();
 
         Receipt r = new Receipt();
         r.setUser(u);
-        r.setTotalPrice(new BigDecimal("5.00"));
+        r.setTotalPrice(5.00);
         r.setMetodoPago(PaymentMethod.Online);
         r.setEstadoRecibo(ReceiptStatus.Pendiente);
         r = receiptRepository.save(r);
@@ -409,11 +410,11 @@ class FablabUseCasesTest {
         User u = userRepository.save(newUser("Laura", "laura@example.com"));
         Receipt r = new Receipt();
         r.setUser(u);
-        r.setTotalPrice(new BigDecimal("15.00"));
+        r.setTotalPrice(15.00);
         r.setMetodoPago(PaymentMethod.Efectivo);
         r.setEstadoRecibo(ReceiptStatus.Pendiente);
 
         Receipt saved = receiptRepository.save(r);
-        assertThat(saved.getDate()).isNotNull();
+        assertThat(saved.getFechaEmision()).isNotNull();
     }
 }

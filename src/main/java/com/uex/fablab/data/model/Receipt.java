@@ -1,7 +1,6 @@
 package com.uex.fablab.data.model;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -23,6 +22,7 @@ public class Receipt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_recibo")
     private Long id;
 
     @ManyToOne(optional = false)
@@ -31,21 +31,21 @@ public class Receipt {
     private User user;
 
     @NotNull
-    @Column(name = "importe_total", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalPrice;
+    @Column(name = "importe_total", nullable = false)
+    private Double totalPrice;
 
     @Column(name = "fecha_emision", nullable = false)
-    private java.time.LocalDateTime fechaEmision = java.time.LocalDateTime.now();
+    private java.time.LocalDate fechaEmision = java.time.LocalDate.now();
 
     @Enumerated(jakarta.persistence.EnumType.STRING)
-    @Column(name = "metodo_pago")
+    @Column(name = "metodo_pago", nullable = false)
     private PaymentMethod metodoPago;
 
     @Column(name = "concepto")
     private String concepto;
 
     @Enumerated(jakarta.persistence.EnumType.STRING)
-    @Column(name = "estado_recibo")
+    @Column(name = "estado_recibo", nullable = false)
     private ReceiptStatus estadoRecibo = ReceiptStatus.Pendiente;
 
     public Long getId() {
@@ -64,19 +64,19 @@ public class Receipt {
         this.user = user;
     }
 
-    public BigDecimal getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(BigDecimal totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
 
-    public LocalDateTime getDate() {
+    public LocalDate getFechaEmision() {
         return fechaEmision;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setFechaEmision(LocalDate date) {
         this.fechaEmision = date;
     }
 

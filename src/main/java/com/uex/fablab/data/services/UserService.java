@@ -52,9 +52,11 @@ public class UserService {
     }
 
     public boolean delete(Long id) {
-        if (!repo.existsById(id)) return false;
-        repo.deleteById(id);
-        return true;
+        return repo.findById(id).map(u -> {
+            // Borrar con entidad cargada para aplicar cascadas JPA
+            repo.delete(u);
+            return true;
+        }).orElse(false);
     }
 
     public User findByEmail(String email) {

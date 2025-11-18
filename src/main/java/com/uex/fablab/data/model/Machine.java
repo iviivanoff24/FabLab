@@ -20,6 +20,7 @@ public class Machine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_m")
     private Long id;
 
     @NotBlank
