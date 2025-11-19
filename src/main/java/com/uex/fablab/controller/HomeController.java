@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
+    // Prueba github
 
     @GetMapping("/")
     public ResponseEntity<Resource> index() {
