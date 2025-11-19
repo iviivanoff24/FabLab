@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
-    // Prueba github
-    //Prueba CAMs
 
     @GetMapping("/")
     public ResponseEntity<Resource> index() {
