@@ -8,6 +8,11 @@
     <link rel="apple-touch-icon" href="img/logo.png" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/main.css" />
+    <style>
+      /* Bordes verde/rojo para validación (fallback si no carga Bootstrap) */
+      .form-control.is-valid { border:2px solid #198754; }
+      .form-control.is-invalid { border:2px solid #dc3545; }
+    </style>
   </head>
   <body>
     <header class="border-bottom bg-white">
@@ -75,7 +80,7 @@
                 <div id="registerError" class="alert alert-danger d-none" role="alert">
                   No se pudo completar el registro. Revisa los datos.
                 </div>
-                <form action="/register" method="post" novalidate>
+                <form action="/register" method="post" id="registerForm" novalidate> <!-- Validacion -->
                   <div class="mb-3">
                     <label for="name" class="form-label">Nombre</label>
                     <input
@@ -86,6 +91,7 @@
                       placeholder="Tu nombre"
                       required
                     />
+                    <div class="invalid-feedback">Debe tener al menos 2 caracteres.</div>
                   </div>
                   <div class="mb-3">
                     <label for="email" class="form-label">Correo electrónico</label>
@@ -97,6 +103,7 @@
                       placeholder="tucorreo@ejemplo.com"
                       required
                     />
+                    <div class="invalid-feedback">Formato de correo inválido.</div>
                   </div>
                   <div class="mb-3">
                     <label for="password" class="form-label">Contraseña</label>
@@ -109,6 +116,7 @@
                       minlength="6"
                       required
                     />
+                    <div class="invalid-feedback">Mínimo 6 caracteres, incluir letra y número.</div>
                   </div>
                   <div class="mb-4">
                     <label for="telefono" class="form-label">Teléfono (opcional)</label>
@@ -119,6 +127,7 @@
                       name="telefono"
                       placeholder="600 000 000"
                     />
+                    <div class="invalid-feedback">Debe ser exactamente 9 dígitos.</div>
                   </div>
                   <button type="submit" class="btn btn-primary w-100">Registrarse</button>
                 </form>
@@ -142,6 +151,43 @@
         }
       })();
       
+    </script>
+    <script>
+      // Validaciones cliente: colorear borde (Bootstrap is-valid / is-invalid)
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('registerForm');
+        if (!form) return;
+
+        const validators = {
+          name: v => v.trim().length >= 2,
+          email: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+          password: v => /^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(v), // min 6, letra y número
+          telefono: v => v.trim() === '' || /^\d{9}$/.test(v.replace(/\s+/g,''))
+        };
+
+        function validateField(input){
+          const fn = validators[input.name];
+          if (!fn) return true; // campos sin validador específico
+          const valid = fn(input.value);
+          input.classList.remove('is-valid','is-invalid');
+          input.classList.add(valid ? 'is-valid' : 'is-invalid');
+          return valid;
+        }
+
+        const inputs = form.querySelectorAll('.form-control');
+        inputs.forEach(inp => {
+          inp.addEventListener('input', () => validateField(inp));
+          inp.addEventListener('blur', () => validateField(inp));
+        });
+
+        form.addEventListener('submit', e => {
+          let allValid = true;
+            inputs.forEach(i => { if(!validateField(i)) allValid = false; });
+          if (!allValid) {
+            e.preventDefault();
+          }
+        });
+      });
     </script>
     <script src="js/main.js"></script>
   </body>

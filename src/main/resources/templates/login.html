@@ -69,7 +69,15 @@
           <div class="card shadow-sm">
             <div class="card-body p-4">
               <h1 class="h4 mb-3 text-center">Iniciar sesión</h1>
-              <form action="/login" method="post" novalidate>
+              <!-- Alerta de error login (se muestra si ?error=...) -->
+              <div id="loginError" class="alert alert-danger d-none" role="alert">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                  <span class="alert-text">Error de autenticación.</span>
+                </div>
+              </div>
+              
+              <form action="/login" method="post" id="loginForm" novalidate> <!-- Validacion -->
                 <div class="mb-3">
                   <label for="email" class="form-label"
                     >Correo electrónico</label
@@ -123,5 +131,39 @@
       </div>
     </div>
     <script src="js/main.js"></script>
+    <script>
+      // Mostrar alerta si hay parámetro error y restaurar valores introducidos.
+      (function(){
+        const params = new URLSearchParams(window.location.search);
+        const errorParam = params.get('error');
+        const alertDiv = document.getElementById('loginError');
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passInput = document.getElementById('password');
+
+        // Restaurar desde sessionStorage si hubo fallo anterior
+        const storedEmail = sessionStorage.getItem('login_email');
+        const storedPass = sessionStorage.getItem('login_password');
+
+        if (errorParam && alertDiv) {
+          alertDiv.classList.remove('d-none');
+          const textNode = alertDiv.querySelector('.alert-text');
+          if (textNode) textNode.textContent = decodeURIComponent(errorParam);
+          if (storedEmail) emailInput.value = storedEmail;
+          if (storedPass) passInput.value = storedPass; // Nota: mantener password en cliente, no poner en URL
+        } else {
+          // Si no hay error, limpiar cualquier dato previo
+          sessionStorage.removeItem('login_email');
+          sessionStorage.removeItem('login_password');
+        }
+
+        if (form) {
+          form.addEventListener('submit', () => {
+            sessionStorage.setItem('login_email', emailInput.value);
+            sessionStorage.setItem('login_password', passInput.value);
+          });
+        }
+      })();
+    </script>
   </body>
 </html>

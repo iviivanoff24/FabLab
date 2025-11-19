@@ -1,5 +1,8 @@
 package com.uex.fablab.controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -38,14 +41,26 @@ public class AuthController {
                           @RequestParam("password") String password,
                           HttpSession session) {
         User user = userService.findByEmail(email);
-        if (user != null && user.getPassword() != null && user.getPassword().equals(password)) {
-            session.setAttribute("USER_ID", user.getId());
-            session.setAttribute("USER_NAME", user.getName());
-            session.setAttribute("USER_EMAIL", user.getEmail());
-            session.setAttribute("USER_ADMIN", user.isAdmin());
-            return "redirect:/";
+        if (user == null) {
+            return redirectLoginError("Usuario no encontrado");
         }
-        return "redirect:/login?error=1";
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            return redirectLoginError("Contraseña no establecida");
+        }
+        if (!user.getPassword().equals(password)) {
+            return redirectLoginError("Contraseña incorrecta");
+        }
+        // OK
+        session.setAttribute("USER_ID", user.getId());
+        session.setAttribute("USER_NAME", user.getName());
+        session.setAttribute("USER_EMAIL", user.getEmail());
+        session.setAttribute("USER_ADMIN", user.isAdmin());
+        return "redirect:/";
+    }
+
+    private String redirectLoginError(String msg) {
+        String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
+        return "redirect:/login?error=" + encoded;
     }
 
     @GetMapping({"/register", "/register.html"})
@@ -70,7 +85,7 @@ public class AuthController {
             if (telefono != null && !telefono.isBlank()) user.setTelefono(telefono);
             // por defecto rol USER en @PrePersist
             userService.create(user);
-            return "redirect:/login?registered=1";
+            return "redirect:/";
         } catch (IllegalArgumentException ex) {
             return "redirect:/register?error=1";
         }

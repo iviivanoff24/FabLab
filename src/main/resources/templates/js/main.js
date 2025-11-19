@@ -28,6 +28,54 @@ document.addEventListener('DOMContentLoaded', () => {
 				logoutBtn.type = 'submit';
 				logoutBtn.className = 'btn btn-outline-secondary btn-sm';
 				logoutBtn.textContent = 'Cerrar sesión';
+
+				// Modal de confirmación (se crea una sola vez si no existe)
+				function ensureLogoutModal() {
+					let modalEl = document.getElementById('logoutConfirmModal');
+					if (modalEl) return modalEl;
+					modalEl = document.createElement('div');
+					modalEl.id = 'logoutConfirmModal';
+					modalEl.className = 'modal fade';
+					modalEl.tabIndex = -1;
+					modalEl.innerHTML = `
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h1 class="modal-title fs-5">Confirmar cierre de sesión</h1>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+								</div>
+								<div class="modal-body">
+									<p>¿Seguro que deseas cerrar tu sesión?</p>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+									<button type="button" id="logoutConfirmBtn" class="btn btn-primary">Cerrar sesión</button>
+								</div>
+							</div>
+						</div>`;
+					document.body.appendChild(modalEl);
+					return modalEl;
+				}
+
+				logoutBtn.addEventListener('click', function (e) {
+					e.preventDefault(); // Evita envío inmediato
+					const modalEl = ensureLogoutModal();
+					const confirmBtn = modalEl.querySelector('#logoutConfirmBtn');
+					if (confirmBtn) {
+						confirmBtn.onclick = () => {
+							logoutForm.submit();
+						};
+					}
+					// Usar la API de Bootstrap para mostrar el modal
+					if (window.bootstrap && bootstrap.Modal) {
+						const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+						modal.show();
+					} else {
+						// Fallback simple si Bootstrap JS no está cargado
+						alert('¿Seguro que deseas cerrar tu sesión?');
+						logoutForm.submit();
+					}
+				});
 				logoutForm.appendChild(logoutBtn);
 				authContainer.appendChild(hello);
 				authContainer.appendChild(logoutForm);
