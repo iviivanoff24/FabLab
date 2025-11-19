@@ -17,7 +17,7 @@ public class MachinesController {
 
     private static final String ADMIN_CARD = "" +
             "<div class=\"card text-bg-warning mb-3 mx-auto\" style=\"max-width: 18rem; max-height: 10rem;\">" +
-            "  <a href=\"add-machine.html\" class=\"text-decoration-none text-dark\">" +
+            "  <a href=\"admin/add-machine.html\" class=\"text-decoration-none text-dark\">" +
             "    <div class=\"card-body d-flex flex-column align-items-center justify-content-center py-3\">" +
             "      <img src=\"img/add.png\" alt=\"Añadir máquina\" width=\"48\" height=\"48\" class=\"mb-2\" />" +
             "      <h5 class=\"card-title text-dark m-0\">Nueva Máquina</h5>" +
