@@ -1,6 +1,46 @@
 // Inicialización del calendario de reservas (movido desde index.html)
 // Aseguramos que el DOM esté listo antes de buscar elementos
 document.addEventListener('DOMContentLoaded', () => {
+	// Estado de sesión y cabecera (login/register vs usuario + logout)
+	// -------- Sesión / Header dinámico --------
+	const authContainer = document.getElementById('authLinks');
+	if (authContainer) {
+		fetch('/api/session/me', { credentials: 'same-origin' })
+			.then(r => {
+				if (!r.ok) throw new Error('Estado HTTP ' + r.status);
+				return r.json();
+			})
+			.then(data => {
+				console.debug('[session] respuesta', data);
+				if (!data.logged) {
+					console.debug('[session] no logueado');
+					return;
+				}
+				authContainer.innerHTML = '';
+				const hello = document.createElement('span');
+				hello.className = 'small text-secondary';
+				hello.textContent = `Hola, ${data.name || data.email}`;
+				const logoutForm = document.createElement('form');
+				logoutForm.method = 'post';
+				logoutForm.action = '/logout';
+				logoutForm.className = 'm-0';
+				const logoutBtn = document.createElement('button');
+				logoutBtn.type = 'submit';
+				logoutBtn.className = 'btn btn-outline-secondary btn-sm';
+				logoutBtn.textContent = 'Cerrar sesión';
+				logoutForm.appendChild(logoutBtn);
+				authContainer.appendChild(hello);
+				authContainer.appendChild(logoutForm);
+			})
+			.catch(err => {
+				console.warn('[session] error obteniendo sesión', err);
+			});
+	} else {
+		console.debug('[session] authLinks no encontrado');
+	}
+
+	// Elementos del calendario
+
 	const monthEl = document.getElementById('fabcalMonth');
 	const daysEl = document.getElementById('fabcalDays');
 	const prevBtn = document.getElementById('fabcalPrev');
