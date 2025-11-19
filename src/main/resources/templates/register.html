@@ -29,7 +29,7 @@
         </div>
 
         <!-- LOGIN / REGISTER / SEARCH -->
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3" id="authLinks">
           <a href="login.html" class="text-dark text-decoration-none small"
             >Iniciar sesión</a
           >
@@ -66,10 +66,83 @@
     <br />
 
     <main>
-
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-7 col-lg-5">
+            <div class="card shadow-sm">
+              <div class="card-body p-4">
+                <h1 class="h4 mb-3 text-center">Crear cuenta</h1>
+                <div id="registerError" class="alert alert-danger d-none" role="alert">
+                  No se pudo completar el registro. Revisa los datos.
+                </div>
+                <form action="/register" method="post" novalidate>
+                  <div class="mb-3">
+                    <label for="name" class="form-label">Nombre</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="name"
+                      name="name"
+                      placeholder="Tu nombre"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Correo electrónico</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      name="email"
+                      placeholder="tucorreo@ejemplo.com"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password"
+                      name="password"
+                      placeholder="********"
+                      minlength="6"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label for="telefono" class="form-label">Teléfono (opcional)</label>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="telefono"
+                      name="telefono"
+                      placeholder="600 000 000"
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+                </form>
+                <p class="text-center small mt-3 mb-0">
+                  ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+      (function(){
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('error')) {
+          const alert = document.getElementById('registerError');
+          if (alert) alert.classList.remove('d-none');
+        }
+      })();
+      
+    </script>
     <script src="js/main.js"></script>
   </body>
 </html>
