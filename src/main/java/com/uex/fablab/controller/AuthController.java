@@ -18,6 +18,7 @@ import com.uex.fablab.data.services.UserService;
 
 import jakarta.servlet.http.HttpSession;
 
+
 @Controller
 public class AuthController {
 
