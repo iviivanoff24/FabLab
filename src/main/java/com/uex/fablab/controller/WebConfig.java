@@ -9,9 +9,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final AdminOnlyInterceptor adminOnlyInterceptor;
+    private final RememberMeInterceptor rememberMeInterceptor;
 
-    public WebConfig(AdminOnlyInterceptor adminOnlyInterceptor) {
+    public WebConfig(AdminOnlyInterceptor adminOnlyInterceptor,
+                     RememberMeInterceptor rememberMeInterceptor) {
         this.adminOnlyInterceptor = adminOnlyInterceptor;
+        this.rememberMeInterceptor = rememberMeInterceptor;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(adminOnlyInterceptor)
-                .addPathPatterns("/**"); // deja que el propio interceptor decida qué rutas proteger
+        registry.addInterceptor(rememberMeInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(adminOnlyInterceptor).addPathPatterns("/**");
     }
 }

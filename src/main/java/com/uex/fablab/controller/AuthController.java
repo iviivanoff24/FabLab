@@ -2,6 +2,8 @@ package com.uex.fablab.controller;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -16,8 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.uex.fablab.data.model.User;
 import com.uex.fablab.data.services.UserService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
 
 @Controller
 public class AuthController {
@@ -40,7 +43,9 @@ public class AuthController {
     @PostMapping("/login")
     public String doLogin(@RequestParam("email") String email,
                           @RequestParam("password") String password,
-                          HttpSession session) {
+                          @RequestParam(value = "remember", required = false) String remember,
+                          HttpSession session,
+                          HttpServletResponse response) {
         User user = userService.findByEmail(email);
         if (user == null) {
             return redirectLoginError("Usuario no encontrado");
@@ -56,6 +61,18 @@ public class AuthController {
         session.setAttribute("USER_NAME", user.getName());
         session.setAttribute("USER_EMAIL", user.getEmail());
         session.setAttribute("USER_ADMIN", user.isAdmin());
+
+        if (remember != null) {
+            String secret = System.getProperty("auth.remember.secret", "defaultSecretValue");
+            String tokenData = user.getId() + ":" + user.getEmail();
+            String signature = sha256(tokenData + secret);
+            String cookieValue = tokenData + ":" + signature;
+            Cookie cookie = new Cookie("REMEMBER_ME", cookieValue);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(30 * 24 * 3600); // 30 días
+            response.addCookie(cookie);
+        }
         return "redirect:/";
     }
 
@@ -93,8 +110,12 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session, HttpServletResponse response) {
         session.invalidate();
+        Cookie cookie = new Cookie("REMEMBER_ME", "");
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
         return "redirect:/";
     }
 
@@ -112,5 +133,19 @@ public class AuthController {
             out.put("admin", session.getAttribute("USER_ADMIN"));
         }
         return out;
+    }
+
+    private static String sha256(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hash) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 no disponible", e);
+        }
     }
 }

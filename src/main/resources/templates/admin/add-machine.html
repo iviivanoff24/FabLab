@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Añadir Máquina</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+  </head>
+  <body>
+    <div class="container py-4">
+      <h1 class="h4 mb-4">Registrar nueva máquina</h1>
+      <form>
+        <div class="mb-3">
+          <label class="form-label" for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" type="text" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="descripcion">Descripción</label>
+          <textarea id="descripcion" name="descripcion" rows="3" class="form-control" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="categoria">Categoría</label>
+          <input id="categoria" name="categoria" type="text" class="form-control" />
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <a href="machines.html" class="btn btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
