@@ -110,12 +110,31 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public String logout(HttpSession session, HttpServletResponse response) {
-        session.invalidate();
+    public String logout(HttpSession session,
+                         HttpServletResponse response,
+                         jakarta.servlet.http.HttpServletRequest request) {
+        if (session != null) {
+            session.invalidate();
+        }
         Cookie cookie = new Cookie("REMEMBER_ME", "");
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
+
+        // Intentar volver a la página previa (Referer) de forma segura
+        String referer = request.getHeader("Referer");
+        if (referer != null) {
+            try {
+                java.net.URI uri = java.net.URI.create(referer);
+                String path = uri.getPath();
+                // Evitar redirecciones externas o vacías
+                if (path != null && path.startsWith("/") && !path.equals("/logout")) {
+                    return "redirect:" + path + (uri.getQuery() != null ? "?" + uri.getQuery() : "");
+                }
+            } catch (IllegalArgumentException ignored) {
+                // Si el referer es inválido, caemos al fallback
+            }
+        }
         return "redirect:/";
     }
 

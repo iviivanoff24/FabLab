@@ -1,5 +1,6 @@
 package com.uex.fablab.usecases;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -46,22 +47,14 @@ import jakarta.persistence.EntityManager;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FablabUseCasesTest {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private MachineRepository machineRepository;
-    @Autowired
-    private ShiftRepository shiftRepository;
-    @Autowired
-    private BookingRepository bookingRepository;
-    @Autowired
-    private CourseRepository courseRepository;
-    @Autowired
-    private InscriptionRepository inscriptionRepository;
-    @Autowired
-    private ReceiptRepository receiptRepository;
-    @Autowired
-    private EntityManager entityManager;
+    @Autowired private UserRepository userRepository;
+    @Autowired private MachineRepository machineRepository;
+    @Autowired private ShiftRepository shiftRepository;
+    @Autowired private BookingRepository bookingRepository;
+    @Autowired private CourseRepository courseRepository;
+    @Autowired private InscriptionRepository inscriptionRepository;
+    @Autowired private ReceiptRepository receiptRepository;
+    @Autowired private EntityManager entityManager;
 
     // Helpers
     private User newUser(String name, String email) {
@@ -79,6 +72,7 @@ class FablabUseCasesTest {
         m.setDescription("Desc " + name);
         m.setLocation("Sala 1");
         m.setStatus(MachineStatus.Disponible);
+        m.setHourlyPrice(new BigDecimal("20.00"));
         return m;
     }
 
@@ -141,6 +135,7 @@ class FablabUseCasesTest {
 
         List<Shift> turnos = shiftRepository.findByMachineAndDate(m, fecha);
         assertThat(turnos).hasSize(2);
+        assertThat(turnos.get(0).getMachine().getHourlyPrice()).isEqualByComparingTo("20.00");
     }
 
     // --- RESERVAS ---
@@ -164,6 +159,7 @@ class FablabUseCasesTest {
         assertThat(found).isNotNull();
         assertThat(found.getId()).isNotNull();
         assertThat(found.getEstado()).isEqualTo(BookingStatus.Pendiente);
+        assertThat(found.getShift().getMachine().getHourlyPrice()).isEqualByComparingTo("20.00");
     }
 
     @Test
@@ -213,13 +209,10 @@ class FablabUseCasesTest {
         b = bookingRepository.save(b);
         Long bookingId = b.getId();
 
-        // Acción: eliminar usuario
-        // Detach de la reserva para que Hibernate no inspeccione una entidad hija que referencia al padre REMOVED en el flush
         entityManager.detach(b);
         userRepository.delete(u);
         entityManager.flush();
         entityManager.clear();
-        // Verificación: la reserva asociada desaparece por ON DELETE CASCADE (según esquema SQL)
         assertThat(bookingRepository.findById(bookingId)).isEmpty();
     }
 
@@ -295,7 +288,6 @@ class FablabUseCasesTest {
         Long s1Id = s1.getId();
         Long s2Id = s2.getId();
 
-        // Detach de turnos para evitar que Hibernate los valide contra la máquina REMOVED en el flush
         entityManager.detach(s1);
         entityManager.detach(s2);
         machineRepository.delete(m);
@@ -324,7 +316,6 @@ class FablabUseCasesTest {
         b = bookingRepository.save(b);
         Long bId = b.getId();
 
-        // Detach de reserva antes de borrar el turno
         entityManager.detach(b);
         shiftRepository.delete(s);
         entityManager.flush();
@@ -347,7 +338,6 @@ class FablabUseCasesTest {
         ins = inscriptionRepository.save(ins);
         Long insId = ins.getId();
 
-        // Detach de inscripción antes de borrar el curso
         entityManager.detach(ins);
         courseRepository.delete(c);
         entityManager.flush();
@@ -378,7 +368,6 @@ class FablabUseCasesTest {
         r = receiptRepository.save(r);
         Long rId = r.getId();
 
-        // Detach de inscripción y recibo antes de borrar el usuario
         entityManager.detach(ins);
         entityManager.detach(r);
         userRepository.delete(u);
@@ -392,12 +381,10 @@ class FablabUseCasesTest {
     @Order(14)
     @DisplayName("Consultas: negativos (sin resultados)")
     void consultasNegativas() {
-        // findByMachineAndDate sin turnos
         Machine m = machineRepository.save(newMachine("Cortadora Vinilo"));
         List<Shift> vacio = shiftRepository.findByMachineAndDate(m, LocalDate.now().plusYears(1));
         assertThat(vacio).isEmpty();
 
-        // findByUserAndShift sin reserva
         User u = userRepository.save(newUser("Kevin", "kevin@example.com"));
         Shift s = shiftRepository.save(newShift(m, LocalDate.now().plusDays(10), LocalTime.of(16, 0), LocalTime.of(17, 0)));
         assertThat(bookingRepository.findByUserAndShift(u, s)).isEmpty();

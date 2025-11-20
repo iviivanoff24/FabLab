@@ -23,6 +23,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/css/**").addResourceLocations(basePath + "css/");
         registry.addResourceHandler("/js/**").addResourceLocations(basePath + "js/");
         registry.addResourceHandler("/img/**").addResourceLocations(basePath + "img/");
+        // Carpeta de subidas en disco
+        registry.addResourceHandler("/uploads/**").addResourceLocations("file:uploads/");
         // fallback para otros recursos estáticos directamente en xml/
         registry.addResourceHandler("/xml/**").addResourceLocations(basePath);
 

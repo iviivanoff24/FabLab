@@ -1,5 +1,6 @@
 package com.uex.fablab.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -46,6 +47,7 @@ class ShiftRepositoryCrudTest {
         m.setDescription("d");
         m.setLocation("lab");
         m.setStatus(com.uex.fablab.data.model.MachineStatus.Disponible);
+        m.setHourlyPrice(new BigDecimal("8.00"));
         m = machineRepository.save(m);
 
         Shift s1 = shiftRepository.save(newShift(m, LocalDate.now()));
@@ -53,5 +55,6 @@ class ShiftRepositoryCrudTest {
         List<Shift> list = shiftRepository.findByMachineAndDate(m, LocalDate.now());
         assertThat(list).isNotEmpty();
         assertThat(list.get(0).getMachine().getId()).isEqualTo(m.getId());
+        assertThat(list.get(0).getMachine().getHourlyPrice()).isEqualByComparingTo("8.00");
     }
 }

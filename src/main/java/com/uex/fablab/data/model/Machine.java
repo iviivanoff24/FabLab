@@ -38,6 +38,10 @@ public class Machine {
     @Column(name = "estado_m", nullable = false)
     private MachineStatus status = MachineStatus.Disponible;
 
+    // Precio por hora en euros (ej. 12.50). Usamos BigDecimal para precisión.
+    @Column(name = "precio_hora")
+    private java.math.BigDecimal hourlyPrice;
+
     @OneToMany(mappedBy = "machine")
     private List<Shift> shifts = new ArrayList<>();
 
@@ -83,5 +87,13 @@ public class Machine {
 
     public List<Shift> getShifts() {
         return shifts;
+    }
+
+    public java.math.BigDecimal getHourlyPrice() {
+        return hourlyPrice;
+    }
+
+    public void setHourlyPrice(java.math.BigDecimal hourlyPrice) {
+        this.hourlyPrice = hourlyPrice;
     }
 }

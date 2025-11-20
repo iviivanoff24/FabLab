@@ -1,34 +1,100 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Añadir Máquina</title>
-    <link rel="stylesheet" href="../css/bootstrap.min.css" />
-    <link rel="stylesheet" href="../css/main.css" />
-  </head>
-  <body>
-    <div class="container py-4">
-      <h1 class="h4 mb-4">Registrar nueva máquina</h1>
-      <form>
-        <div class="mb-3">
-          <label class="form-label" for="nombre">Nombre</label>
-          <input id="nombre" name="nombre" type="text" class="form-control" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label" for="descripcion">Descripción</label>
-          <textarea id="descripcion" name="descripcion" rows="3" class="form-control" required></textarea>
-        </div>
-        <div class="mb-3">
-          <label class="form-label" for="categoria">Categoría</label>
-          <input id="categoria" name="categoria" type="text" class="form-control" />
-        </div>
-        <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-primary">Guardar</button>
-          <a href="machines.html" class="btn btn-secondary">Cancelar</a>
-        </div>
-      </form>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nueva Máquina - FabLab</title>
+  <link rel="icon" href="/img/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <header class="border-bottom bg-white mb-3">
+    <div class="container py-2 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <img src="/img/logo.png" alt="Logo FabLab Mérida" width="50" height="50" class="me-2" />
+        <div class="fw-bold lh-1">FabLab<br /><span class="text-secondary">Mérida</span></div>
+      </div>
+      <div id="authLinks" class="d-flex align-items-center gap-3">
+        <a href="/login.html" class="small text-decoration-none">Iniciar sesión</a>
+        <a href="/register.html" class="small text-decoration-none">Registrarse</a>
+      </div>
     </div>
-    <script src="../js/bootstrap.bundle.min.js"></script>
-  </body>
+    <nav class="border-top">
+      <div class="container">
+        <ul class="nav nav-underline">
+          <li class="nav-item"><a class="nav-link text-dark" href="/">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link text-dark" href="/machines.html">Máquinas</a></li>
+          <li class="nav-item"><span class="nav-link active text-primary">Nueva Máquina</span></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1 class="h4 mb-3">Registrar nueva máquina</h1>
+    <div id="adminGuard" class="alert alert-warning d-none">Solo administradores pueden crear máquinas.</div>
+
+    <form id="machineForm" method="post" action="/admin/machines" enctype="multipart/form-data" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="name" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="name" name="name" required />
+        <div class="invalid-feedback">Ingrese un nombre.</div>
+      </div>
+      <div class="mb-3">
+        <label for="location" class="form-label">Ubicación</label>
+        <input type="text" class="form-control" id="location" name="location" />
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Descripción</label>
+        <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="image" class="form-label">Imagen de la máquina (opcional)</label>
+        <div class="input-group">
+          <input type="file" class="form-control" id="image" name="image" accept="image/*" />
+          <label class="input-group-text" for="image">Subir</label>
+        </div>
+        <div class="form-text">Formatos: JPG, PNG o GIF. Máx 2 MB.</div>
+      </div>
+      <div class="mb-3">
+        <label for="hourlyPrice" class="form-label">Precio por hora (€)</label>
+        <div class="input-group">
+          <span class="input-group-text">€</span>
+          <input type="number" step="0.01" min="0" class="form-control" id="hourlyPrice" name="hourlyPrice" placeholder="0.00" aria-label="Precio por hora" />
+          <span class="input-group-text">.00</span>
+        </div>
+        <div class="form-text">Dejar vacío para 0 €.</div>
+      </div>
+      <div class="mb-3">
+        <label for="status" class="form-label">Estado inicial</label>
+          <select class="form-select" id="status" name="status">
+            <option value="Disponible">Disponible</option>
+            <option value="En_mantenimiento">En mantenimiento</option>
+          </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar máquina</button>
+      <a href="/machines.html" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+  </main>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js" defer></script>
+  <script>
+    // Validación simple + guardia admin (cliente)
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('/api/session/me').then(r=>r.json()).then(data => {
+        if (!data.admin) {
+          document.getElementById('machineForm').classList.add('d-none');
+          document.getElementById('adminGuard').classList.remove('d-none');
+        }
+      });
+      const form = document.getElementById('machineForm');
+      form.addEventListener('submit', e => {
+        if (!form.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
+        form.classList.add('was-validated');
+      });
+    });
+  </script>
+</body>
 </html>

@@ -1,5 +1,7 @@
 package com.uex.fablab.repository;
 
+import java.math.BigDecimal;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,7 @@ class MachineRepositoryCrudTest {
         m.setDescription("desc");
         m.setLocation("lab");
         m.setStatus(MachineStatus.Disponible);
+        m.setHourlyPrice(new BigDecimal("12.50"));
         return m;
     }
 
@@ -36,5 +39,6 @@ class MachineRepositoryCrudTest {
         Machine found = machineRepository.findById(saved.getId()).orElse(null);
         assertThat(found).isNotNull();
         assertThat(found.getName()).isEqualTo("Laser");
+        assertThat(found.getHourlyPrice()).isEqualByComparingTo("12.50");
     }
 }

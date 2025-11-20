@@ -1,5 +1,6 @@
 package com.uex.fablab.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -62,6 +63,7 @@ class BookingRepositoryCrudTest {
         m.setDescription("d");
         m.setLocation("lab");
         m.setStatus(com.uex.fablab.data.model.MachineStatus.Disponible);
+        m.setHourlyPrice(new BigDecimal("15.75"));
         m = machineRepository.save(m);
 
         Shift s = new Shift();
@@ -76,5 +78,6 @@ class BookingRepositoryCrudTest {
         Optional<Booking> found = bookingRepository.findByUserAndShift(u, s);
         assertThat(found).isPresent();
         assertThat(found.get().getId()).isEqualTo(saved.getId());
+        assertThat(found.get().getShift().getMachine().getHourlyPrice()).isEqualByComparingTo("15.75");
     }
 }
