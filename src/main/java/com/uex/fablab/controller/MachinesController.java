@@ -123,7 +123,7 @@ public class MachinesController {
                     .append("</span></p>")
                     // Acciones (Reservar, Editar, Borrar) en una sola fila
                     .append("      <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>")
-                    .append("        <a href='#' class='btn btn-sm btn-primary'>Reservar</a>");
+                    .append("        <a href='#' class='btn btn-sm btn-warning'>Reservar</a>");
             if (isAdmin) {
                 sb.append("<a href='/admin/modify-machine.html?id=").append(m.getId()).append("' class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>");
             }
