@@ -1,5 +1,6 @@
 package com.uex.fablab.controller;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -349,7 +350,7 @@ public class MachinesController {
             try {
                 Path p = getUploadsDir().resolve("machine-" + id + ext);
                 Files.deleteIfExists(p);
-            } catch (Exception ignored) {
+            } catch (IOException ignored) {
             }
         }
     }

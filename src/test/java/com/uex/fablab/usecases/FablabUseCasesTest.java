@@ -40,8 +40,6 @@ import com.uex.fablab.data.repository.ReceiptRepository;
 import com.uex.fablab.data.repository.ShiftRepository;
 import com.uex.fablab.data.repository.UserRepository;
 
-import jakarta.persistence.EntityManager;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -54,8 +52,7 @@ class FablabUseCasesTest {
     @Autowired private CourseRepository courseRepository;
     @Autowired private InscriptionRepository inscriptionRepository;
     @Autowired private ReceiptRepository receiptRepository;
-    @Autowired private EntityManager entityManager;
-
+    
     // Helpers
     private User newUser(String name, String email) {
         User u = new User();
@@ -207,12 +204,10 @@ class FablabUseCasesTest {
         b.setFechaReserva(LocalDate.now());
         b.setEstado(BookingStatus.Pendiente);
         b = bookingRepository.save(b);
+        u.getBookings().add(b);
         Long bookingId = b.getId();
 
-        entityManager.detach(b);
         userRepository.delete(u);
-        entityManager.flush();
-        entityManager.clear();
         assertThat(bookingRepository.findById(bookingId)).isEmpty();
     }
 
@@ -288,11 +283,7 @@ class FablabUseCasesTest {
         Long s1Id = s1.getId();
         Long s2Id = s2.getId();
 
-        entityManager.detach(s1);
-        entityManager.detach(s2);
         machineRepository.delete(m);
-        entityManager.flush();
-        entityManager.clear();
 
         assertThat(shiftRepository.findById(s1Id)).isEmpty();
         assertThat(shiftRepository.findById(s2Id)).isEmpty();
@@ -316,10 +307,7 @@ class FablabUseCasesTest {
         b = bookingRepository.save(b);
         Long bId = b.getId();
 
-        entityManager.detach(b);
         shiftRepository.delete(s);
-        entityManager.flush();
-        entityManager.clear();
         assertThat(bookingRepository.findById(bId)).isEmpty();
     }
 
@@ -338,10 +326,7 @@ class FablabUseCasesTest {
         ins = inscriptionRepository.save(ins);
         Long insId = ins.getId();
 
-        entityManager.detach(ins);
         courseRepository.delete(c);
-        entityManager.flush();
-        entityManager.clear();
         assertThat(inscriptionRepository.findById(insId)).isEmpty();
     }
 
@@ -366,13 +351,11 @@ class FablabUseCasesTest {
         r.setMetodoPago(PaymentMethod.Online);
         r.setEstadoRecibo(ReceiptStatus.Pendiente);
         r = receiptRepository.save(r);
+        u.getInscriptions().add(ins);
+        u.getReceipts().add(r);
         Long rId = r.getId();
 
-        entityManager.detach(ins);
-        entityManager.detach(r);
         userRepository.delete(u);
-        entityManager.flush();
-        entityManager.clear();
         assertThat(inscriptionRepository.findById(insId)).isEmpty();
         assertThat(receiptRepository.findById(rId)).isEmpty();
     }
