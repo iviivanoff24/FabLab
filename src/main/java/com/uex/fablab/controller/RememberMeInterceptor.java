@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.uex.fablab.data.model.User;
-import com.uex.fablab.data.repository.UserRepository;
+import com.uex.fablab.data.services.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,12 +19,12 @@ import jakarta.servlet.http.HttpSession;
 @Component
 public class RememberMeInterceptor implements HandlerInterceptor {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final String secret;
 
-    public RememberMeInterceptor(UserRepository userRepository,
+    public RememberMeInterceptor(UserService userService,
                                  @Value("${auth.remember.secret:defaultSecretValue}") String secret) {
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.secret = secret;
     }
 
@@ -47,7 +47,7 @@ public class RememberMeInterceptor implements HandlerInterceptor {
                     String sig = parts[2];
                     String expected = sha256(userId + ":" + email + secret);
                     if (!expected.equals(sig)) return true; // firma inválida
-                    User user = userRepository.findById(userId).orElse(null);
+                    User user = userService.findById(userId).orElse(null);
                     if (user == null || !email.equals(user.getEmail())) return true;
                     HttpSession newSession = request.getSession(true);
                     newSession.setAttribute("USER_ID", user.getId());

@@ -61,6 +61,9 @@ public class Booking {
 
     public void setShift(Shift shift) {
         this.shift = shift;
+        if (shift != null && !shift.getBookings().contains(this)) {
+            shift.getBookings().add(this);
+        }
     }
 
     public LocalDate getFechaReserva() {

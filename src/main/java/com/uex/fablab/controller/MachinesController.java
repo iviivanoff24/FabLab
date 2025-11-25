@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.uex.fablab.data.model.Machine;
 import com.uex.fablab.data.model.MachineStatus;
-import com.uex.fablab.data.repository.MachineRepository;
+import com.uex.fablab.data.services.MachineService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -38,10 +38,10 @@ public class MachinesController {
             + "  </a>"
             + "</div>";
 
-    private final MachineRepository machineRepository;
+    private final MachineService machineService;
 
-    public MachinesController(MachineRepository machineRepository) {
-        this.machineRepository = machineRepository;
+    public MachinesController(MachineService machineService) {
+        this.machineService = machineService;
     }
 
     @GetMapping({"/machines", "/machines.html"})
@@ -63,7 +63,7 @@ public class MachinesController {
     // API: obtener datos de máquina por id (para pre-rellenar formulario de edición)
     @GetMapping("/api/machines/{id}")
     public ResponseEntity<?> getMachineById(@PathVariable("id") Long id) {
-        var opt = machineRepository.findById(id);
+        var opt = machineService.findById(id);
         if (opt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -80,7 +80,7 @@ public class MachinesController {
     }
 
     private String buildMachinesCards(boolean isAdmin) {
-        java.util.List<Machine> list = machineRepository.findAll();
+        java.util.List<Machine> list = machineService.listAll();
         StringBuilder sb = new StringBuilder();
         if (list.isEmpty()) {
             sb.append("<div class=\"alert alert-info mt-3\">No hay máquinas registradas aún.</div>");
@@ -230,7 +230,7 @@ public class MachinesController {
                 } catch (NumberFormatException ignored) {
                 }
             }
-            m = machineRepository.save(m);
+            m = machineService.save(m);
 
             // Guardar imagen opcional si viene y no está vacía
             if (image != null && !image.isEmpty() && m.getId() != null) {
@@ -267,7 +267,7 @@ public class MachinesController {
         try {
             // Eliminar archivos de imagen asociados si existen
             deleteMachineImages(id);
-            machineRepository.deleteById(id);
+            machineService.delete(id);
         } catch (Exception ignored) {
         }
         return "redirect:/machines";
@@ -288,7 +288,7 @@ public class MachinesController {
             return "redirect:/login?error=" + java.net.URLEncoder.encode("Solo administradores", java.nio.charset.StandardCharsets.UTF_8);
         }
         try {
-            java.util.Optional<Machine> opt = machineRepository.findById(id);
+            java.util.Optional<Machine> opt = machineService.findById(id);
             if (opt.isEmpty()) {
                 return "redirect:/machines?error=" + java.net.URLEncoder.encode("Máquina no encontrada", java.nio.charset.StandardCharsets.UTF_8);
             }
@@ -314,7 +314,7 @@ public class MachinesController {
                 } catch (NumberFormatException ignored) {
                 }
             }
-            m = machineRepository.save(m);
+            m = machineService.save(m);
 
             // Si llega nueva imagen válida, borrar anteriores y guardar la nueva
             if (image != null && !image.isEmpty() && m.getId() != null) {
