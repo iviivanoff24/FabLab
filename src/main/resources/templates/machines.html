@@ -88,7 +88,8 @@
         <div th:if="${#lists.isEmpty(machines)}" class="alert alert-info mt-3">No hay máquinas registradas aún.</div>
 
         <div th:if="${!#lists.isEmpty(machines)}" class="d-flex flex-wrap gap-4">
-          <div class="card" th:each="m : ${machines}">
+          <div class="card" th:each="m : ${machines}"
+               th:with="statusName=${m.status != null ? m.status.name() : ''}, statusClass=${statusName == 'En_mantenimiento' ? ' text-bg-warning' : (statusName == 'Disponible' ? ' text-bg-success' : ' text-bg-secondary')}, statusText=${statusName == 'En_mantenimiento' ? 'En mantenimiento' : (statusName == 'Disponible' ? 'Disponible' : (statusName == '' ? 'Sin estado' : statusName))}">
             <div class="face face1">
               <div class="content">
                 <img th:src="${machineImageUrls[m.id]}" alt="Imagen máquina" />
@@ -100,15 +101,14 @@
                 <p th:text="${m.description != null && m.description != '' ? m.description : 'Sin descripción.'}"></p>
                 <p class="mb-1"><span class="badge text-bg-primary">€<span th:text="${m.hourlyPrice != null ? #numbers.formatDecimal(m.hourlyPrice,1,2) : '0.00'}"></span>/h</span></p>
                 <p class="mb-1">
-                  <span class="badge" th:classappend="${m.status?.name() == 'En_mantenimiento'} ? ' text-bg-warning' : (m.status?.name() == 'Disponible' ? ' text-bg-success' : ' text-bg-secondary')"
-                        th:text="${m.status != null ? (m.status.name() == 'En_mantenimiento' ? 'En mantenimiento' : (m.status.name() == 'Disponible' ? 'Disponible' : 'Sin estado')) : 'Sin estado'}"></span>
+                  <span class="badge" th:classappend="${statusClass}" th:text="${statusText}"></span>
                 </p>
                 <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>
-                  <a th:href="@{'/machines/' + ${m.id} + '/reserve'}" class='btn btn-sm btn-warning'>Reservar</a>
-                  <a th:if="${isAdmin}" th:href="@{'/admin/modify-machine.html'(id=${m.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
-                  <form th:if="${isAdmin}" th:id="${'form-delete-machine-' + m.id}" th:action="@{'/admin/machines/' + ${m.id} + '/delete'}" method='post' class='d-inline'></form>
-                  <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' 
-                          th:attr="data-machine-id=${m.id},data-machine-name=${m.name}"><i class='bi bi-trash'></i> Borrar</button>
+                    <a th:href="@{/machines/{id}/reserve(id=${m.id})}" class='btn btn-sm btn-warning'>Reservar</a>
+                    <a th:if="${isAdmin}" th:href="@{/admin/modify-machine(id=${m.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
+                    <form th:if="${isAdmin}" th:id="${'form-delete-machine-' + m.id}" th:action="@{/admin/machines/{id}/delete(id=${m.id})}" method='post' class='d-inline'></form>
+                    <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' 
+                      th:data-machine-id="${m.id}" th:data-machine-name="${m.name}"><i class='bi bi-trash'></i> Borrar</button>
                 </div>
               </div>
             </div>

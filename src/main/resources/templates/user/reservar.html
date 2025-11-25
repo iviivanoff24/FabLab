@@ -39,8 +39,8 @@
   <div th:if="${machine != null}" class="list-group mb-4">
     <div class="list-group-item d-flex justify-content-between align-items-center" th:each="slot : ${slots}">
       <div>
-        <span class="fw-semibold" th:text="${slot.startTime} + ' - ' + ${slot.endTime}">09:00 - 10:00</span>
-        <span class="badge bg-secondary" th:if="${slot.reservado}" th:text="${slot.reservadoPorMi}? 'Reservado · Tu reserva' : 'Reservado'">Reservado</span>
+        <span class="fw-semibold" th:text="${slot.startTime + ' - ' + slot.endTime}">09:00 - 10:00</span>
+        <span class="badge bg-secondary" th:if="${slot.reservado}" th:text="${slot.reservadoPorMi} ? 'Reservado · Tu reserva' : 'Reservado'">Reservado</span>
         <span class="badge bg-success" th:if="${!slot.reservado} and ${slot.canReserve}">Disponible</span>
         <span class="badge bg-danger" th:if="${!slot.reservado} and ${!slot.canReserve}">No disponible</span>
       </div>
@@ -53,8 +53,8 @@
         </form>
         <button th:if="${!slot.canReserve}" class="btn btn-sm btn-outline-secondary" disabled>Reservar</button>
         <button th:if="${slot.canCancel}" type="button" class="btn btn-sm btn-outline-danger ms-2"
-                data-bs-toggle="modal" data-bs-target="#cancelBookingModal"
-                th:attr="data-shift-id=${slot.shiftId},data-start-hour=${slot.hour},data-date=${selectedDate},data-machine-id=${machine.id}">Cancelar</button>
+          data-bs-toggle="modal" data-bs-target="#cancelBookingModal"
+          th:data-shift-id="${slot.shiftId}" th:data-start-hour="${slot.hour}" th:data-date="${selectedDate}" th:data-machine-id="${machine.id}">Cancelar</button>
       </div>
     </div>
   </div>

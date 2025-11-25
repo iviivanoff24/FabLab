@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head></head>
-<body>
-<th:block th:fragment="siteHeader(active)">
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="siteHeader(active)">
   <header class="border-bottom bg-white mb-3">
     <div class="container py-2 d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center">
@@ -19,12 +15,10 @@
           <li class="nav-item"><a th:classappend="${active}=='home'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/">Inicio</a></li>
           <li class="nav-item"><a th:classappend="${active}=='machines'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/machines">Máquinas</a></li>
           <li class="nav-item"><a th:classappend="${active}=='reservar'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/reservar">Reservar</a></li>
-          <li class="nav-item"><a th:classappend="${active}=='courses'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/courses.html">Cursos</a></li>
-          <li class="nav-item"><a th:classappend="${active}=='readme'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/readme.html">Cómo funciona</a></li>
+          <li class="nav-item"><a th:classappend="${active}=='courses'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/courses">Cursos</a></li>
+          <li class="nav-item"><a th:classappend="${active}=='readme'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/readme">Cómo funciona</a></li>
         </ul>
       </div>
     </nav>
   </header>
 </th:block>
-</body>
-</html>
