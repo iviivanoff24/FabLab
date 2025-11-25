@@ -12,11 +12,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final AdminOnlyInterceptor adminOnlyInterceptor;
+    private final UserInterceptor userInterceptor;
     private final RememberMeInterceptor rememberMeInterceptor;
 
     public WebConfig(AdminOnlyInterceptor adminOnlyInterceptor,
+                     UserInterceptor userInterceptor,
                      RememberMeInterceptor rememberMeInterceptor) {
         this.adminOnlyInterceptor = adminOnlyInterceptor;
+        this.userInterceptor = userInterceptor;
         this.rememberMeInterceptor = rememberMeInterceptor;
     }
 
@@ -45,6 +48,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(rememberMeInterceptor).addPathPatterns("/**");
+        // Primero exigir login para rutas protegidas de usuario
+        registry.addInterceptor(userInterceptor).addPathPatterns("/**");
+        // Luego validar si además debe ser admin
         registry.addInterceptor(adminOnlyInterceptor).addPathPatterns("/**");
     }
 }

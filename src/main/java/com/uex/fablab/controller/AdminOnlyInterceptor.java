@@ -19,7 +19,6 @@ public class AdminOnlyInterceptor implements HandlerInterceptor {
     // Ajusta aquí los patrones que quieres restringir a ADMIN
     // Por defecto protegemos APIs sensibles y rutas bajo /admin/**
     private static final List<String> ADMIN_PATTERNS = List.of(
-            "/users/**",
             "/admin/**"
     );
 

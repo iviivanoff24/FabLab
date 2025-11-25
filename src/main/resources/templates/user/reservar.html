@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservar máquina</title>
+  <link rel="icon" href="/img/logo.png" type="image/png" sizes="32x32" />
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+<header class="border-bottom bg-white mb-3">
+  <div class="container py-2 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+      <img src="/img/logo.png" alt="Logo FabLab Mérida" width="50" height="50" class="me-2" />
+      <div class="fw-bold lh-1">FabLab<br><span class="text-secondary">Mérida</span></div>
+    </div>
+    <div class="small" id="authLinks">
+      <a href="/login" class="text-dark text-decoration-none">Iniciar sesión</a>
+    </div>
+  </div>
+  <nav class="border-top">
+    <div class="container">
+      <ul class="nav nav-underline">
+        <li class="nav-item"><a class="nav-link text-dark" href="/">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link text-dark" href="/machines">Máquinas</a></li>
+        <li class="nav-item"><a class="nav-link active text-primary fw-semibold" href="/reservar">Reservar</a></li>
+        <li class="nav-item"><a class="nav-link text-dark" href="/courses.html">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link text-dark" href="/readme.html">Cómo funciona</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<main class="container mb-5">
+  <h2 class="h4 mb-3">Reservar máquina</h2>
+  <!-- MACHINE_SELECTOR_MARKER -->
+  <hr />
+  <!-- SLOTS_MARKER -->
+  <p class="text-muted small mt-3">Seleccione la máquina y la fecha para ver los turnos horarios (09:00 - 21:00). Los turnos reservados se muestran en gris.</p>
+</main>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js" defer></script>
+</body>
+</html>
