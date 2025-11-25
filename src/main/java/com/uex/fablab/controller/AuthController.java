@@ -5,10 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,12 +36,8 @@ public class AuthController {
      * @return recurso HTML de la página de login
      */
     @GetMapping({"/login", "/login.html"})
-    public ResponseEntity<Resource> loginPage() {
-        Resource resource = new ClassPathResource("templates/login.html");
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(resource);
+    public String loginPage() {
+        return "login"; // Thymeleaf template: templates/login.html
     }
 
     /**
@@ -104,12 +96,8 @@ public class AuthController {
      * @return recurso HTML de la página de registro
      */
     @GetMapping({"/register", "/register.html"})
-    public ResponseEntity<Resource> registerPage() {
-        Resource resource = new ClassPathResource("templates/register.html");
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(resource);
+    public String registerPage() {
+        return "register"; // Thymeleaf template: templates/register.html
     }
 
     /**

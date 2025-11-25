@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,66 +10,16 @@
     <link rel="stylesheet" href="css/main.css" />
     <style>
       /* Bordes verde/rojo para validación (fallback si no carga Bootstrap) */
-      .form-control.is-valid { border:2px solid #198754; }
-      .form-control.is-invalid { border:2px solid #dc3545; }
+      .form-control.is-valid {
+        border: 2px solid #198754;
+      }
+      .form-control.is-invalid {
+        border: 2px solid #dc3545;
+      }
     </style>
   </head>
   <body>
-    <header class="border-bottom bg-white">
-      <div
-        class="container py-2 d-flex justify-content-between align-items-center"
-      >
-        <!-- LOGO -->
-        <div class="d-flex align-items-center">
-          <img
-            src="img/logo.png"
-            alt="Logo FabLab Mérida"
-            width="50"
-            height="50"
-            class="me-2"
-          />
-          <div class="fw-bold lh-1">
-            FabLab<br /><span class="text-secondary">Mérida</span>
-          </div>
-        </div>
-
-        <!-- LOGIN / REGISTER / SEARCH -->
-        <div class="d-flex align-items-center gap-3" id="authLinks">
-          <a href="login.html" class="text-dark text-decoration-none small"
-            >Iniciar sesión</a
-          >
-          <a href="register.html" class="text-primary fw-semibold small"
-            >Registrarse</a
-          >
-          <i class="bi bi-search" style="font-size: 1.1rem"></i>
-        </div>
-      </div>
-
-      <!-- NAV LINKS (DEBAJO DEL LOGO) -->
-      <nav class="border-top">
-        <div class="container">
-          <ul class="nav nav-underline">
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="/"
-                >Inicio</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="/machines">Máquinas</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="/reservar">Reservar</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="courses.html">Cursos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="readme.html">Cómo funciona</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
+    <div th:replace="fragments/header :: siteHeader('')"></div>
 
     <br />
 
@@ -80,10 +30,20 @@
             <div class="card shadow-sm">
               <div class="card-body p-4">
                 <h1 class="h4 mb-3 text-center">Crear cuenta</h1>
-                <div id="registerError" class="alert alert-danger d-none" role="alert">
+                <div
+                  id="registerError"
+                  class="alert alert-danger d-none"
+                  role="alert"
+                >
                   No se pudo completar el registro. Revisa los datos.
                 </div>
-                <form action="/register" method="post" id="registerForm" novalidate> <!-- Validacion -->
+                <form
+                  action="/register"
+                  method="post"
+                  id="registerForm"
+                  novalidate
+                >
+                  <!-- Validacion -->
                   <div class="mb-3">
                     <label for="name" class="form-label">Nombre</label>
                     <input
@@ -94,10 +54,14 @@
                       placeholder="Tu nombre"
                       required
                     />
-                    <div class="invalid-feedback">Debe tener al menos 2 caracteres.</div>
+                    <div class="invalid-feedback">
+                      Debe tener al menos 2 caracteres.
+                    </div>
                   </div>
                   <div class="mb-3">
-                    <label for="email" class="form-label">Correo electrónico</label>
+                    <label for="email" class="form-label"
+                      >Correo electrónico</label
+                    >
                     <input
                       type="email"
                       class="form-control"
@@ -106,7 +70,9 @@
                       placeholder="tucorreo@ejemplo.com"
                       required
                     />
-                    <div class="invalid-feedback">Formato de correo inválido.</div>
+                    <div class="invalid-feedback">
+                      Formato de correo inválido.
+                    </div>
                   </div>
                   <div class="mb-3">
                     <label for="password" class="form-label">Contraseña</label>
@@ -119,10 +85,14 @@
                       minlength="6"
                       required
                     />
-                    <div class="invalid-feedback">Mínimo 6 caracteres, incluir letra y número.</div>
+                    <div class="invalid-feedback">
+                      Mínimo 6 caracteres, incluir letra y número.
+                    </div>
                   </div>
                   <div class="mb-4">
-                    <label for="telefono" class="form-label">Teléfono (opcional)</label>
+                    <label for="telefono" class="form-label"
+                      >Teléfono (opcional)</label
+                    >
                     <input
                       type="tel"
                       class="form-control"
@@ -130,12 +100,16 @@
                       name="telefono"
                       placeholder="600 000 000"
                     />
-                    <div class="invalid-feedback">Debe ser exactamente 9 dígitos.</div>
+                    <div class="invalid-feedback">
+                      Debe ser exactamente 9 dígitos.
+                    </div>
                   </div>
-                  <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+                  <button type="submit" class="btn btn-primary w-100">
+                    Registrarse
+                  </button>
                 </form>
                 <p class="text-center small mt-3 mb-0">
-                  ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+                  ¿Ya tienes cuenta? <a href="/login">Inicia sesión</a>
                 </p>
               </div>
             </div>
@@ -146,46 +120,48 @@
 
     <script src="js/bootstrap.bundle.min.js"></script>
     <script>
-      (function(){
+      (function () {
         const params = new URLSearchParams(window.location.search);
-        if (params.has('error')) {
-          const alert = document.getElementById('registerError');
-          if (alert) alert.classList.remove('d-none');
+        if (params.has("error")) {
+          const alert = document.getElementById("registerError");
+          if (alert) alert.classList.remove("d-none");
         }
       })();
-      
     </script>
     <script>
       // Validaciones cliente: colorear borde (Bootstrap is-valid / is-invalid)
-      document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('registerForm');
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("registerForm");
         if (!form) return;
 
         const validators = {
-          name: v => v.trim().length >= 2,
-          email: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
-          password: v => /^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(v), // min 6, letra y número
-          telefono: v => v.trim() === '' || /^\d{9}$/.test(v.replace(/\s+/g,''))
+          name: (v) => v.trim().length >= 2,
+          email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+          password: (v) => /^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(v), // min 6, letra y número
+          telefono: (v) =>
+            v.trim() === "" || /^\d{9}$/.test(v.replace(/\s+/g, "")),
         };
 
-        function validateField(input){
+        function validateField(input) {
           const fn = validators[input.name];
           if (!fn) return true; // campos sin validador específico
           const valid = fn(input.value);
-          input.classList.remove('is-valid','is-invalid');
-          input.classList.add(valid ? 'is-valid' : 'is-invalid');
+          input.classList.remove("is-valid", "is-invalid");
+          input.classList.add(valid ? "is-valid" : "is-invalid");
           return valid;
         }
 
-        const inputs = form.querySelectorAll('.form-control');
-        inputs.forEach(inp => {
-          inp.addEventListener('input', () => validateField(inp));
-          inp.addEventListener('blur', () => validateField(inp));
+        const inputs = form.querySelectorAll(".form-control");
+        inputs.forEach((inp) => {
+          inp.addEventListener("input", () => validateField(inp));
+          inp.addEventListener("blur", () => validateField(inp));
         });
 
-        form.addEventListener('submit', e => {
+        form.addEventListener("submit", (e) => {
           let allValid = true;
-            inputs.forEach(i => { if(!validateField(i)) allValid = false; });
+          inputs.forEach((i) => {
+            if (!validateField(i)) allValid = false;
+          });
           if (!allValid) {
             e.preventDefault();
           }

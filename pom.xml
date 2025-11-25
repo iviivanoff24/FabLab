@@ -27,8 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<!-- Ajustado temporalmente a 22 para coincidir con JDK disponible -->
-		<java.version>22</java.version>
+		<java.version>21</java.version>
 	</properties>
 	<dependencies>
 		<dependency>

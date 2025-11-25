@@ -11,63 +11,7 @@
     <link rel="stylesheet" href="css/machines.css" />
   </head>
   <body>
-    <header class="border-bottom bg-white">
-      <div
-        class="container py-2 d-flex justify-content-between align-items-center"
-      >
-        <!-- LOGO -->
-        <div class="d-flex align-items-center">
-          <img
-            src="img/logo.png"
-            alt="Logo FabLab Mérida"
-            width="50"
-            height="50"
-            class="me-2"
-          />
-          <div class="fw-bold lh-1">
-            FabLab<br /><span class="text-secondary">Mérida</span>
-          </div>
-        </div>
-
-        <!-- LOGIN / REGISTER / SEARCH -->
-        <div class="d-flex align-items-center gap-3" id="authLinks">
-          <a href="login.html" class="text-dark text-decoration-none small"
-            >Iniciar sesión</a
-          >
-          <a href="register.html" class="text-dark text-decoration-none small"
-            >Registrarse</a
-          >
-          <i class="bi bi-search" style="font-size: 1.1rem"></i>
-        </div>
-      </div>
-
-      <!-- NAV LINKS (DEBAJO DEL LOGO) -->
-      <nav class="border-top">
-        <div class="container">
-          <ul class="nav nav-underline">
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="/">Inicio</a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link active text-primary fw-semibold"
-                href="/machines"
-                >Máquinas</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="/reservar">Reservar</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="courses.html">Cursos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="readme.html">Cómo funciona</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
+    <div th:replace="fragments/header :: siteHeader('machines')"></div>
 
     <br />
 
@@ -76,7 +20,7 @@
         <!-- Card crear máquina solo para admin -->
         <div th:if="${isAdmin}" class="mb-4">
           <div class="card text-bg-warning mb-3 mx-auto" style="max-width: 18rem; max-height: 10rem;">
-            <a href="/admin/add-machine.html" class="text-decoration-none text-dark">
+            <a href="/admin/add-machine" class="text-decoration-none text-dark">
               <div class="card-body d-flex flex-column align-items-center justify-content-center py-3">
                 <img src="img/add.png" alt="Añadir máquina" width="48" height="48" class="mb-2" />
                 <h5 class="card-title text-dark m-0">Nueva Máquina</h5>

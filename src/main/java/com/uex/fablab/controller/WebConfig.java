@@ -33,8 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Mantener mapeos actuales para recursos estáticos mientras siguen en 'templates',
-        // pero se elimina el handler de HTML para no interferir con ThymeleafViewResolver.
+        // Recursos estáticos dentro de templates
         String basePath = "classpath:/templates/";
         registry.addResourceHandler("/css/**").addResourceLocations(basePath + "css/");
         registry.addResourceHandler("/js/**").addResourceLocations(basePath + "js/");
