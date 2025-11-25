@@ -11,6 +11,10 @@ import com.uex.fablab.data.model.Shift;
 import com.uex.fablab.data.model.User;
 import com.uex.fablab.data.repository.BookingRepository;
 
+/**
+ * Servicio de reservas.
+ * Proporciona operaciones CRUD y utilidades de búsqueda relacionadas con {@link com.uex.fablab.data.model.Booking}.
+ */
 @Service
 @Transactional
 public class BookingService {
@@ -20,10 +24,16 @@ public class BookingService {
         this.repo = repo;
     }
 
+    /** Lista todas las reservas. */
     public List<Booking> listAll() { return repo.findAll(); }
+    /** Busca una reserva por id. */
     public Optional<Booking> findById(Long id) { return repo.findById(id); }
+    /** Busca una reserva por usuario y turno. */
     public Optional<Booking> findByUserAndShift(User u, Shift s) { return repo.findByUserAndShift(u, s); }
+    /** Lista reservas de un usuario. */
     public List<Booking> findByUser(User u) { return repo.findByUser(u); }
+    /** Guarda una reserva. */
     public Booking save(Booking b) { return repo.save(b); }
+    /** Elimina una reserva por id. */
     public boolean delete(Long id) { if (!repo.existsById(id)) return false; repo.deleteById(id); return true; }
 }

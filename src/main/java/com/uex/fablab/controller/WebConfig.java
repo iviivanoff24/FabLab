@@ -8,18 +8,29 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Configuración Web MVC.
+ * Define handlers de recursos estáticos y registra interceptores de sesión/seguridad.
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     private final AdminOnlyInterceptor adminOnlyInterceptor;
+    private final UserInterceptor userInterceptor;
     private final RememberMeInterceptor rememberMeInterceptor;
 
     public WebConfig(AdminOnlyInterceptor adminOnlyInterceptor,
+                     UserInterceptor userInterceptor,
                      RememberMeInterceptor rememberMeInterceptor) {
         this.adminOnlyInterceptor = adminOnlyInterceptor;
+        this.userInterceptor = userInterceptor;
         this.rememberMeInterceptor = rememberMeInterceptor;
     }
 
+    /**
+     * Mapeo de rutas estáticas para CSS, JS e imágenes, incluyendo subidas en disco.
+     * @param registry registro de handlers de recursos
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String basePath = "classpath:/templates/";
@@ -42,9 +53,16 @@ public class WebConfig implements WebMvcConfigurer {
         //registry.addResourceHandler("/**/*.html").addResourceLocations(basePath);
     }
 
+    /**
+     * Registra interceptores en orden: remember-me, usuario autenticado y administrador.
+     * @param registry registro de interceptores
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(rememberMeInterceptor).addPathPatterns("/**");
+        // Primero exigir login para rutas protegidas de usuario
+        registry.addInterceptor(userInterceptor).addPathPatterns("/**");
+        // Luego validar si además debe ser admin
         registry.addInterceptor(adminOnlyInterceptor).addPathPatterns("/**");
     }
 }

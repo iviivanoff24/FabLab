@@ -9,13 +9,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.uex.fablab.data.model.Receipt;
 import com.uex.fablab.data.repository.ReceiptRepository;
 
+/**
+ * Servicio de recibos.
+ */
 @Service
 @Transactional
 public class ReceiptService {
     private final ReceiptRepository repo;
     public ReceiptService(ReceiptRepository repo) { this.repo = repo; }
+    /** Lista todos los recibos. */
     public List<Receipt> listAll() { return repo.findAll(); }
+    /** Busca recibo por id. */
     public Optional<Receipt> findById(Long id) { return repo.findById(id); }
+    /** Guarda recibo. */
     public Receipt save(Receipt r) { return repo.save(r); }
+    /** Elimina recibo por id. */
     public boolean delete(Long id) { if (!repo.existsById(id)) return false; repo.deleteById(id); return true; }
 }

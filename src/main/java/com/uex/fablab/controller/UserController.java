@@ -19,6 +19,10 @@ import com.uex.fablab.data.services.UserService;
 
 import jakarta.validation.Valid;
 
+/**
+ * API REST de usuarios.
+ * Permite listar, crear, consultar, actualizar y eliminar usuarios.
+ */
 @RestController
 @RequestMapping("/users")
 @Validated
@@ -29,11 +33,20 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Lista todos los usuarios.
+     * @return lista de usuarios
+     */
     @GetMapping
     public List<User> all() {
         return userService.listAll();
     }
 
+    /**
+     * Crea un nuevo usuario.
+     * @param user datos del usuario
+     * @return usuario creado o error de validación
+     */
     @PostMapping
     public ResponseEntity<User> create(@Valid @RequestBody User user) {
         try {
@@ -44,11 +57,22 @@ public class UserController {
         }
     }
 
+    /**
+     * Recupera un usuario por id.
+     * @param id identificador
+     * @return usuario o 404 si no existe
+     */
     @GetMapping("/{id}")
     public ResponseEntity<User> one(@PathVariable Long id) {
         return userService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Actualiza un usuario por id.
+     * @param id identificador
+     * @param input datos a actualizar
+     * @return usuario actualizado o 404
+     */
     @PutMapping("/{id}")
     public ResponseEntity<User> update(@PathVariable Long id, @Valid @RequestBody User input) {
         return userService.update(id, input)
@@ -56,6 +80,11 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Elimina un usuario por id.
+     * @param id identificador
+     * @return 204 si se eliminó o 404 si no existe
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!userService.delete(id)) return ResponseEntity.notFound().build();

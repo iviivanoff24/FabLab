@@ -17,12 +17,24 @@ public class FablabApplication {
 
     private static final Logger log = LoggerFactory.getLogger(FablabApplication.class);
 
+    /**
+     * Punto de entrada de la aplicación FabLab basada en Spring Boot.
+     * Arranca el contexto de la aplicación.
+     *
+     * @param args argumentos de línea de comandos
+     */
     public static void main(String[] args) {
         SpringApplication.run(FablabApplication.class, args);
     }
 
-    // Comprueba la conexión a la base de datos al arrancar
     @Bean
+    /**
+     * Runner que valida la conectividad con la base de datos al iniciar la aplicación.
+     * Registra en el log la URL y el usuario conectados o el error si falla.
+     *
+     * @param dataSource el {@link javax.sql.DataSource} configurado para la aplicación
+     * @return un {@link CommandLineRunner} que realiza la comprobación al arrancar
+     */
     public CommandLineRunner comprobarConexion(DataSource dataSource) {
         return args -> {
             try (Connection conn = dataSource.getConnection()) {

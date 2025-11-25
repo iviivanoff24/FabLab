@@ -22,6 +22,11 @@ import com.uex.fablab.data.services.MachineService;
 
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Controlador de máquinas.
+ * Renderiza la lista de máquinas y gestiona páginas de administración para alta,
+ * modificación y borrado. También expone una API de detalle por id.
+ */
 @Controller
 public class MachinesController {
 
@@ -44,6 +49,13 @@ public class MachinesController {
         this.machineService = machineService;
     }
 
+    /**
+     * Página de listado de máquinas.
+     * Inyecta tarjetas HTML con acciones según el rol (reservar, editar, borrar).
+     *
+     * @param session sesión HTTP para determinar si es admin
+     * @return HTML renderizado
+     */
     @GetMapping({"/machines", "/machines.html"})
     public ResponseEntity<String> machines(HttpSession session) throws java.io.IOException {
         boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
@@ -60,7 +72,12 @@ public class MachinesController {
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(html);
     }
 
-    // API: obtener datos de máquina por id (para pre-rellenar formulario de edición)
+    /**
+     * API: obtiene datos de una máquina por id (útil para pre-rellenar formularios).
+     *
+     * @param id identificador de la máquina
+     * @return JSON con datos básicos o 404 si no existe
+     */
     @GetMapping("/api/machines/{id}")
     public ResponseEntity<?> getMachineById(@PathVariable("id") Long id) {
         var opt = machineService.findById(id);
@@ -124,7 +141,7 @@ public class MachinesController {
                     .append("</span></p>")
                     // Acciones (Reservar, Editar, Borrar) en una sola fila
                     .append("      <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>")
-                    .append("        <a href='#' class='btn btn-sm btn-warning'>Reservar</a>");
+                    .append("        <a href='/machines/").append(m.getId()).append("/reserve' class='btn btn-sm btn-warning'>Reservar</a>");
                         if (isAdmin) {
                                 // Botón editar
                                 sb.append("<a href='/admin/modify-machine.html?id=").append(m.getId()).append("' class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>");
@@ -192,15 +209,13 @@ public class MachinesController {
                 .replace("'", "&#39;");
     }
 
+    /**
+     * Página de alta de máquina (solo administradores).
+     *
+     * @return HTML de la página de alta
+     */
     @GetMapping({"/admin/add-machine", "/admin/add-machine.html"})
-    public ResponseEntity<org.springframework.core.io.Resource> addMachinePage(HttpSession session) {
-        boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
-        if (!isAdmin) {
-            // Reutiliza login con mensaje
-            return ResponseEntity.status(302)
-                    .header("Location", "/login?error=" + java.net.URLEncoder.encode("Solo administradores", java.nio.charset.StandardCharsets.UTF_8))
-                    .build();
-        }
+    public ResponseEntity<org.springframework.core.io.Resource> addMachinePage() {
         var res = new ClassPathResource("templates/admin/add-machine.html");
         if (!res.exists()) {
             return ResponseEntity.notFound().build();
@@ -208,15 +223,14 @@ public class MachinesController {
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(res);
     }
 
+    /**
+     * Página de modificación de máquina (solo administradores).
+     *
+     * @param id id de la máquina a modificar
+     * @return HTML de la página de modificación
+     */
     @GetMapping({"/admin/modify-machine", "/admin/modify-machine.html"})
-    public ResponseEntity<org.springframework.core.io.Resource> modifyMachinePage(HttpSession session,
-            @RequestParam("id") Long id) {
-        boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
-        if (!isAdmin) {
-            return ResponseEntity.status(302)
-                    .header("Location", "/login?error=" + java.net.URLEncoder.encode("Solo administradores", java.nio.charset.StandardCharsets.UTF_8))
-                    .build();
-        }
+    public ResponseEntity<org.springframework.core.io.Resource> modifyMachinePage(@RequestParam("id") Long id) {
         var res = new ClassPathResource("templates/admin/modify-machine.html");
         if (!res.exists()) {
             return ResponseEntity.notFound().build();
@@ -224,21 +238,35 @@ public class MachinesController {
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(res);
     }
 
-    // Simple creación de máquina. En un proyecto real se validaría y se usaría DTO.
+    /**
+     * Crea una máquina.
+     * Valida imagen opcional y persiste la entidad.
+     *
+     * @param name nombre
+     * @param location ubicación
+     * @param description descripción
+     * @param status estado
+     * @param hourlyPrice precio por hora
+     * @param image imagen subida (máx 2 MB)
+     * @return redirección a listado o página de error
+     */
     @PostMapping("/admin/machines")
-    public String createMachine(HttpSession session,
+    public String createMachine(
             @RequestParam("name") String name,
             @RequestParam(value = "location", required = false) String location,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "hourlyPrice", required = false) String hourlyPrice,
             @RequestParam(value = "image", required = false) MultipartFile image) {
-        boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
-        if (!isAdmin) {
-            return "redirect:/login?error=" + java.net.URLEncoder.encode("Solo administradores", java.nio.charset.StandardCharsets.UTF_8);
-        }
         // Guardar usando repositorio inyectado
         try {
+            // Validación previa: si hay imagen y supera 2 MB, abortar creación
+            if (image != null && !image.isEmpty()) {
+                long size = image.getSize();
+                if (size > 2_000_000) {
+                    return "redirect:/admin/add-machine?error=" + java.net.URLEncoder.encode("La imagen supera 2 MB", java.nio.charset.StandardCharsets.UTF_8);
+                }
+            }
             Machine m = new Machine();
             m.setName(name);
             if (location != null) {
@@ -287,12 +315,14 @@ public class MachinesController {
         }
     }
 
+    /**
+     * Elimina una máquina por id (borra también imágenes asociadas).
+     *
+     * @param id identificador de la máquina
+     * @return redirección al listado
+     */
     @PostMapping("/admin/machines/{id}/delete")
-    public String deleteMachine(HttpSession session, @PathVariable("id") Long id) {
-        boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
-        if (!isAdmin) {
-            return "redirect:/login?error=" + java.net.URLEncoder.encode("Solo administradores", java.nio.charset.StandardCharsets.UTF_8);
-        }
+    public String deleteMachine(@PathVariable("id") Long id) {
         try {
             machineService.delete(id); // ahora el servicio también borra las imágenes
         } catch (Exception ignored) {
@@ -300,9 +330,20 @@ public class MachinesController {
         return "redirect:/machines";
     }
 
-    // Actualización de máquina (incluye reemplazo de imagen: borra la anterior si se sube una nueva)
+    /**
+     * Actualiza una máquina (y reemplaza imagen si se sube una nueva, borrando la anterior).
+     *
+     * @param id id de la máquina
+     * @param name nombre
+     * @param location ubicación
+     * @param description descripción
+     * @param status estado
+     * @param hourlyPrice precio por hora
+     * @param image imagen
+     * @return redirección al listado o página de error
+     */
     @PostMapping("/admin/machines/{id}")
-    public String updateMachine(HttpSession session,
+    public String updateMachine(
             @PathVariable("id") Long id,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "location", required = false) String location,
@@ -310,10 +351,6 @@ public class MachinesController {
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "hourlyPrice", required = false) String hourlyPrice,
             @RequestParam(value = "image", required = false) MultipartFile image) {
-        boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
-        if (!isAdmin) {
-            return "redirect:/login?error=" + java.net.URLEncoder.encode("Solo administradores", java.nio.charset.StandardCharsets.UTF_8);
-        }
         try {
             java.util.Optional<Machine> opt = machineService.findById(id);
             if (opt.isEmpty()) {
