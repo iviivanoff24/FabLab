@@ -56,6 +56,7 @@
           <input type="file" class="form-control" id="image" name="image" accept="image/*" />
           <label class="input-group-text" for="image">Subir</label>
         </div>
+        <div class="invalid-feedback">La imagen debe pesar menos de 2 MB.</div>
         <div class="form-text">Formatos: JPG, PNG o GIF. Máx 2 MB.</div>
       </div>
       <div class="mb-3">
@@ -84,6 +85,16 @@
   <script>
     // Validación simple + guardia admin (cliente)
     document.addEventListener('DOMContentLoaded', () => {
+      // Mostrar error del servidor si viene en querystring ?error=
+      const params = new URLSearchParams(location.search);
+      const serverError = params.get('error');
+      if (serverError) {
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger';
+        alert.textContent = decodeURIComponent(serverError);
+        document.querySelector('main.container').insertBefore(alert, document.getElementById('machineForm'));
+      }
+
       fetch('/api/session/me').then(r=>r.json()).then(data => {
         if (!data.admin) {
           document.getElementById('machineForm').classList.add('d-none');
@@ -91,7 +102,18 @@
         }
       });
       const form = document.getElementById('machineForm');
+      const imgInput = document.getElementById('image');
+      const validateImage = () => {
+        const f = imgInput.files && imgInput.files[0];
+        if (f && f.size > 2000000) {
+          imgInput.setCustomValidity('La imagen supera 2 MB');
+        } else {
+          imgInput.setCustomValidity('');
+        }
+      };
+      imgInput.addEventListener('change', validateImage);
       form.addEventListener('submit', e => {
+        validateImage();
         if (!form.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
         form.classList.add('was-validated');
       });

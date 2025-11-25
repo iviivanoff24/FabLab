@@ -239,6 +239,13 @@ public class MachinesController {
         }
         // Guardar usando repositorio inyectado
         try {
+            // Validación previa: si hay imagen y supera 2 MB, abortar creación
+            if (image != null && !image.isEmpty()) {
+                long size = image.getSize();
+                if (size > 2_000_000) {
+                    return "redirect:/admin/add-machine?error=" + java.net.URLEncoder.encode("La imagen supera 2 MB", java.nio.charset.StandardCharsets.UTF_8);
+                }
+            }
             Machine m = new Machine();
             m.setName(name);
             if (location != null) {
