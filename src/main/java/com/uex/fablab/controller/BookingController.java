@@ -50,6 +50,7 @@ public class BookingController {
     public ResponseEntity<String> reserveMachinePage(@PathVariable("id") Long machineId, HttpSession session,
             @RequestParam(value = "date", required = false) String dateStr,
             @RequestParam(value = "success", required = false) String successParam,
+            @RequestParam(value = "canceled", required = false) String canceledParam,
             @RequestParam(value = "error", required = false) String errorParam) throws java.io.IOException {
         // Interceptor garantiza que el usuario está autenticado
         Object userId = session.getAttribute("USER_ID");
@@ -112,12 +113,15 @@ public class BookingController {
 
         if (successParam != null) {
             shiftsHtml.append("<div class='alert alert-success py-1'>Reserva creada correctamente.</div>");
+        } else if (canceledParam != null) {
+            shiftsHtml.append("<div class='alert alert-success py-1'>Reserva cancelada correctamente.</div>");
         } else if (errorParam != null) {
             shiftsHtml.append("<div class='alert alert-danger py-1'>").append(safe(errorParam)).append("</div>");
         }
 
         shiftsHtml.append("<div class='list-group mb-4'>");
         // Generar slots horarios 09:00 - 21:00 (último empieza 20:00 termina 21:00)
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
         for (int hour = 9; hour < 21; hour++) {
             LocalTime start = LocalTime.of(hour, 0);
             LocalTime end = start.plusHours(1);
@@ -149,7 +153,8 @@ public class BookingController {
             }
             shiftsHtml.append("</div>");
             boolean maquinaDisponible = machine.getStatus() != null && machine.getStatus().name().equalsIgnoreCase("Disponible");
-            if (!reservado && maquinaDisponible) {
+            boolean slotEnFuturo = java.time.LocalDateTime.of(selectedDate, start).isAfter(now);
+            if (!reservado && maquinaDisponible && slotEnFuturo) {
                 shiftsHtml.append("<form method='post' action='/machines/")
                         .append(machineId)
                         .append("/reserve' class='m-0'>")
@@ -163,9 +168,53 @@ public class BookingController {
             } else {
                 shiftsHtml.append("<button class='btn btn-sm btn-outline-secondary' disabled>Reservar</button>");
             }
+            // Botón cancelar (abre modal) cuando es mi reserva y aún no ha pasado
+            if (reservado && reservadoPorMi && slotEnFuturo && s != null) {
+                shiftsHtml.append("<button type='button' class='btn btn-sm btn-outline-danger ms-2' ")
+                        .append("data-bs-toggle='modal' data-bs-target='#cancelBookingModal' ")
+                        .append("data-shift-id='").append(s.getId()).append("' ")
+                        .append("data-start-hour='").append(hour).append("' ")
+                        .append("data-date='").append(selectedDate).append("'>Cancelar</button>");
+            }
             shiftsHtml.append("</div>");
         }
         shiftsHtml.append("</div>");
+        // Modal de confirmación + formulario oculto para cancelar
+        shiftsHtml.append("<div class='modal fade' id='cancelBookingModal' tabindex='-1' aria-labelledby='cancelBookingModalLabel' aria-hidden='true'>")
+                .append("  <div class='modal-dialog'>")
+                .append("    <div class='modal-content'>")
+                .append("      <div class='modal-header'>")
+                .append("        <h1 class='modal-title fs-5' id='cancelBookingModalLabel'>Confirmar cancelación de reserva</h1>")
+                .append("        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>")
+                .append("      </div>")
+                .append("      <div class='modal-body'>")
+                .append("        <p>¿Seguro que deseas cancelar esta reserva?</p>")
+                .append("      </div>")
+                .append("      <div class='modal-footer'>")
+                .append("        <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>No, volver</button>")
+                .append("        <button type='button' id='confirmCancelBookingBtn' class='btn btn-primary'>Sí, cancelar</button>")
+                .append("      </div>")
+                .append("    </div>")
+                .append("  </div>")
+                .append("</div>");
+        // Formulario oculto
+        shiftsHtml.append("<form id='cancelBookingForm' method='post' action='/machines/")
+                .append(machineId)
+                .append("/reserve/cancel' class='d-none'>")
+                .append("  <input type='hidden' name='date' id='cancelDate' />")
+                .append("  <input type='hidden' name='startHour' id='cancelStartHour' />")
+                .append("  <input type='hidden' name='shiftId' id='cancelShiftId' />")
+                .append("</form>");
+        // Script para poblar y confirmar
+        shiftsHtml.append("<script>document.addEventListener('DOMContentLoaded',function(){")
+                .append("var modal=document.getElementById('cancelBookingModal');")
+                .append("var dateInput=document.getElementById('cancelDate');")
+                .append("var hourInput=document.getElementById('cancelStartHour');")
+                .append("var shiftInput=document.getElementById('cancelShiftId');")
+                .append("var confirmBtn=document.getElementById('confirmCancelBookingBtn');")
+                .append("modal.addEventListener('show.bs.modal',function(ev){var btn=ev.relatedTarget;dateInput.value=btn.getAttribute('data-date');hourInput.value=btn.getAttribute('data-start-hour');shiftInput.value=btn.getAttribute('data-shift-id');});")
+                .append("confirmBtn.addEventListener('click',function(){document.getElementById('cancelBookingForm').submit();});")
+                .append("});</script>");
         html = html.replace(SHIFTS_LIST_MARKER, shiftsHtml.toString());
 
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(html);
@@ -176,6 +225,7 @@ public class BookingController {
             @RequestParam(value = "machineId", required = false) Long machineId,
             @RequestParam(value = "date", required = false) String dateStr,
             @RequestParam(value = "success", required = false) String success,
+            @RequestParam(value = "canceled", required = false) String canceled,
             @RequestParam(value = "error", required = false) String error) throws java.io.IOException {
         // Interceptor garantiza autenticación
         Object userId = session.getAttribute("USER_ID");
@@ -191,7 +241,9 @@ public class BookingController {
         } else {
             for (Machine m : machines) {
                 selector.append("<option value='").append(m.getId()).append("'");
-                if (machineId != null && m.getId().equals(machineId)) selector.append(" selected");
+                if (machineId != null && m.getId().equals(machineId)) {
+                    selector.append(" selected");
+                }
                 selector.append(">")
                         .append(safe(m.getName()))
                         .append("</option>");
@@ -199,8 +251,15 @@ public class BookingController {
         }
         selector.append("</select></div>");
         java.time.LocalDate selectedDate = null;
-        if (dateStr != null && !dateStr.isBlank()) { try { selectedDate = java.time.LocalDate.parse(dateStr); } catch (Exception ignored) {} }
-        if (selectedDate == null) selectedDate = java.time.LocalDate.now();
+        if (dateStr != null && !dateStr.isBlank()) {
+            try {
+                selectedDate = java.time.LocalDate.parse(dateStr);
+            } catch (Exception ignored) {
+            }
+        }
+        if (selectedDate == null) {
+            selectedDate = java.time.LocalDate.now();
+        }
         selector.append("<div class='col-md-3'><label class='form-label'>Fecha</label><input type='date' name='date' class='form-control form-control-sm' value='")
                 .append(selectedDate)
                 .append("' /></div>");
@@ -211,6 +270,8 @@ public class BookingController {
         StringBuilder slotsHtml = new StringBuilder();
         if (success != null) {
             slotsHtml.append("<div class='alert alert-success py-1'>Reserva creada correctamente.</div>");
+        } else if (canceled != null) {
+            slotsHtml.append("<div class='alert alert-success py-1'>Reserva cancelada correctamente.</div>");
         } else if (error != null) {
             slotsHtml.append("<div class='alert alert-danger py-1'>").append(safe(error)).append("</div>");
         }
@@ -224,21 +285,30 @@ public class BookingController {
                 Machine machine = machineOpt.get();
                 java.util.List<Shift> existingShifts = shiftService.findByMachineAndDate(machine, selectedDate);
                 java.util.Map<LocalTime, Shift> shiftByStart = new java.util.HashMap<>();
-                for (Shift s : existingShifts) shiftByStart.put(s.getStartTime(), s);
+                for (Shift s : existingShifts) {
+                    shiftByStart.put(s.getStartTime(), s);
+                }
                 slotsHtml.append("<div class='list-group mb-4'>");
+                java.time.LocalDateTime now2 = java.time.LocalDateTime.now();
                 for (int hour = 9; hour < 21; hour++) {
-                    LocalTime start = LocalTime.of(hour, 0); LocalTime end = start.plusHours(1);
+                    LocalTime start = LocalTime.of(hour, 0);
+                    LocalTime end = start.plusHours(1);
                     Shift s = shiftByStart.get(start);
-                    boolean reservado = false; boolean reservadoPorMi = false;
+                    boolean reservado = false;
+                    boolean reservadoPorMi = false;
                     if (s != null) {
                         reservado = !s.getBookings().isEmpty() || s.getStatus() == ShiftStatus.Reservado;
-                        if (reservado) reservadoPorMi = s.getBookings().stream().anyMatch(b -> b.getUser() != null && b.getUser().getId().equals(userId));
+                        if (reservado) {
+                            reservadoPorMi = s.getBookings().stream().anyMatch(b -> b.getUser() != null && b.getUser().getId().equals(userId));
+                        }
                     }
                     slotsHtml.append("<div class='list-group-item d-flex justify-content-between align-items-center'>");
                     slotsHtml.append("<div><span class='fw-semibold'>").append(start).append(" - ").append(end).append("</span> ");
                     if (reservado) {
                         slotsHtml.append("<span class='badge bg-secondary'>Reservado</span>");
-                        if (reservadoPorMi) slotsHtml.append(" <span class='badge bg-warning text-dark'>Tu reserva</span>");
+                        if (reservadoPorMi) {
+                            slotsHtml.append(" <span class='badge bg-warning text-dark'>Tu reserva</span>");
+                        }
                     } else if (machine.getStatus() != null && machine.getStatus().name().equalsIgnoreCase("Disponible")) {
                         slotsHtml.append("<span class='badge bg-success'>Disponible</span>");
                     } else {
@@ -246,7 +316,8 @@ public class BookingController {
                     }
                     slotsHtml.append("</div>");
                     boolean maquinaDisponible = machine.getStatus() != null && machine.getStatus().name().equalsIgnoreCase("Disponible");
-                    if (!reservado && maquinaDisponible) {
+                    boolean slotEnFuturo = java.time.LocalDateTime.of(selectedDate, start).isAfter(now2);
+                    if (!reservado && maquinaDisponible && slotEnFuturo) {
                         slotsHtml.append("<form method='post' action='/reservar' class='m-0'>")
                                 .append("<input type='hidden' name='machineId' value='").append(machineId).append("' />")
                                 .append("<input type='hidden' name='date' value='").append(selectedDate).append("' />")
@@ -255,9 +326,53 @@ public class BookingController {
                     } else {
                         slotsHtml.append("<button class='btn btn-sm btn-outline-secondary' disabled>Reservar</button>");
                     }
+                    if (reservado && reservadoPorMi && slotEnFuturo && s != null) {
+                        slotsHtml.append("<button type='button' class='btn btn-sm btn-outline-danger ms-2' ")
+                                .append("data-bs-toggle='modal' data-bs-target='#cancelBookingModal' ")
+                                .append("data-shift-id='").append(s.getId()).append("' ")
+                                .append("data-start-hour='").append(hour).append("' ")
+                                .append("data-date='").append(selectedDate).append("' ")
+                                .append("data-machine-id='").append(machineId).append("'>Cancelar</button>");
+                    }
                     slotsHtml.append("</div>");
                 }
                 slotsHtml.append("</div>");
+                // Modal de confirmación + formulario oculto para cancelar
+                slotsHtml.append("<div class='modal fade' id='cancelBookingModal' tabindex='-1' aria-labelledby='cancelBookingModalLabel' aria-hidden='true'>")
+                        .append("  <div class='modal-dialog'>")
+                        .append("    <div class='modal-content'>")
+                        .append("      <div class='modal-header'>")
+                        .append("        <h1 class='modal-title fs-5' id='cancelBookingModalLabel'>Confirmar cancelación de reserva</h1>")
+                        .append("        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>")
+                        .append("      </div>")
+                        .append("      <div class='modal-body'>")
+                        .append("        <p>¿Seguro que deseas cancelar esta reserva?</p>")
+                        .append("      </div>")
+                        .append("      <div class='modal-footer'>")
+                        .append("        <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>No, volver</button>")
+                        .append("        <button type='button' id='confirmCancelBookingBtn' class='btn btn-primary'>Sí, cancelar</button>")
+                        .append("      </div>")
+                        .append("    </div>")
+                        .append("  </div>")
+                        .append("</div>");
+                // Formulario oculto para la página genérica
+                slotsHtml.append("<form id='cancelBookingForm' method='post' action='/reservar/cancel' class='d-none'>")
+                        .append("  <input type='hidden' name='machineId' id='cancelMachineId' />")
+                        .append("  <input type='hidden' name='date' id='cancelDate' />")
+                        .append("  <input type='hidden' name='startHour' id='cancelStartHour' />")
+                        .append("  <input type='hidden' name='shiftId' id='cancelShiftId' />")
+                        .append("</form>");
+                // Script para poblar y confirmar
+                slotsHtml.append("<script>document.addEventListener('DOMContentLoaded',function(){")
+                        .append("var modal=document.getElementById('cancelBookingModal');")
+                        .append("var mInput=document.getElementById('cancelMachineId');")
+                        .append("var dateInput=document.getElementById('cancelDate');")
+                        .append("var hourInput=document.getElementById('cancelStartHour');")
+                        .append("var shiftInput=document.getElementById('cancelShiftId');")
+                        .append("var confirmBtn=document.getElementById('confirmCancelBookingBtn');")
+                        .append("modal.addEventListener('show.bs.modal',function(ev){var btn=ev.relatedTarget;mInput.value=btn.getAttribute('data-machine-id');dateInput.value=btn.getAttribute('data-date');hourInput.value=btn.getAttribute('data-start-hour');shiftInput.value=btn.getAttribute('data-shift-id');});")
+                        .append("confirmBtn.addEventListener('click',function(){document.getElementById('cancelBookingForm').submit();});")
+                        .append("});</script>");
             }
         }
         html = html.replace(RES_SLOTS_MARKER, slotsHtml.toString());
@@ -266,9 +381,9 @@ public class BookingController {
 
     @PostMapping("/reservar")
     public String genericCreateBooking(HttpSession session,
-                                       @RequestParam("machineId") Long machineId,
-                                       @RequestParam("startHour") String startHourStr,
-                                       @RequestParam("date") String dateStr) {
+            @RequestParam("machineId") Long machineId,
+            @RequestParam("startHour") String startHourStr,
+            @RequestParam("date") String dateStr) {
         // Interceptor garantiza autenticación
         Object userId = session.getAttribute("USER_ID");
         var machineOpt = machineService.findById(machineId);
@@ -277,7 +392,12 @@ public class BookingController {
         }
         Machine machine = machineOpt.get();
         LocalDate date = LocalDate.now();
-        if (dateStr != null && !dateStr.isBlank()) { try { date = LocalDate.parse(dateStr); } catch (Exception ignored) {} }
+        if (dateStr != null && !dateStr.isBlank()) {
+            try {
+                date = LocalDate.parse(dateStr);
+            } catch (Exception ignored) {
+            }
+        }
         Long uid = (Long) userId;
         var userOpt = userService.findById(uid);
         if (userOpt.isEmpty()) {
@@ -285,13 +405,26 @@ public class BookingController {
         }
         User user = userOpt.get();
         int hour;
-        try { hour = Integer.parseInt(startHourStr); } catch (NumberFormatException ex) { return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Hora inválida", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date; }
+        try {
+            hour = Integer.parseInt(startHourStr);
+        } catch (NumberFormatException ex) {
+            return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Hora inválida", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+        }
         if (hour < 9 || hour > 20) {
             return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Hora fuera de rango", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
         }
-        LocalTime start = LocalTime.of(hour,0);
+        LocalTime start = LocalTime.of(hour, 0);
+        // Validar que el turno está en el futuro respecto a ahora
+        if (!java.time.LocalDateTime.of(date, start).isAfter(java.time.LocalDateTime.now())) {
+            return "redirect:/reservar?error=" + java.net.URLEncoder.encode("No se puede reservar en el pasado", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+        }
         Shift found = null;
-        for (Shift s : shiftService.findByMachineAndDate(machine, date)) { if (s.getStartTime().equals(start)) { found = s; break; } }
+        for (Shift s : shiftService.findByMachineAndDate(machine, date)) {
+            if (s.getStartTime().equals(start)) {
+                found = s;
+                break;
+            }
+        }
         Shift shift;
         if (found != null) {
             shift = found;
@@ -320,10 +453,86 @@ public class BookingController {
             b.setShift(shift);
             b.setFechaReserva(LocalDate.now());
             bookingService.save(b);
-            if (shift.getStatus() == ShiftStatus.Disponible) { shift.setStatus(ShiftStatus.Reservado); shiftService.save(shift); }
+            if (shift.getStatus() == ShiftStatus.Disponible) {
+                shift.setStatus(ShiftStatus.Reservado);
+                shiftService.save(shift);
+            }
             return "redirect:/reservar?success=1&machineId=" + machineId + "&date=" + date;
         } catch (Exception ex) {
             return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Error al reservar", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+        }
+    }
+
+    @PostMapping("/reservar/cancel")
+    public String genericCancelBooking(HttpSession session,
+            @RequestParam("machineId") Long machineId,
+            @RequestParam("startHour") String startHourStr,
+            @RequestParam("date") String dateStr,
+            @RequestParam(value = "shiftId", required = false) Long shiftId) {
+        Object userId = session.getAttribute("USER_ID");
+        var machineOpt = machineService.findById(machineId);
+        if (machineOpt.isEmpty()) {
+            return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Máquina no encontrada", StandardCharsets.UTF_8);
+        }
+        Machine machine = machineOpt.get();
+        LocalDate date = LocalDate.now();
+        if (dateStr != null && !dateStr.isBlank()) {
+            try {
+                date = LocalDate.parse(dateStr);
+            } catch (Exception ignored) {
+            }
+        }
+        int hour;
+        try {
+            hour = Integer.parseInt(startHourStr);
+        } catch (NumberFormatException ex) {
+            return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Hora inválida", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+        }
+        LocalTime start = LocalTime.of(hour, 0);
+        if (!java.time.LocalDateTime.of(date, start).isAfter(java.time.LocalDateTime.now())) {
+            return "redirect:/reservar?error=" + java.net.URLEncoder.encode("No se puede cancelar una reserva pasada", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+        }
+        Long uid = (Long) userId;
+        var userOpt = userService.findById(uid);
+        if (userOpt.isEmpty()) {
+            return "redirect:/login?error=" + java.net.URLEncoder.encode("Usuario inválido", StandardCharsets.UTF_8);
+        }
+        User user = userOpt.get();
+        Shift shift = null;
+        if (shiftId != null) {
+            var shOpt = shiftService.findById(shiftId);
+            if (shOpt.isPresent()) {
+                shift = shOpt.get();
+            }
+        }
+        if (shift == null) {
+            for (Shift s : shiftService.findByMachineAndDate(machine, date)) {
+                if (s.getStartTime().equals(start)) {
+                    shift = s;
+                    break;
+                }
+            }
+        }
+        if (shift == null) {
+            return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Turno no encontrado", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+        }
+        var bookingOpt = bookingService.findByUserAndShift(user, shift);
+        if (bookingOpt.isEmpty()) {
+            return "redirect:/reservar?error=" + java.net.URLEncoder.encode("No tienes reserva en este turno", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+        }
+        try {
+            Booking b = bookingOpt.get();
+            bookingService.delete(b.getId());
+            // Si no quedan reservas, marcar el turno como disponible
+            var refreshedShiftOpt = shiftService.findById(shift.getId());
+            if (refreshedShiftOpt.isPresent() && (refreshedShiftOpt.get().getBookings() == null || refreshedShiftOpt.get().getBookings().isEmpty())) {
+                Shift rs = refreshedShiftOpt.get();
+                rs.setStatus(ShiftStatus.Disponible);
+                shiftService.save(rs);
+            }
+            return "redirect:/reservar?canceled=1&machineId=" + machineId + "&date=" + date;
+        } catch (Exception ex) {
+            return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Error al cancelar", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
         }
     }
 
@@ -375,6 +584,9 @@ public class BookingController {
                 return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("Hora fuera de rango", StandardCharsets.UTF_8) + "&date=" + date;
             }
             LocalTime start = LocalTime.of(hour, 0);
+            if (!java.time.LocalDateTime.of(date, start).isAfter(java.time.LocalDateTime.now())) {
+                return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("No se puede reservar en el pasado", StandardCharsets.UTF_8) + "&date=" + date;
+            }
             Shift found = null;
             for (Shift s : shiftService.findByMachineAndDate(machine, date)) {
                 if (s.getStartTime().equals(start)) {
@@ -424,6 +636,79 @@ public class BookingController {
             return "redirect:/machines/" + machineId + "/reserve?success=1&date=" + date;
         } catch (Exception ex) {
             return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("Error al reservar", StandardCharsets.UTF_8) + "&date=" + date;
+        }
+    }
+
+    @PostMapping("/machines/{id}/reserve/cancel")
+    public String cancelBooking(@PathVariable("id") Long machineId,
+            @RequestParam(value = "shiftId", required = false) Long shiftId,
+            @RequestParam(value = "startHour", required = false) String startHourStr,
+            @RequestParam(value = "date", required = false) String dateStr,
+            HttpSession session) {
+        Object userId = session.getAttribute("USER_ID");
+        var machineOpt = machineService.findById(machineId);
+        if (machineOpt.isEmpty()) {
+            return "redirect:/machines?error=" + java.net.URLEncoder.encode("Máquina no encontrada", StandardCharsets.UTF_8);
+        }
+        Machine machine = machineOpt.get();
+        LocalDate date = LocalDate.now();
+        if (dateStr != null && !dateStr.isBlank()) {
+            try {
+                date = LocalDate.parse(dateStr);
+            } catch (Exception ignored) {
+            }
+        }
+        int hour = -1;
+        if (startHourStr != null) {
+            try {
+                hour = Integer.parseInt(startHourStr);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        LocalTime start = hour >= 0 ? LocalTime.of(hour, 0) : null;
+        if (start != null && !java.time.LocalDateTime.of(date, start).isAfter(java.time.LocalDateTime.now())) {
+            return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("No se puede cancelar una reserva pasada", StandardCharsets.UTF_8) + "&date=" + date;
+        }
+        Long uid = (Long) userId;
+        var userOpt = userService.findById(uid);
+        if (userOpt.isEmpty()) {
+            return "redirect:/login?error=" + java.net.URLEncoder.encode("Usuario inválido", StandardCharsets.UTF_8);
+        }
+        User user = userOpt.get();
+        Shift shift = null;
+        if (shiftId != null) {
+            var shOpt = shiftService.findById(shiftId);
+            if (shOpt.isPresent()) {
+                shift = shOpt.get();
+            }
+        }
+        if (shift == null && start != null) {
+            for (Shift s : shiftService.findByMachineAndDate(machine, date)) {
+                if (s.getStartTime().equals(start)) {
+                    shift = s;
+                    break;
+                }
+            }
+        }
+        if (shift == null) {
+            return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("Turno no encontrado", StandardCharsets.UTF_8) + "&date=" + date;
+        }
+        var bookingOpt = bookingService.findByUserAndShift(user, shift);
+        if (bookingOpt.isEmpty()) {
+            return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("No tienes reserva en este turno", StandardCharsets.UTF_8) + "&date=" + date;
+        }
+        try {
+            Booking b = bookingOpt.get();
+            bookingService.delete(b.getId());
+            var refreshedShiftOpt = shiftService.findById(shift.getId());
+            if (refreshedShiftOpt.isPresent() && (refreshedShiftOpt.get().getBookings() == null || refreshedShiftOpt.get().getBookings().isEmpty())) {
+                Shift rs = refreshedShiftOpt.get();
+                rs.setStatus(ShiftStatus.Disponible);
+                shiftService.save(rs);
+            }
+            return "redirect:/machines/" + machineId + "/reserve?canceled=1&date=" + date;
+        } catch (Exception ex) {
+            return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("Error al cancelar", StandardCharsets.UTF_8) + "&date=" + date;
         }
     }
 
