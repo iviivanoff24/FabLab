@@ -26,6 +26,12 @@ import com.uex.fablab.data.services.UserService;
 
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Controlador de reservas de máquinas.
+ * Proporciona páginas para reservar por máquina y una página genérica con selector,
+ * además de los endpoints para crear y cancelar reservas. Genera HTML dinámico
+ * inyectando fragmentos en plantillas estáticas.
+ */
 @Controller
 public class BookingController {
 
@@ -46,6 +52,19 @@ public class BookingController {
         this.userService = userService;
     }
 
+    /**
+     * Página de reserva para una máquina específica.
+     * Muestra los turnos del día seleccionado, permite reservar turnos futuros y cancelar
+     * la reserva propia todavía no iniciada.
+     *
+     * @param machineId id de la máquina
+     * @param session sesión HTTP con atributos de usuario
+     * @param dateStr fecha en formato ISO (yyyy-MM-dd), por defecto hoy
+     * @param successParam indicador de reserva creada
+     * @param canceledParam indicador de reserva cancelada
+     * @param errorParam mensaje de error a mostrar
+     * @return HTML de la página renderizada
+     */
     @GetMapping("/machines/{id}/reserve")
     public ResponseEntity<String> reserveMachinePage(@PathVariable("id") Long machineId, HttpSession session,
             @RequestParam(value = "date", required = false) String dateStr,
@@ -220,6 +239,19 @@ public class BookingController {
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(html);
     }
 
+    /**
+     * Página genérica de reservas con selector de máquina.
+     * Permite elegir máquina y fecha, reservar turnos futuros y cancelar la reserva propia
+     * si el turno aún no ha comenzado.
+     *
+     * @param session sesión HTTP
+     * @param machineId id de la máquina seleccionada (opcional)
+     * @param dateStr fecha en ISO (yyyy-MM-dd)
+     * @param success indicador de reserva creada
+     * @param canceled indicador de reserva cancelada
+     * @param error mensaje de error
+     * @return HTML renderizado de la página
+     */
     @GetMapping({"/reservar", "/reservar.html"})
     public ResponseEntity<String> genericReservePage(HttpSession session,
             @RequestParam(value = "machineId", required = false) Long machineId,
@@ -379,6 +411,16 @@ public class BookingController {
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(html);
     }
 
+    /**
+     * Crea una reserva desde la página genérica.
+     * Valida que el turno esté en el rango permitido (09–21) y en el futuro.
+     *
+     * @param session sesión HTTP
+     * @param machineId id de la máquina
+     * @param startHourStr hora de inicio (9..20)
+     * @param dateStr fecha del turno (yyyy-MM-dd)
+     * @return redirección a la página genérica con estado
+     */
     @PostMapping("/reservar")
     public String genericCreateBooking(HttpSession session,
             @RequestParam("machineId") Long machineId,
@@ -463,6 +505,17 @@ public class BookingController {
         }
     }
 
+    /**
+     * Cancela una reserva propia desde la página genérica.
+     * Solo permite cancelar si el turno aún no ha comenzado.
+     *
+     * @param session sesión HTTP
+     * @param machineId id de la máquina
+     * @param startHourStr hora de inicio del turno
+     * @param dateStr fecha del turno
+     * @param shiftId id del turno (opcional)
+     * @return redirección con estado de cancelación
+     */
     @PostMapping("/reservar/cancel")
     public String genericCancelBooking(HttpSession session,
             @RequestParam("machineId") Long machineId,
@@ -536,6 +589,17 @@ public class BookingController {
         }
     }
 
+    /**
+     * Crea una reserva desde la página de la máquina.
+     * Valida hora y fecha y crea turno si no existía.
+     *
+     * @param machineId id de la máquina
+     * @param shiftId id del turno (opcional)
+     * @param startHourStr hora inicio (9..20)
+     * @param dateStr fecha del turno
+     * @param session sesión HTTP
+     * @return redirección a la página de reserva de máquina con estado
+     */
     @PostMapping("/machines/{id}/reserve")
     public String createBooking(@PathVariable("id") Long machineId,
             @RequestParam(value = "shiftId", required = false) Long shiftId,
@@ -639,6 +703,17 @@ public class BookingController {
         }
     }
 
+    /**
+     * Cancela una reserva propia desde la página de la máquina.
+     * Solo si el turno aún no ha comenzado.
+     *
+     * @param machineId id de la máquina
+     * @param shiftId id del turno (opcional)
+     * @param startHourStr hora de inicio
+     * @param dateStr fecha del turno
+     * @param session sesión HTTP
+     * @return redirección con estado de cancelación
+     */
     @PostMapping("/machines/{id}/reserve/cancel")
     public String cancelBooking(@PathVariable("id") Long machineId,
             @RequestParam(value = "shiftId", required = false) Long shiftId,

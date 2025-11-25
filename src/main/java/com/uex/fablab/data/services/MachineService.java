@@ -11,6 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.uex.fablab.data.model.Machine;
 import com.uex.fablab.data.repository.MachineRepository;
 
+/**
+ * Servicio de máquinas.
+ * Encapsula acceso a repositorio y operaciones auxiliares para gestionar imágenes.
+ */
 @Service
 @Transactional
 public class MachineService {
@@ -20,18 +24,26 @@ public class MachineService {
         this.repo = repo;
     }
 
+    /** Lista todas las máquinas. */
     public List<Machine> listAll() {
         return repo.findAll();
     }
 
+    /** Busca una máquina por id. */
     public Optional<Machine> findById(Long id) {
         return repo.findById(id);
     }
 
+    /** Guarda una máquina. */
     public Machine save(Machine m) {
         return repo.save(m);
     }
 
+    /**
+     * Elimina la máquina por id y borra sus imágenes asociadas del sistema de ficheros.
+     * @param id identificador
+     * @return true si se eliminó, false si no existe
+     */
     public boolean delete(Long id) {
         return repo.findById(id).map(m -> {
             // Borrar imágenes asociadas antes de eliminar la entidad

@@ -16,6 +16,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Interceptor de "remember me" que recrea la sesión de usuario si existe una cookie válida.
+ * No interrumpe el flujo si la cookie no está presente o es inválida.
+ */
 @Component
 public class RememberMeInterceptor implements HandlerInterceptor {
 
@@ -28,6 +32,13 @@ public class RememberMeInterceptor implements HandlerInterceptor {
         this.secret = secret;
     }
 
+    /**
+     * Antes de atender la petición, intenta autenticar mediante cookie REMEMBER_ME.
+     * @param request petición HTTP
+     * @param response respuesta HTTP
+     * @param handler handler
+     * @return siempre true para continuar la cadena
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         HttpSession session = request.getSession(false);
@@ -63,6 +74,11 @@ public class RememberMeInterceptor implements HandlerInterceptor {
         return true;
     }
 
+    /**
+     * Calcula SHA-256 en hexadecimal.
+     * @param input texto
+     * @return hash hexadecimal
+     */
     private static String sha256(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

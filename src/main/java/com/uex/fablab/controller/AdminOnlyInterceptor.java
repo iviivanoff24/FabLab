@@ -11,6 +11,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Interceptor que restringe ciertas rutas a usuarios con rol administrador.
+ * Si el usuario no está autenticado como admin, redirige a la página de login con mensaje.
+ */
 @Component
 public class AdminOnlyInterceptor implements HandlerInterceptor {
 
@@ -22,6 +26,13 @@ public class AdminOnlyInterceptor implements HandlerInterceptor {
             "/admin/**"
     );
 
+    /**
+     * Verifica si la petición coincide con algún patrón de rutas admin y valida el rol.
+     * @param request petición HTTP
+     * @param response respuesta HTTP
+     * @param handler handler actual
+     * @return true si se permite continuar; false si se redirige
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String path = request.getRequestURI();

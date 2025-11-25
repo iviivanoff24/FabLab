@@ -22,6 +22,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Controlador de autenticación y registro.
+ * Gestiona login, registro, logout y un endpoint para consultar el estado de sesión.
+ */
 @Controller
 public class AuthController {
 
@@ -31,6 +35,10 @@ public class AuthController {
         this.userService = userService;
     }
 
+    /**
+     * Renderiza la página de inicio de sesión.
+     * @return recurso HTML de la página de login
+     */
     @GetMapping({"/login", "/login.html"})
     public ResponseEntity<Resource> loginPage() {
         Resource resource = new ClassPathResource("templates/login.html");
@@ -40,6 +48,16 @@ public class AuthController {
                 .body(resource);
     }
 
+    /**
+     * Procesa el formulario de login. Crea atributos de sesión y cookie de "remember me" si se solicita.
+     *
+     * @param email correo del usuario
+     * @param password contraseña
+     * @param remember marca para recordar sesión
+     * @param session sesión HTTP
+     * @param response respuesta HTTP para setear cookies
+     * @return redirección a la página principal o de error
+     */
     @PostMapping("/login")
     public String doLogin(@RequestParam("email") String email,
                           @RequestParam("password") String password,
@@ -81,6 +99,10 @@ public class AuthController {
         return "redirect:/login?error=" + encoded;
     }
 
+    /**
+     * Renderiza la página de registro.
+     * @return recurso HTML de la página de registro
+     */
     @GetMapping({"/register", "/register.html"})
     public ResponseEntity<Resource> registerPage() {
         Resource resource = new ClassPathResource("templates/register.html");
@@ -90,6 +112,14 @@ public class AuthController {
                 .body(resource);
     }
 
+    /**
+     * Procesa el formulario de registro de usuario.
+     * @param name nombre
+     * @param email correo
+     * @param password contraseña
+     * @param telefono teléfono opcional
+     * @return redirección a inicio o a error
+     */
     @PostMapping("/register")
     public String doRegister(@RequestParam("name") String name,
                              @RequestParam("email") String email,
@@ -109,6 +139,15 @@ public class AuthController {
         }
     }
 
+    /**
+     * Cierra la sesión del usuario, borra la cookie de "remember me" y redirige.
+     * Intenta volver a la página previa indicada por el header Referer.
+     *
+     * @param session sesión HTTP
+     * @param response respuesta HTTP
+     * @param request petición HTTP
+     * @return redirección a la página previa o al inicio
+     */
     @PostMapping("/logout")
     public String logout(HttpSession session,
                          HttpServletResponse response,
@@ -138,6 +177,11 @@ public class AuthController {
         return "redirect:/";
     }
 
+    /**
+     * Endpoint JSON con el estado de la sesión actual.
+     * @param session sesión HTTP
+     * @return mapa con indicadores de login y datos básicos del usuario
+     */
     @GetMapping("/api/session/me")
     @ResponseBody
     public java.util.Map<String, Object> sessionMe(HttpSession session) {
@@ -154,6 +198,11 @@ public class AuthController {
         return out;
     }
 
+    /**
+     * Calcula el hash SHA-256 para el texto dado.
+     * @param input texto de entrada
+     * @return representación hexadecimal del hash
+     */
     private static String sha256(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

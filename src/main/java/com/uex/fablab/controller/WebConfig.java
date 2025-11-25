@@ -8,6 +8,10 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Configuración Web MVC.
+ * Define handlers de recursos estáticos y registra interceptores de sesión/seguridad.
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
@@ -23,6 +27,10 @@ public class WebConfig implements WebMvcConfigurer {
         this.rememberMeInterceptor = rememberMeInterceptor;
     }
 
+    /**
+     * Mapeo de rutas estáticas para CSS, JS e imágenes, incluyendo subidas en disco.
+     * @param registry registro de handlers de recursos
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String basePath = "classpath:/templates/";
@@ -45,6 +53,10 @@ public class WebConfig implements WebMvcConfigurer {
         //registry.addResourceHandler("/**/*.html").addResourceLocations(basePath);
     }
 
+    /**
+     * Registra interceptores en orden: remember-me, usuario autenticado y administrador.
+     * @param registry registro de interceptores
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(rememberMeInterceptor).addPathPatterns("/**");
