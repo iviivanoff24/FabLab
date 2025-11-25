@@ -1,5 +1,7 @@
 package com.uex.fablab.data.services;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,8 +33,32 @@ public class MachineService {
     }
 
     public boolean delete(Long id) {
-        if (!repo.existsById(id)) return false;
-        repo.deleteById(id);
-        return true;
+        return repo.findById(id).map(m -> {
+            // Borrar imágenes asociadas antes de eliminar la entidad
+            deleteMachineImages(m.getId());
+            repo.delete(m); // cascadas JPA para turnos
+            return true;
+        }).orElse(false);
+    }
+
+    private void deleteMachineImages(Long id) {
+        if (id == null) return;
+        String[] exts = {".jpg", ".png", ".gif"};
+        Path uploadsDir = resolveUploadsDir();
+        for (String ext : exts) {
+            try {
+                Path p = uploadsDir.resolve("machine-" + id + ext);
+                Files.deleteIfExists(p);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private Path resolveUploadsDir() {
+        // Coincide con la lógica del controller: intentar ruta del módulo y fallback local
+        Path moduleDir = Path.of("ProyectoMDAI", "src", "main", "resources", "templates", "img", "upload", "machines");
+        if (Files.exists(moduleDir)) return moduleDir;
+        Path localDir = Path.of("src", "main", "resources", "templates", "img", "upload", "machines");
+        return localDir;
     }
 }
