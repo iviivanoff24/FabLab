@@ -16,6 +16,11 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+/**
+ * Entidad Usuario del sistema (cliente o administrador). Gestiona credenciales
+ * simples y un campo de rol (USER/ADMIN). Provee método de conveniencia
+ * {@link #isAdmin()} para comprobaciones de autorización en la capa web.
+ */
 @Entity
 @Table(name = "Usuario")
 public class User {

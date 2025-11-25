@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<th:block th:fragment="siteHeader(active)">
+  <header class="border-bottom bg-white mb-3">
+    <div class="container py-2 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <img src="/img/logo.png" alt="Logo FabLab Mérida" width="50" height="50" class="me-2" />
+        <div class="fw-bold lh-1">FabLab<br><span class="text-secondary">Mérida</span></div>
+      </div>
+      <div class="small" id="authLinks">
+        <a href="/login" class="text-dark text-decoration-none">Iniciar sesión</a>
+      </div>
+    </div>
+    <nav class="border-top">
+      <div class="container">
+        <ul class="nav nav-underline">
+          <li class="nav-item"><a th:classappend="${active}=='home'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/">Inicio</a></li>
+          <li class="nav-item"><a th:classappend="${active}=='machines'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/machines">Máquinas</a></li>
+          <li class="nav-item"><a th:classappend="${active}=='reservar'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/reservar">Reservar</a></li>
+          <li class="nav-item"><a th:classappend="${active}=='courses'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/courses.html">Cursos</a></li>
+          <li class="nav-item"><a th:classappend="${active}=='readme'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/readme.html">Cómo funciona</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+</th:block>
+</body>
+</html>

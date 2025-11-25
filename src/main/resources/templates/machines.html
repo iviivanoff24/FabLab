@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -73,8 +73,66 @@
 
     <main class="machines-page">
       <div class="container">
-        <!-- ADMIN_ONLY_MARKER -->
-        <!-- MACHINES_LIST_MARKER -->
+        <!-- Card crear máquina solo para admin -->
+        <div th:if="${isAdmin}" class="mb-4">
+          <div class="card text-bg-warning mb-3 mx-auto" style="max-width: 18rem; max-height: 10rem;">
+            <a href="/admin/add-machine.html" class="text-decoration-none text-dark">
+              <div class="card-body d-flex flex-column align-items-center justify-content-center py-3">
+                <img src="img/add.png" alt="Añadir máquina" width="48" height="48" class="mb-2" />
+                <h5 class="card-title text-dark m-0">Nueva Máquina</h5>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(machines)}" class="alert alert-info mt-3">No hay máquinas registradas aún.</div>
+
+        <div th:if="${!#lists.isEmpty(machines)}" class="d-flex flex-wrap gap-4">
+          <div class="card" th:each="m : ${machines}">
+            <div class="face face1">
+              <div class="content">
+                <img th:src="${machineImageUrls[m.id]}" alt="Imagen máquina" />
+                <h3 th:text="${m.name}"></h3>
+              </div>
+            </div>
+            <div class="face face2">
+              <div class="content">
+                <p th:text="${m.description != null && m.description != '' ? m.description : 'Sin descripción.'}"></p>
+                <p class="mb-1"><span class="badge text-bg-primary">€<span th:text="${m.hourlyPrice != null ? #numbers.formatDecimal(m.hourlyPrice,1,2) : '0.00'}"></span>/h</span></p>
+                <p class="mb-1">
+                  <span class="badge" th:classappend="${m.status?.name() == 'En_mantenimiento'} ? ' text-bg-warning' : (m.status?.name() == 'Disponible' ? ' text-bg-success' : ' text-bg-secondary')"
+                        th:text="${m.status != null ? (m.status.name() == 'En_mantenimiento' ? 'En mantenimiento' : (m.status.name() == 'Disponible' ? 'Disponible' : 'Sin estado')) : 'Sin estado'}"></span>
+                </p>
+                <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>
+                  <a th:href="@{'/machines/' + ${m.id} + '/reserve'}" class='btn btn-sm btn-warning'>Reservar</a>
+                  <a th:if="${isAdmin}" th:href="@{'/admin/modify-machine.html'(id=${m.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
+                  <form th:if="${isAdmin}" th:id="${'form-delete-machine-' + m.id}" th:action="@{'/admin/machines/' + ${m.id} + '/delete'}" method='post' class='d-inline'></form>
+                  <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' 
+                          th:attr="data-machine-id=${m.id},data-machine-name=${m.name}"><i class='bi bi-trash'></i> Borrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal borrado solo admin -->
+        <div th:if="${isAdmin}" class='modal fade' id='deleteMachineModal' tabindex='-1' aria-labelledby='deleteMachineModalLabel' aria-hidden='true'>
+          <div class='modal-dialog'>
+            <div class='modal-content'>
+              <div class='modal-header'>
+                <h1 class='modal-title fs-5' id='deleteMachineModalLabel'>Confirmar borrado de máquina</h1>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>
+              </div>
+              <div class='modal-body'>
+                <p>¿Seguro que deseas borrar la máquina <strong id='deleteMachineName'></strong>? Esta acción no se puede deshacer.</p>
+              </div>
+              <div class='modal-footer'>
+                <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
+                <button type='button' id='confirmDeleteMachineBtn' class='btn btn-danger'>Borrar definitivamente</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <br />
@@ -82,5 +140,17 @@
 
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="/js/main.js" defer></script>
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      document.addEventListener('DOMContentLoaded',function(){
+        var modal=document.getElementById('deleteMachineModal');
+        if(!modal) return;
+        var currentId=null;var nameSpan=document.getElementById('deleteMachineName');
+        modal.addEventListener('show.bs.modal',function(ev){var btn=ev.relatedTarget;currentId=btn.getAttribute('data-machine-id');var nm=btn.getAttribute('data-machine-name');nameSpan.textContent=nm||currentId;});
+        var confirmBtn=document.getElementById('confirmDeleteMachineBtn');
+        if(confirmBtn){confirmBtn.addEventListener('click',function(){if(currentId){var f=document.getElementById('form-delete-machine-'+currentId);if(f){f.submit();}}});}
+      });
+      /*]]>*/
+    </script>
   </body>
 </html>

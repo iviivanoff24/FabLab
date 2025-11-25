@@ -22,6 +22,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Entidad Turno (slot horario de una máquina). Representa un intervalo de una hora
+ * en una fecha concreta asociado a una {@link Machine}. Se crea sólo cuando existe
+ * una reserva sobre ese intervalo. El estado indica disponibilidad general del slot.
+ */
 @Entity
 @Table(name = "Turno")
 public class Shift {

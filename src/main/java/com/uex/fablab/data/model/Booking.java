@@ -13,6 +13,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * Entidad Reserva: asociación de un {@link User} con un {@link Shift}. Incluye fecha
+ * de creación y estado de la reserva. La lógica de negocio asegura que sólo se
+ * pueda reservar turnos futuros y cancelar antes de su inicio.
+ */
 @Entity
 @Table(name = "Reserva")
 public class Booking {

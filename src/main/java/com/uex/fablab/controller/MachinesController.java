@@ -1,15 +1,15 @@
 package com.uex.fablab.controller;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,24 +24,10 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  * Controlador de máquinas.
- * Renderiza la lista de máquinas y gestiona páginas de administración para alta,
- * modificación y borrado. También expone una API de detalle por id.
+ * Usa plantillas Thymeleaf para listar máquinas y páginas de administración.
  */
 @Controller
 public class MachinesController {
-
-    private static final String MARKER = "<!-- ADMIN_ONLY_MARKER -->";
-    private static final String MACHINES_MARKER = "<!-- MACHINES_LIST_MARKER -->";
-
-    private static final String ADMIN_CARD = ""
-            + "<div class=\"card text-bg-warning mb-3 mx-auto\" style=\"max-width: 18rem; max-height: 10rem;\">"
-            + "  <a href=\"/admin/add-machine.html\" class=\"text-decoration-none text-dark\">"
-            + "    <div class=\"card-body d-flex flex-column align-items-center justify-content-center py-3\">"
-            + "      <img src=\"img/add.png\" alt=\"Añadir máquina\" width=\"48\" height=\"48\" class=\"mb-2\" />"
-            + "      <h5 class=\"card-title text-dark m-0\">Nueva Máquina</h5>"
-            + "    </div>"
-            + "  </a>"
-            + "</div>";
 
     private final MachineService machineService;
 
@@ -50,31 +36,27 @@ public class MachinesController {
     }
 
     /**
-     * Página de listado de máquinas.
-     * Inyecta tarjetas HTML con acciones según el rol (reservar, editar, borrar).
-     *
-     * @param session sesión HTTP para determinar si es admin
-     * @return HTML renderizado
+     * Página de listado de máquinas usando Thymeleaf.
+     * @param session sesión para detectar rol admin
+     * @param model modelo con máquinas y urls de imagen
+     * @return nombre de la vista
      */
-    @GetMapping({"/machines", "/machines.html"})
-    public ResponseEntity<String> machines(HttpSession session) throws java.io.IOException {
+    @GetMapping("/machines")
+    public String machines(HttpSession session, Model model) {
         boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
-        var resource = new ClassPathResource("templates/machines.html");
-        String html = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-        // Inyectar lista de máquinas
-        String cards = buildMachinesCards(isAdmin);
-        html = html.replace(MACHINES_MARKER, cards);
-        if (isAdmin) {
-            html = html.replace(MARKER, ADMIN_CARD);
-        } else {
-            html = html.replace(MARKER, "");
+        var list = machineService.listAll();
+        model.addAttribute("machines", list);
+        model.addAttribute("isAdmin", isAdmin);
+        Map<Long,String> imageUrls = new HashMap<>();
+        for (Machine m : list) {
+            imageUrls.put(m.getId(), resolveImageUrl(m.getId()));
         }
-        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(html);
+        model.addAttribute("machineImageUrls", imageUrls);
+        return "machines"; // templates/machines.html
     }
 
     /**
      * API: obtiene datos de una máquina por id (útil para pre-rellenar formularios).
-     *
      * @param id identificador de la máquina
      * @return JSON con datos básicos o 404 si no existe
      */
@@ -96,92 +78,6 @@ public class MachinesController {
         return ResponseEntity.ok(body);
     }
 
-    private String buildMachinesCards(boolean isAdmin) {
-        java.util.List<Machine> list = machineService.listAll();
-        StringBuilder sb = new StringBuilder();
-        if (list.isEmpty()) {
-            sb.append("<div class=\"alert alert-info mt-3\">No hay máquinas registradas aún.</div>");
-            return sb.toString();
-        }
-        for (Machine m : list) {
-            String name = safe(m.getName());
-            String desc = safe(m.getDescription());
-            if (desc.isBlank()) {
-                desc = "Sin descripción.";
-            }
-            java.math.BigDecimal price = m.getHourlyPrice();
-            String priceStr = price != null ? String.format(java.util.Locale.US, "%.2f", price) : "0.00";
-            String imgUrl = resolveImageUrl(m.getId());
-            MachineStatus st = m.getStatus();
-            String statusLabel = (st == MachineStatus.En_mantenimiento) ? "En mantenimiento" : (st == MachineStatus.Disponible ? "Disponible" : "Sin estado");
-            String statusClass = (st == MachineStatus.En_mantenimiento) ? "text-bg-warning" : (st == MachineStatus.Disponible ? "text-bg-success" : "text-bg-secondary");
-            sb.append("<div class=\"card\">")
-                    .append("  <div class=\"face face1\">")
-                    .append("    <div class=\"content\">")
-                    .append("      <img src=\"")
-                    .append(imgUrl)
-                    .append("\" />")
-                    .append("      <h3>")
-                    .append(name)
-                    .append("</h3>")
-                    .append("    </div>")
-                    .append("  </div>")
-                    .append("  <div class=\"face face2\">")
-                    .append("    <div class=\"content\">")
-                    .append("      <p>")
-                    .append(desc)
-                    .append("</p>")
-                    .append("      <p class=\"mb-1\"><span class=\"badge text-bg-primary\">€")
-                    .append(priceStr)
-                    .append("/h</span></p>")
-                    .append("      <p class=\"mb-1\"><span class=\"badge ")
-                    .append(statusClass)
-                    .append("\">")
-                    .append(statusLabel)
-                    .append("</span></p>")
-                    // Acciones (Reservar, Editar, Borrar) en una sola fila
-                    .append("      <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>")
-                    .append("        <a href='/machines/").append(m.getId()).append("/reserve' class='btn btn-sm btn-warning'>Reservar</a>");
-                        if (isAdmin) {
-                                // Botón editar
-                                sb.append("<a href='/admin/modify-machine.html?id=").append(m.getId()).append("' class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>");
-                                // Formulario oculto para borrado y botón que abre modal de confirmación
-                                sb.append("<form id='form-delete-machine-").append(m.getId()).append("' method='post' action='/admin/machines/").append(m.getId()).append("/delete' class='d-inline'></form>");
-                                sb.append("<button type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' data-machine-id='")
-                                    .append(m.getId()).append("' data-machine-name='")
-                                    .append(name.replace("'","&#39;")).append("'>")
-                                    .append("<i class='bi bi-trash'></i> Borrar</button>");
-                        }
-            sb.append("      </div>");
-            sb.append("    </div>")
-                    .append("  </div>")
-                    .append("</div>");
-        }
-                // Agregar modal de confirmación solo para admin
-                if (isAdmin) {
-                        sb.append("<div class='modal fade' id='deleteMachineModal' tabindex='-1' aria-labelledby='deleteMachineModalLabel' aria-hidden='true'>")
-                            .append("  <div class='modal-dialog'>")
-                            .append("    <div class='modal-content'>")
-                            .append("      <div class='modal-header'>")
-                            .append("        <h1 class='modal-title fs-5' id='deleteMachineModalLabel'>Confirmar borrado de máquina</h1>")
-                            .append("        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>")
-                            .append("      </div>")
-                            .append("      <div class='modal-body'>")
-                            .append("        <p>¿Seguro que deseas borrar la máquina <strong id='deleteMachineName'></strong>? Esta acción no se puede deshacer.</p>")
-                            .append("      </div>")
-                            .append("      <div class='modal-footer'>")
-                            .append("        <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>")
-                            .append("        <button type='button' id='confirmDeleteMachineBtn' class='btn btn-danger'>Borrar definitivamente</button>")
-                            .append("      </div>")
-                            .append("    </div>")
-                            .append("  </div>")
-                            .append("</div>");
-                        // Script para manejar la confirmación y enviar el formulario adecuado
-                        sb.append("<script>document.addEventListener('DOMContentLoaded',function(){var modal=document.getElementById('deleteMachineModal');var currentId=null;var nameSpan=document.getElementById('deleteMachineName');modal.addEventListener('show.bs.modal',function(ev){var btn=ev.relatedTarget;currentId=btn.getAttribute('data-machine-id');var nm=btn.getAttribute('data-machine-name');nameSpan.textContent=nm||currentId;});document.getElementById('confirmDeleteMachineBtn').addEventListener('click',function(){if(currentId){var f=document.getElementById('form-delete-machine-'+currentId);if(f){f.submit();}}});});</script>");
-                }
-                return sb.toString();
-    }
-
     private String resolveImageUrl(Long id) {
         if (id == null) {
             return "/img/logo.png";
@@ -198,29 +94,14 @@ public class MachinesController {
         return "/img/logo.png";
     }
 
-    private static String safe(String s) {
-        if (s == null) {
-            return "";
-        }
-        return s.replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("\"", "&quot;")
-                .replace("'", "&#39;");
-    }
-
     /**
      * Página de alta de máquina (solo administradores).
      *
      * @return HTML de la página de alta
      */
-    @GetMapping({"/admin/add-machine", "/admin/add-machine.html"})
-    public ResponseEntity<org.springframework.core.io.Resource> addMachinePage() {
-        var res = new ClassPathResource("templates/admin/add-machine.html");
-        if (!res.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(res);
+    @GetMapping("/admin/add-machine")
+    public String addMachinePage() {
+        return "admin/add-machine"; // templates/admin/add-machine.html
     }
 
     /**
@@ -229,13 +110,10 @@ public class MachinesController {
      * @param id id de la máquina a modificar
      * @return HTML de la página de modificación
      */
-    @GetMapping({"/admin/modify-machine", "/admin/modify-machine.html"})
-    public ResponseEntity<org.springframework.core.io.Resource> modifyMachinePage(@RequestParam("id") Long id) {
-        var res = new ClassPathResource("templates/admin/modify-machine.html");
-        if (!res.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(res);
+    @GetMapping("/admin/modify-machine")
+    public String modifyMachinePage(@RequestParam("id") Long id, Model model) {
+        model.addAttribute("machineId", id);
+        return "admin/modify-machine"; // templates/admin/modify-machine.html
     }
 
     /**

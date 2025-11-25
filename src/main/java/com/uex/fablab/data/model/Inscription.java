@@ -14,6 +14,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * Entidad Inscripción de un {@link User} en un {@link Course}. Registra fecha y
+ * estado (activo, cancelado, etc.). La consistencia de capacidad se gestiona en
+ * la capa de servicio.
+ */
 @Entity
 @Table(name = "Inscripcion")
 public class Inscription {

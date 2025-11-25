@@ -16,6 +16,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Entidad Recibo de pago: agrupa importe total, método de pago y estado de
+ * procesamiento/confirmación. Se asocia a un {@link User} y puede incluir un
+ * concepto libre (texto descriptivo de la transacción).
+ */
 @Entity
 @Table(name = "Recibo")
 public class Receipt {

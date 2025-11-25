@@ -16,6 +16,11 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Entidad Curso: actividad formativa con fechas de inicio/fin, capacidad y estado.
+ * Las inscripciones se modelan mediante {@link Inscription}. El estado controla
+ * visibilidad y disponibilidad (activo, cancelado, etc.).
+ */
 @Entity
 @Table(name = "Curso")
 public class Course {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,38 +9,96 @@
   <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
-<header class="border-bottom bg-white mb-3">
-  <div class="container py-2 d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center">
-      <img src="/img/logo.png" alt="Logo FabLab Mérida" width="50" height="50" class="me-2" />
-      <div class="fw-bold lh-1">FabLab<br><span class="text-secondary">Mérida</span></div>
-    </div>
-    <div class="small" id="authLinks">
-      <a href="/login" class="text-dark text-decoration-none">Iniciar sesión</a>
-    </div>
-  </div>
-  <nav class="border-top">
-    <div class="container">
-      <ul class="nav nav-underline">
-        <li class="nav-item"><a class="nav-link text-dark" href="/">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link text-dark" href="/machines">Máquinas</a></li>
-        <li class="nav-item"><a class="nav-link active text-primary fw-semibold" href="/reservar">Reservar</a></li>
-        <li class="nav-item"><a class="nav-link text-dark" href="/courses.html">Cursos</a></li>
-        <li class="nav-item"><a class="nav-link text-dark" href="/readme.html">Cómo funciona</a></li>
-      </ul>
-    </div>
-  </nav>
-</header>
+<div th:replace="fragments/header :: siteHeader('reservar')"></div>
 
 <main class="container mb-5">
   <h2 class="h4 mb-3">Reservar máquina</h2>
-  <!-- MACHINE_SELECTOR_MARKER -->
+  <form method="get" class="row g-3 align-items-end mb-3">
+    <div class="col-md-4">
+      <label class="form-label">Máquina</label>
+      <select name="machineId" class="form-select form-select-sm" required>
+        <option th:if="${machines.size()==0}" value="">No hay máquinas</option>
+        <option th:each="m: ${machines}" th:value="${m.id}" th:selected="${m.id}==${selectedMachineId}" th:text="${m.name}">Máquina</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Fecha</label>
+      <input type="date" name="date" class="form-control form-control-sm" th:value="${selectedDate}" />
+    </div>
+    <div class="col-auto"><button class="btn btn-sm btn-primary">Ver turnos</button></div>
+  </form>
+  <div th:if="${messageSuccess}" class="alert alert-success py-1" th:text="${messageSuccess}"></div>
+  <div th:if="${messageError}" class="alert alert-danger py-1" th:text="${messageError}"></div>
   <hr />
-  <!-- SLOTS_MARKER -->
+  <div th:if="${selectedMachineId == null}" class="alert alert-info">Seleccione una máquina para ver turnos.</div>
+  <div th:if="${selectedMachineId != null && machine == null}" class="alert alert-danger">Máquina no encontrada.</div>
+  <div th:if="${machine != null}" class="mb-2">
+    <p class="small mb-1">Máquina: <span class="fw-semibold" th:text="${machine.name}">Nombre</span></p>
+    <p class="small mb-3">Estado: <span class="badge bg-primary" th:text="${machine.status}">Disponible</span></p>
+  </div>
+  <div th:if="${machine != null}" class="list-group mb-4">
+    <div class="list-group-item d-flex justify-content-between align-items-center" th:each="slot : ${slots}">
+      <div>
+        <span class="fw-semibold" th:text="${slot.startTime} + ' - ' + ${slot.endTime}">09:00 - 10:00</span>
+        <span class="badge bg-secondary" th:if="${slot.reservado}" th:text="${slot.reservadoPorMi}? 'Reservado · Tu reserva' : 'Reservado'">Reservado</span>
+        <span class="badge bg-success" th:if="${!slot.reservado} and ${slot.canReserve}">Disponible</span>
+        <span class="badge bg-danger" th:if="${!slot.reservado} and ${!slot.canReserve}">No disponible</span>
+      </div>
+      <div class="d-flex align-items-center">
+        <form th:if="${slot.canReserve}" th:action="@{'/reservar'}" method="post" class="m-0 me-2">
+          <input type="hidden" name="machineId" th:value="${machine.id}" />
+          <input type="hidden" name="date" th:value="${selectedDate}" />
+          <input type="hidden" name="startHour" th:value="${slot.hour}" />
+          <button class="btn btn-sm btn-outline-primary">Reservar</button>
+        </form>
+        <button th:if="${!slot.canReserve}" class="btn btn-sm btn-outline-secondary" disabled>Reservar</button>
+        <button th:if="${slot.canCancel}" type="button" class="btn btn-sm btn-outline-danger ms-2"
+                data-bs-toggle="modal" data-bs-target="#cancelBookingModal"
+                th:attr="data-shift-id=${slot.shiftId},data-start-hour=${slot.hour},data-date=${selectedDate},data-machine-id=${machine.id}">Cancelar</button>
+      </div>
+    </div>
+  </div>
   <p class="text-muted small mt-3">Seleccione la máquina y la fecha para ver los turnos horarios (09:00 - 21:00). Los turnos reservados se muestran en gris.</p>
+
+  <!-- Modal cancelación -->
+  <div class="modal fade" id="cancelBookingModal" tabindex="-1" aria-labelledby="cancelBookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="cancelBookingModalLabel">Confirmar cancelación de reserva</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Seguro que deseas cancelar esta reserva?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, volver</button>
+          <button type="button" id="confirmCancelBookingBtn" class="btn btn-primary">Sí, cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form id="cancelBookingForm" method="post" action="/reservar/cancel" class="d-none">
+    <input type="hidden" name="machineId" id="cancelMachineId" />
+    <input type="hidden" name="date" id="cancelDate" />
+    <input type="hidden" name="startHour" id="cancelStartHour" />
+    <input type="hidden" name="shiftId" id="cancelShiftId" />
+  </form>
 </main>
 
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/main.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var modal=document.getElementById('cancelBookingModal');
+  var mInput=document.getElementById('cancelMachineId');
+  var dateInput=document.getElementById('cancelDate');
+  var hourInput=document.getElementById('cancelStartHour');
+  var shiftInput=document.getElementById('cancelShiftId');
+  var confirmBtn=document.getElementById('confirmCancelBookingBtn');
+  modal.addEventListener('show.bs.modal',function(ev){var btn=ev.relatedTarget;if(!btn) return; mInput.value=btn.getAttribute('data-machine-id');dateInput.value=btn.getAttribute('data-date');hourInput.value=btn.getAttribute('data-start-hour');shiftInput.value=btn.getAttribute('data-shift-id');});
+  confirmBtn.addEventListener('click',function(){document.getElementById('cancelBookingForm').submit();});
+});
+</script>
 </body>
 </html>

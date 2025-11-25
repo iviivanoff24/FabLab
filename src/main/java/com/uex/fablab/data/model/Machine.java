@@ -15,6 +15,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
+/**
+ * Entidad de máquina física disponible en el FabLab.
+ * Contiene metadatos descriptivos (nombre, descripción, ubicación), estado operativo
+ * y precio horario. Los turnos (Shift) se crean dinámicamente bajo demanda el día
+ * de la reserva: por ello la colección {@code shifts} refleja únicamente los turnos
+ * ya usados/reservados.
+ */
 @Entity
 @Table(name = "Maquina")
 public class Machine {
