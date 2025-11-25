@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.uex.fablab.data.model.Machine;
 import com.uex.fablab.data.model.MachineStatus;
-import com.uex.fablab.data.repository.MachineRepository;
+import com.uex.fablab.data.services.MachineService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -38,10 +38,10 @@ public class MachinesController {
             + "  </a>"
             + "</div>";
 
-    private final MachineRepository machineRepository;
+    private final MachineService machineService;
 
-    public MachinesController(MachineRepository machineRepository) {
-        this.machineRepository = machineRepository;
+    public MachinesController(MachineService machineService) {
+        this.machineService = machineService;
     }
 
     @GetMapping({"/machines", "/machines.html"})
@@ -63,7 +63,7 @@ public class MachinesController {
     // API: obtener datos de máquina por id (para pre-rellenar formulario de edición)
     @GetMapping("/api/machines/{id}")
     public ResponseEntity<?> getMachineById(@PathVariable("id") Long id) {
-        var opt = machineRepository.findById(id);
+        var opt = machineService.findById(id);
         if (opt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -80,7 +80,7 @@ public class MachinesController {
     }
 
     private String buildMachinesCards(boolean isAdmin) {
-        java.util.List<Machine> list = machineRepository.findAll();
+        java.util.List<Machine> list = machineService.listAll();
         StringBuilder sb = new StringBuilder();
         if (list.isEmpty()) {
             sb.append("<div class=\"alert alert-info mt-3\">No hay máquinas registradas aún.</div>");
@@ -125,15 +125,44 @@ public class MachinesController {
                     // Acciones (Reservar, Editar, Borrar) en una sola fila
                     .append("      <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>")
                     .append("        <a href='#' class='btn btn-sm btn-warning'>Reservar</a>");
-            if (isAdmin) {
-                sb.append("<a href='/admin/modify-machine.html?id=").append(m.getId()).append("' class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>");
-            }
+                        if (isAdmin) {
+                                // Botón editar
+                                sb.append("<a href='/admin/modify-machine.html?id=").append(m.getId()).append("' class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>");
+                                // Formulario oculto para borrado y botón que abre modal de confirmación
+                                sb.append("<form id='form-delete-machine-").append(m.getId()).append("' method='post' action='/admin/machines/").append(m.getId()).append("/delete' class='d-inline'></form>");
+                                sb.append("<button type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' data-machine-id='")
+                                    .append(m.getId()).append("' data-machine-name='")
+                                    .append(name.replace("'","&#39;")).append("'>")
+                                    .append("<i class='bi bi-trash'></i> Borrar</button>");
+                        }
             sb.append("      </div>");
             sb.append("    </div>")
                     .append("  </div>")
                     .append("</div>");
         }
-        return sb.toString();
+                // Agregar modal de confirmación solo para admin
+                if (isAdmin) {
+                        sb.append("<div class='modal fade' id='deleteMachineModal' tabindex='-1' aria-labelledby='deleteMachineModalLabel' aria-hidden='true'>")
+                            .append("  <div class='modal-dialog'>")
+                            .append("    <div class='modal-content'>")
+                            .append("      <div class='modal-header'>")
+                            .append("        <h1 class='modal-title fs-5' id='deleteMachineModalLabel'>Confirmar borrado de máquina</h1>")
+                            .append("        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>")
+                            .append("      </div>")
+                            .append("      <div class='modal-body'>")
+                            .append("        <p>¿Seguro que deseas borrar la máquina <strong id='deleteMachineName'></strong>? Esta acción no se puede deshacer.</p>")
+                            .append("      </div>")
+                            .append("      <div class='modal-footer'>")
+                            .append("        <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>")
+                            .append("        <button type='button' id='confirmDeleteMachineBtn' class='btn btn-danger'>Borrar definitivamente</button>")
+                            .append("      </div>")
+                            .append("    </div>")
+                            .append("  </div>")
+                            .append("</div>");
+                        // Script para manejar la confirmación y enviar el formulario adecuado
+                        sb.append("<script>document.addEventListener('DOMContentLoaded',function(){var modal=document.getElementById('deleteMachineModal');var currentId=null;var nameSpan=document.getElementById('deleteMachineName');modal.addEventListener('show.bs.modal',function(ev){var btn=ev.relatedTarget;currentId=btn.getAttribute('data-machine-id');var nm=btn.getAttribute('data-machine-name');nameSpan.textContent=nm||currentId;});document.getElementById('confirmDeleteMachineBtn').addEventListener('click',function(){if(currentId){var f=document.getElementById('form-delete-machine-'+currentId);if(f){f.submit();}}});});</script>");
+                }
+                return sb.toString();
     }
 
     private String resolveImageUrl(Long id) {
@@ -230,7 +259,7 @@ public class MachinesController {
                 } catch (NumberFormatException ignored) {
                 }
             }
-            m = machineRepository.save(m);
+            m = machineService.save(m);
 
             // Guardar imagen opcional si viene y no está vacía
             if (image != null && !image.isEmpty() && m.getId() != null) {
@@ -265,9 +294,7 @@ public class MachinesController {
             return "redirect:/login?error=" + java.net.URLEncoder.encode("Solo administradores", java.nio.charset.StandardCharsets.UTF_8);
         }
         try {
-            // Eliminar archivos de imagen asociados si existen
-            deleteMachineImages(id);
-            machineRepository.deleteById(id);
+            machineService.delete(id); // ahora el servicio también borra las imágenes
         } catch (Exception ignored) {
         }
         return "redirect:/machines";
@@ -288,7 +315,7 @@ public class MachinesController {
             return "redirect:/login?error=" + java.net.URLEncoder.encode("Solo administradores", java.nio.charset.StandardCharsets.UTF_8);
         }
         try {
-            java.util.Optional<Machine> opt = machineRepository.findById(id);
+            java.util.Optional<Machine> opt = machineService.findById(id);
             if (opt.isEmpty()) {
                 return "redirect:/machines?error=" + java.net.URLEncoder.encode("Máquina no encontrada", java.nio.charset.StandardCharsets.UTF_8);
             }
@@ -314,7 +341,7 @@ public class MachinesController {
                 } catch (NumberFormatException ignored) {
                 }
             }
-            m = machineRepository.save(m);
+            m = machineService.save(m);
 
             // Si llega nueva imagen válida, borrar anteriores y guardar la nueva
             if (image != null && !image.isEmpty() && m.getId() != null) {

@@ -8,6 +8,7 @@ import java.util.List;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,7 +52,7 @@ public class Shift {
     @Column(name = "estado_turno", nullable = false)
     private ShiftStatus status = ShiftStatus.Disponible;
 
-    @OneToMany(mappedBy = "shift")
+    @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Booking> bookings = new ArrayList<>();
 
     public Long getId() {
@@ -68,6 +69,9 @@ public class Shift {
 
     public void setMachine(Machine machine) {
         this.machine = machine;
+        if (machine != null && !machine.getShifts().contains(this)) {
+            machine.getShifts().add(this);
+        }
     }
 
     public LocalDate getDate() {

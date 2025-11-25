@@ -3,6 +3,7 @@ package com.uex.fablab.data.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -42,7 +43,7 @@ public class Machine {
     @Column(name = "precio_hora")
     private java.math.BigDecimal hourlyPrice;
 
-    @OneToMany(mappedBy = "machine")
+    @OneToMany(mappedBy = "machine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Shift> shifts = new ArrayList<>();
 
     public Long getId() {

@@ -62,6 +62,9 @@ public class Inscription {
 
     public void setCourse(Course course) {
         this.course = course;
+        if (course != null && !course.getInscriptions().contains(this)) {
+            course.getInscriptions().add(this);
+        }
     }
 
     public LocalDate getDate() {
