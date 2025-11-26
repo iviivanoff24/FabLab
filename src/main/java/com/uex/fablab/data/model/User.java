@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,12 +55,15 @@ public class User {
     private java.time.LocalDate fechaRegistro;
 
     // Relaciones inversas para cascada en borrado
+    @JsonManagedReference(value = "user-bookings")
     @OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.REMOVE, orphanRemoval = true)
     private List<Booking> bookings = new ArrayList<>();
 
+    @JsonManagedReference(value = "user-inscriptions")
     @OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.REMOVE, orphanRemoval = true)
     private List<Inscription> inscriptions = new ArrayList<>();
 
+    @JsonManagedReference(value = "user-receipts")
     @OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.REMOVE, orphanRemoval = true)
     private List<Receipt> receipts = new ArrayList<>();
 

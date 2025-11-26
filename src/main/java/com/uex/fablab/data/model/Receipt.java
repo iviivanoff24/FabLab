@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +31,7 @@ public class Receipt {
     @Column(name = "id_recibo")
     private Long id;
 
+    @JsonBackReference(value = "user-receipts")
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_u", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

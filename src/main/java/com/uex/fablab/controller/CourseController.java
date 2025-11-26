@@ -74,7 +74,19 @@ public class CourseController {
     public String newCoursePage() { return "admin/add-course"; }
 
     @GetMapping("/admin/modify-course")
-    public String modifyCoursePage(@RequestParam("id") Long id, Model model) { model.addAttribute("courseId", id); return "admin/modify-course"; }
+    public String modifyCoursePage(@RequestParam("id") Long id, HttpSession session, Model model) {
+        var opt = courseService.findById(id);
+        if (opt.isEmpty()) {
+            return "redirect:/courses?error=" + java.net.URLEncoder.encode("Curso no encontrado", java.nio.charset.StandardCharsets.UTF_8);
+        }
+        Course course = opt.get();
+        boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
+        model.addAttribute("course", course);
+        model.addAttribute("courseId", id);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("courseImageUrl", resolveImageUrl(course.getId()));
+        return "admin/modify-course";
+    }
 
     @GetMapping("/courses/{id}")
         public String courseDetailsPage(@PathVariable("id") Long id, HttpSession session,

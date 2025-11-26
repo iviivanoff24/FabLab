@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -50,6 +51,7 @@ public class Machine {
     @Column(name = "precio_hora")
     private java.math.BigDecimal hourlyPrice;
 
+    @JsonManagedReference(value = "machine-shifts")
     @OneToMany(mappedBy = "machine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Shift> shifts = new ArrayList<>();
 

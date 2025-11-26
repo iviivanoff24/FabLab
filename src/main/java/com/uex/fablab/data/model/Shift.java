@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -36,6 +38,7 @@ public class Shift {
     @Column(name = "id_turno")
     private Long id;
 
+    @JsonBackReference(value = "machine-shifts")
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_m", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -57,6 +60,7 @@ public class Shift {
     @Column(name = "estado_turno", nullable = false)
     private ShiftStatus status = ShiftStatus.Disponible;
 
+    @JsonManagedReference(value = "shift-bookings")
     @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Booking> bookings = new ArrayList<>();
 

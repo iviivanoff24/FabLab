@@ -48,7 +48,7 @@
                   <span class="badge" th:classappend="${statusClass}" th:text="${statusText}"></span>
                 </p>
                 <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>
-                    <a th:href="@{/machines/{id}/reserve(id=${m.id})}" class='btn btn-sm btn-warning'>Reservar</a>
+                    <a th:if="${isAdmin or statusName != 'En_mantenimiento'}" th:href="@{/machines/{id}/reserve(id=${m.id})}" class='btn btn-sm btn-warning'>Reservar</a>
                     <a th:if="${isAdmin}" th:href="@{/admin/modify-machine(id=${m.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
                     <form th:if="${isAdmin}" th:id="${'form-delete-machine-' + m.id}" th:action="@{/admin/machines/{id}/delete(id=${m.id})}" method='post' class='d-inline'></form>
                     <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' 

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,11 +28,13 @@ public class Booking {
     @jakarta.persistence.Column(name = "id_reserva")
     private Long id;
 
+    @JsonBackReference(value = "user-bookings")
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_u", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
+    @JsonBackReference(value = "shift-bookings")
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_turno", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
