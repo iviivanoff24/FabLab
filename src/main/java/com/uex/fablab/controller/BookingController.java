@@ -69,6 +69,16 @@ public class BookingController {
         List<Shift> existingShifts = shiftService.findByMachineAndDate(machine, selectedDate);
         // Construir vista de slots
         List<SlotView> slots = buildSlots(existingShifts, machine, selectedDate, userId);
+        // Exponer en el modelo si el usuario es admin y su id para la vista
+        Long currentUserId = null;
+        boolean isAdmin = false;
+        if (userId instanceof Long) {
+            currentUserId = (Long) userId;
+            var uopt = userService.findById(currentUserId);
+            if (uopt.isPresent()) isAdmin = uopt.get().isAdmin();
+        }
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("currentUserId", currentUserId);
         if (successParam != null) model.addAttribute("messageSuccess", "Reserva creada correctamente.");
         if (canceledParam != null) model.addAttribute("messageSuccess", "Reserva cancelada correctamente.");
         if (errorParam != null) model.addAttribute("messageError", errorParam);
@@ -104,6 +114,16 @@ public class BookingController {
                 slots = buildSlots(existingShifts, machine, selectedDate, userId);
             }
         }
+            // Exponer en el modelo si el usuario es admin y su id para la vista genérica
+            Long currentUserId = null;
+            boolean isAdmin = false;
+            if (userId instanceof Long) {
+                currentUserId = (Long) userId;
+                var uopt = userService.findById(currentUserId);
+                if (uopt.isPresent()) isAdmin = uopt.get().isAdmin();
+            }
+            model.addAttribute("isAdmin", isAdmin);
+            model.addAttribute("currentUserId", currentUserId);
         if (success != null) model.addAttribute("messageSuccess", "Reserva creada correctamente.");
         if (canceled != null) model.addAttribute("messageSuccess", "Reserva cancelada correctamente.");
         if (error != null) model.addAttribute("messageError", error);
@@ -225,7 +245,9 @@ public class BookingController {
             @RequestParam("machineId") Long machineId,
             @RequestParam("startHour") String startHourStr,
             @RequestParam("date") String dateStr,
-            @RequestParam(value = "shiftId", required = false) Long shiftId) {
+            @RequestParam(value = "shiftId", required = false) Long shiftId,
+            @RequestParam(value = "bookingId", required = false) Long bookingId,
+            @RequestParam(value = "bookingUserId", required = false) Long bookingUserId) {
         Object userId = session.getAttribute("USER_ID");
         var machineOpt = machineService.findById(machineId);
         if (machineOpt.isEmpty()) {
@@ -273,9 +295,31 @@ public class BookingController {
         if (shift == null) {
             return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Turno no encontrado", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
         }
-        var bookingOpt = bookingService.findByUserAndShift(user, shift);
-        if (bookingOpt.isEmpty()) {
-            return "redirect:/reservar?error=" + java.net.URLEncoder.encode("No tienes reserva en este turno", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+        java.util.Optional<Booking> bookingOpt;
+        boolean isAdmin = user.isAdmin();
+        if (isAdmin) {
+            // Admin puede eliminar reservas ajenas: se acepta bookingId o bookingUserId, o bien se elimina la primera reserva encontrada
+            if (bookingId != null) {
+                bookingOpt = bookingService.findById(bookingId);
+            } else if (bookingUserId != null) {
+                var targetUserOpt = userService.findById(bookingUserId);
+                if (targetUserOpt.isPresent()) {
+                    bookingOpt = bookingService.findByUserAndShift(targetUserOpt.get(), shift);
+                } else {
+                    bookingOpt = java.util.Optional.empty();
+                }
+            } else {
+                Long _shiftIdForFilter = shift.getId();
+                bookingOpt = bookingService.listAll().stream().filter(b -> b.getShift() != null && b.getShift().getId().equals(_shiftIdForFilter)).findFirst();
+            }
+            if (bookingOpt.isEmpty()) {
+                return "redirect:/reservar?error=" + java.net.URLEncoder.encode("No hay reservas en este turno para cancelar", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+            }
+        } else {
+            bookingOpt = bookingService.findByUserAndShift(user, shift);
+            if (bookingOpt.isEmpty()) {
+                return "redirect:/reservar?error=" + java.net.URLEncoder.encode("No tienes reserva en este turno", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
+            }
         }
         try {
             Booking b = bookingOpt.get();
@@ -423,6 +467,8 @@ public class BookingController {
             @RequestParam(value = "shiftId", required = false) Long shiftId,
             @RequestParam(value = "startHour", required = false) String startHourStr,
             @RequestParam(value = "date", required = false) String dateStr,
+            @RequestParam(value = "bookingId", required = false) Long bookingId,
+            @RequestParam(value = "bookingUserId", required = false) Long bookingUserId,
             HttpSession session) {
         Object userId = session.getAttribute("USER_ID");
         var machineOpt = machineService.findById(machineId);
@@ -472,9 +518,30 @@ public class BookingController {
         if (shift == null) {
             return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("Turno no encontrado", StandardCharsets.UTF_8) + "&date=" + date;
         }
-        var bookingOpt = bookingService.findByUserAndShift(user, shift);
-        if (bookingOpt.isEmpty()) {
-            return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("No tienes reserva en este turno", StandardCharsets.UTF_8) + "&date=" + date;
+        java.util.Optional<Booking> bookingOpt;
+        boolean isAdmin = user.isAdmin();
+        if (isAdmin) {
+            if (bookingId != null) {
+                bookingOpt = bookingService.findById(bookingId);
+            } else if (bookingUserId != null) {
+                var targetUserOpt = userService.findById(bookingUserId);
+                if (targetUserOpt.isPresent()) {
+                    bookingOpt = bookingService.findByUserAndShift(targetUserOpt.get(), shift);
+                } else {
+                    bookingOpt = java.util.Optional.empty();
+                }
+            } else {
+                Long _shiftIdForFilter = shift.getId();
+                bookingOpt = bookingService.listAll().stream().filter(b -> b.getShift() != null && b.getShift().getId().equals(_shiftIdForFilter)).findFirst();
+            }
+            if (bookingOpt.isEmpty()) {
+                return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("No hay reservas en este turno para cancelar", StandardCharsets.UTF_8) + "&date=" + date;
+            }
+        } else {
+            bookingOpt = bookingService.findByUserAndShift(user, shift);
+            if (bookingOpt.isEmpty()) {
+                return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("No tienes reserva en este turno", StandardCharsets.UTF_8) + "&date=" + date;
+            }
         }
         try {
             Booking b = bookingOpt.get();
@@ -500,6 +567,7 @@ public class BookingController {
         public boolean reservadoPorMi;
         public boolean canReserve;
         public boolean canCancel;
+        public java.util.List<Booking> bookings = java.util.List.of();
         public Long shiftId;
     }
 
@@ -510,6 +578,11 @@ public class BookingController {
         }
         List<SlotView> slots = new ArrayList<>();
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        boolean isAdmin = false;
+        if (userId instanceof Long) {
+            var uopt = userService.findById((Long) userId);
+            if (uopt.isPresent()) isAdmin = uopt.get().isAdmin();
+        }
         for (int hour = 9; hour < 21; hour++) {
             LocalTime start = LocalTime.of(hour, 0);
             LocalTime end = start.plusHours(1);
@@ -517,9 +590,10 @@ public class BookingController {
             boolean reservado = false;
             boolean reservadoPorMi = false;
             if (s != null) {
-                reservado = !s.getBookings().isEmpty() || s.getStatus() == ShiftStatus.Reservado;
+                var bookings = s.getBookings();
+                reservado = !bookings.isEmpty() || s.getStatus() == ShiftStatus.Reservado;
                 if (reservado) {
-                    reservadoPorMi = s.getBookings().stream().anyMatch(b -> b.getUser() != null && b.getUser().getId().equals(userId));
+                    reservadoPorMi = bookings.stream().anyMatch(b -> b.getUser() != null && b.getUser().getId().equals(userId));
                 }
             }
             boolean maquinaDisponible = machine != null && machine.getStatus() != null && machine.getStatus().name().equalsIgnoreCase("Disponible");
@@ -531,8 +605,12 @@ public class BookingController {
             sv.reservado = reservado;
             sv.reservadoPorMi = reservadoPorMi;
             sv.canReserve = !reservado && maquinaDisponible && slotEnFuturo;
-            sv.canCancel = reservado && reservadoPorMi && slotEnFuturo && s != null;
+            // Permitir cancelar si eres el que reservó, o si eres admin y el slot está reservado
+            sv.canCancel = reservado && slotEnFuturo && s != null && (reservadoPorMi || isAdmin);
             sv.shiftId = s != null ? s.getId() : null;
+            if (s != null) {
+                sv.bookings = new ArrayList<>(s.getBookings());
+            }
             slots.add(sv);
         }
         return slots;

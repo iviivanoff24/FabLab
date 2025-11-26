@@ -94,6 +94,8 @@
               th:text="${slot.reservadoPorMi} ? 'Reservado · Tu reserva' : 'Reservado'"
               >Reservado</span
             >
+            <!-- Mostrar nombre(es) del/los usuario(s) que tienen la reserva (solo para admins) -->
+            <span th:if="${isAdmin and slot.reservado}" th:each="b : ${slot.bookings}" class="badge bg-info text-dark ms-2" th:text="${'Reserva: ' + b.user.name}">Reserva</span>
             <span
               class="badge bg-success"
               th:if="${!slot.reservado} and ${slot.canReserve}"
@@ -124,19 +126,22 @@
             >
               Reservar
             </button>
-            <button
-              th:if="${slot.canCancel}"
-              type="button"
-              class="btn btn-sm btn-outline-danger ms-2"
-              data-bs-toggle="modal"
-              data-bs-target="#cancelBookingModal"
-              th:data-shift-id="${slot.shiftId}"
-              th:data-start-hour="${slot.hour}"
-              th:data-date="${selectedDate}"
-              th:data-machine-id="${machine.id}"
-            >
-              Cancelar
-            </button>
+            <!-- Lista de reservas por turno con botón que abre modal -->
+            <div th:if="${slot.reservado}" class="ms-2">
+              <ul class="list-unstyled mb-0">
+                <li th:each="b : ${slot.bookings}" class="d-flex align-items-center">
+                  <button th:if="${isAdmin or (currentUserId != null and currentUserId == b.user.id)}" type="button" class="btn btn-sm btn-outline-danger ms-2"
+                    data-bs-toggle="modal" data-bs-target="#cancelBookingModal"
+                    th:data-booking-id="${b.id}"
+                    th:data-shift-id="${slot.shiftId}"
+                    th:data-start-hour="${slot.hour}"
+                    th:data-date="${selectedDate}"
+                    th:data-machine-id="${machine.id}">
+                    Cancelar
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -198,6 +203,7 @@
         <input type="hidden" name="date" id="cancelDate" />
         <input type="hidden" name="startHour" id="cancelStartHour" />
         <input type="hidden" name="shiftId" id="cancelShiftId" />
+        <input type="hidden" name="bookingId" id="cancelBookingId" />
       </form>
     </main>
 
@@ -210,6 +216,7 @@
         var dateInput = document.getElementById("cancelDate");
         var hourInput = document.getElementById("cancelStartHour");
         var shiftInput = document.getElementById("cancelShiftId");
+        var bookingInput = document.getElementById("cancelBookingId");
         var confirmBtn = document.getElementById("confirmCancelBookingBtn");
         modal.addEventListener("show.bs.modal", function (ev) {
           var btn = ev.relatedTarget;
@@ -218,6 +225,7 @@
           dateInput.value = btn.getAttribute("data-date");
           hourInput.value = btn.getAttribute("data-start-hour");
           shiftInput.value = btn.getAttribute("data-shift-id");
+          bookingInput.value = btn.getAttribute("data-booking-id") || '';
         });
         confirmBtn.addEventListener("click", function () {
           document.getElementById("cancelBookingForm").submit();
