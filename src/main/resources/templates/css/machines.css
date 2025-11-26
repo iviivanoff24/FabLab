@@ -45,7 +45,7 @@
 }
 
 .machines-page .container .card:hover .face.face1{
-    background: #0093b9;
+    background: #ffc107;
     transform: translateY(0);
 }
 
