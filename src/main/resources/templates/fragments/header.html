@@ -35,7 +35,7 @@
   (function(){
     async function renderAuth() {
       try {
-        const r = await fetch('/api/session/me');
+        const r = await fetch('/api/session/me', { credentials: 'same-origin' });
         if (!r.ok) return;
         const data = await r.json();
         const auth = document.getElementById('authLinks');

@@ -130,7 +130,7 @@
             <div th:if="${slot.reservado}" class="ms-2">
               <ul class="list-unstyled mb-0">
                 <li th:each="b : ${slot.bookings}" class="d-flex align-items-center">
-                  <button th:if="${isAdmin or (currentUserId != null and currentUserId == b.user.id)}" type="button" class="btn btn-sm btn-outline-danger ms-2"
+                  <button th:if="${(isAdmin or (currentUserId != null and currentUserId == b.user.id)) and slot.canCancel}" type="button" class="btn btn-sm btn-outline-danger ms-2"
                     data-bs-toggle="modal" data-bs-target="#cancelBookingModal"
                     th:data-booking-id="${b.id}"
                     th:data-shift-id="${slot.shiftId}"

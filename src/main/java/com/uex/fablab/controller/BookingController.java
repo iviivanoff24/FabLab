@@ -268,7 +268,10 @@ public class BookingController {
             return "redirect:/reservar?error=" + java.net.URLEncoder.encode("Hora inválida", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
         }
         LocalTime start = LocalTime.of(hour, 0);
-        if (!java.time.LocalDateTime.of(date, start).isAfter(java.time.LocalDateTime.now())) {
+        LocalTime end = start.plusHours(1);
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        // Permitir cancelar mientras el turno no haya terminado (usar end time)
+        if (!java.time.LocalDateTime.of(date, end).isAfter(now)) {
             return "redirect:/reservar?error=" + java.net.URLEncoder.encode("No se puede cancelar una reserva pasada", StandardCharsets.UTF_8) + "&machineId=" + machineId + "&date=" + date;
         }
         Long uid = (Long) userId;
@@ -491,8 +494,12 @@ public class BookingController {
             }
         }
         LocalTime start = hour >= 0 ? LocalTime.of(hour, 0) : null;
-        if (start != null && !java.time.LocalDateTime.of(date, start).isAfter(java.time.LocalDateTime.now())) {
-            return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("No se puede cancelar una reserva pasada", StandardCharsets.UTF_8) + "&date=" + date;
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        if (start != null) {
+            LocalTime end = start.plusHours(1);
+            if (!java.time.LocalDateTime.of(date, end).isAfter(now)) {
+                return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("No se puede cancelar una reserva pasada", StandardCharsets.UTF_8) + "&date=" + date;
+            }
         }
         Long uid = (Long) userId;
         var userOpt = userService.findById(uid);
@@ -597,16 +604,18 @@ public class BookingController {
                 }
             }
             boolean maquinaDisponible = machine != null && machine.getStatus() != null && machine.getStatus().name().equalsIgnoreCase("Disponible");
-            boolean slotEnFuturo = java.time.LocalDateTime.of(date, start).isAfter(now);
+            boolean slotStartsInFuture = java.time.LocalDateTime.of(date, start).isAfter(now);
+            boolean slotEndsInFuture = java.time.LocalDateTime.of(date, end).isAfter(now);
             SlotView sv = new SlotView();
             sv.hour = hour;
             sv.startTime = start;
             sv.endTime = end;
             sv.reservado = reservado;
             sv.reservadoPorMi = reservadoPorMi;
-            sv.canReserve = !reservado && maquinaDisponible && slotEnFuturo;
-            // Permitir cancelar si eres el que reservó, o si eres admin y el slot está reservado
-            sv.canCancel = reservado && slotEnFuturo && s != null && (reservadoPorMi || isAdmin);
+            sv.canReserve = !reservado && maquinaDisponible && slotStartsInFuture;
+            // Permitir cancelar si eres el que reservó, o si eres admin y el slot está reservado.
+            // Ahora se permite cancelar mientras el turno no haya terminado (end > now).
+            sv.canCancel = reservado && slotEndsInFuture && s != null && (reservadoPorMi || isAdmin);
             sv.shiftId = s != null ? s.getId() : null;
             if (s != null) {
                 sv.bookings = new ArrayList<>(s.getBookings());
