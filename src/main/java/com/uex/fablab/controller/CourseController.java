@@ -102,8 +102,8 @@ public class CourseController {
         Course course = opt.get();
         Long currentUserId = null;
         boolean isAdmin = false;
-        if (userId instanceof Long) {
-            currentUserId = (Long) userId;
+        if (userId instanceof Long aLong) {
+            currentUserId = aLong;
             var uopt = userService.findById(currentUserId);
             if (uopt.isPresent()) isAdmin = uopt.get().isAdmin();
         }
@@ -251,10 +251,10 @@ public class CourseController {
             Course c = new Course();
             c.setName(title);
             if (description != null) c.setDescription(description);
-            if (capacity != null && !capacity.isBlank()) { try { c.setCapacity(Integer.parseInt(capacity)); } catch (NumberFormatException ignored) {} }
+            if (capacity != null && !capacity.isBlank()) { try { c.setCapacity(Integer.valueOf(capacity)); } catch (NumberFormatException ignored) {} }
             if (startDate != null && !startDate.isBlank()) { try { c.setStartDate(java.time.LocalDate.parse(startDate)); } catch (Exception ignored) {} }
             if (endDate != null && !endDate.isBlank()) { try { c.setEndDate(java.time.LocalDate.parse(endDate)); } catch (Exception ignored) {} }
-            if (price != null && !price.isBlank()) { try { c.setPrecio(Double.parseDouble(price)); } catch (NumberFormatException ignored) {} }
+            if (price != null && !price.isBlank()) { try { c.setPrecio(Double.valueOf(price)); } catch (NumberFormatException ignored) {} }
             c = courseService.save(c);
             if (image != null && !image.isEmpty() && c.getId() != null) {
                 String contentType = image.getContentType(); long size = image.getSize();
@@ -284,10 +284,10 @@ public class CourseController {
             Course c = opt.get();
             if (title != null && !title.isBlank()) c.setName(title);
             if (description != null) c.setDescription(description);
-            if (capacity != null && !capacity.isBlank()) { try { c.setCapacity(Integer.parseInt(capacity)); } catch (NumberFormatException ignored) {} }
+            if (capacity != null && !capacity.isBlank()) { try { c.setCapacity(Integer.valueOf(capacity)); } catch (NumberFormatException ignored) {} }
             if (startDate != null && !startDate.isBlank()) { try { c.setStartDate(java.time.LocalDate.parse(startDate)); } catch (Exception ignored) {} }
             if (endDate != null && !endDate.isBlank()) { try { c.setEndDate(java.time.LocalDate.parse(endDate)); } catch (Exception ignored) {} }
-            if (price != null && !price.isBlank()) { try { c.setPrecio(Double.parseDouble(price)); } catch (NumberFormatException ignored) {} }
+            if (price != null && !price.isBlank()) { try { c.setPrecio(Double.valueOf(price)); } catch (NumberFormatException ignored) {} }
             c = courseService.save(c);
             if (image != null && !image.isEmpty() && c.getId() != null) {
                 String contentType = image.getContentType(); long size = image.getSize();

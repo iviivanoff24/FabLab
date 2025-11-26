@@ -35,18 +35,17 @@
     <div class="list-group-item d-flex justify-content-between align-items-center" th:each="slot : ${slots}">
       <div>
         <span class="fw-semibold" th:text="${slot.startTime + ' - ' + slot.endTime}">09:00 - 10:00</span>
-        <span class="badge bg-secondary" th:if="${slot.reservado}" th:text="${slot.reservadoPorMi} ? 'Reservado · Tu reserva' : 'Reservado'">Reservado</span>
+        <span class="badge bg-secondary" th:if="${slot.reservado}" th:text="${slot.reservadoPorMi ? 'Reservado · Tu reserva' : 'Reservado'}">Reservado</span>
         <!-- Mostrar nombre(es) del/los usuario(s) que tienen la reserva (solo para admins) -->
         <span th:if="${isAdmin and slot.reservado}" th:each="b : ${slot.bookings}" class="badge bg-info text-dark ms-2" th:text="${'Reserva: ' + b.user.name}">Reserva</span>
-        <span class="badge bg-success" th:if="${!slot.reservado} and ${slot.canReserve}" >Disponible</span>
-        <span class="badge bg-danger" th:if="${!slot.reservado} and ${!slot.canReserve}">No disponible</span>
+        <span class="badge bg-success" th:if="${!slot.reservado and slot.canReserve}" >Disponible</span>
+        <span class="badge bg-danger" th:if="${!slot.reservado and !slot.canReserve}">No disponible</span>
       </div>
       <div class="d-flex align-items-center">
-        <form th:if="${slot.canReserve}" th:action="@{/machines/{id}/reserve(id=${machine.id})}" method="post" class="m-0 me-2">
-          <input type="hidden" name="date" th:value="${selectedDate}" />
-          <input type="hidden" name="startHour" th:value="${slot.hour}" />
-          <button class="btn btn-sm btn-outline-primary">Reservar</button>
-        </form>
+        <div class="d-flex">
+          <!-- Pago y reservar: redirige a la página de pago, que creará la reserva tras el pago -->
+          <a th:if="${slot.canReserve}" th:href="@{/payment(type='reservation', itemId=${machine.id}, itemName=${machine.name}, date=${selectedDate}, startHour=${slot.hour}, amount=${machine.hourlyPrice}, returnUrl='/machines/' + ${machine.id} + '?date=' + ${selectedDate})}" class="btn btn-sm btn-outline-success">Pagar y reservar</a>
+        </div>
         <button th:if="${!slot.canReserve}" class="btn btn-sm btn-outline-secondary" disabled>Reservar</button>
         <!-- Mostrar lista de reservas y botón Cancelar por reserva (visible a admin o al usuario propietario) -->
         <div th:if="${slot.reservado}" class="ms-2">

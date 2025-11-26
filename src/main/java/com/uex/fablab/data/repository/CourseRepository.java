@@ -4,5 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.uex.fablab.data.model.Course;
 
+/**
+ * Repositorio JPA para la entidad {@link com.uex.fablab.data.model.Course}.
+ */
 public interface CourseRepository extends JpaRepository<Course, Long> {
 }

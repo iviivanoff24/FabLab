@@ -38,6 +38,14 @@ public class BookingController {
     private final BookingService bookingService;
     private final UserService userService;
 
+    /**
+     * Constructor del controlador de reservas.
+     *
+     * @param machineService servicio para operaciones sobre máquinas
+     * @param shiftService servicio para operaciones sobre turnos
+     * @param bookingService servicio para operaciones sobre reservas
+     * @param userService servicio para operaciones sobre usuarios
+     */
     public BookingController(MachineService machineService, ShiftService shiftService, BookingService bookingService, UserService userService) {
         this.machineService = machineService;
         this.shiftService = shiftService;
@@ -72,8 +80,8 @@ public class BookingController {
         // Exponer en el modelo si el usuario es admin y su id para la vista
         Long currentUserId = null;
         boolean isAdmin = false;
-        if (userId instanceof Long) {
-            currentUserId = (Long) userId;
+        if (userId instanceof Long aLong) {
+            currentUserId = aLong;
             var uopt = userService.findById(currentUserId);
             if (uopt.isPresent()) isAdmin = uopt.get().isAdmin();
         }
@@ -334,8 +342,8 @@ public class BookingController {
         List<SlotView> slots = new ArrayList<>();
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
         boolean isAdmin = false;
-        if (userId instanceof Long) {
-            var uopt = userService.findById((Long) userId);
+        if (userId instanceof Long aLong) {
+            var uopt = userService.findById(aLong);
             if (uopt.isPresent()) isAdmin = uopt.get().isAdmin();
         }
         for (int hour = 9; hour < 21; hour++) {
@@ -346,14 +354,19 @@ public class BookingController {
             boolean reservadoPorMi = false;
             if (s != null) {
                 var bookings = s.getBookings();
-                reservado = !bookings.isEmpty() || s.getStatus() == ShiftStatus.Reservado;
+                // comprobar de forma eficiente en repositorio si hay reservas para el turno
+                boolean anyInRepo = bookingService.existsByShift(s);
+                reservado = (!bookings.isEmpty()) || anyInRepo || s.getStatus() == ShiftStatus.Reservado;
                 if (reservado) {
-                    reservadoPorMi = bookings.stream().anyMatch(b -> b.getUser() != null && b.getUser().getId().equals(userId));
+                    if (userId instanceof Long uid) {
+                        reservadoPorMi = bookingService.findByUserAndShift(userService.findById(uid).orElse(null), s).isPresent();
+                    } else {
+                        reservadoPorMi = bookings.stream().anyMatch(b -> b.getUser() != null && b.getUser().getId().equals(userId));
+                    }
                 }
             }
             boolean maquinaDisponible = machine != null && machine.getStatus() != null && machine.getStatus().name().equalsIgnoreCase("Disponible");
             boolean slotStartsInFuture = java.time.LocalDateTime.of(date, start).isAfter(now);
-            boolean slotEndsInFuture = java.time.LocalDateTime.of(date, end).isAfter(now);
             SlotView sv = new SlotView();
             sv.hour = hour;
             sv.startTime = start;
@@ -362,8 +375,8 @@ public class BookingController {
             sv.reservadoPorMi = reservadoPorMi;
             sv.canReserve = !reservado && maquinaDisponible && slotStartsInFuture;
             // Permitir cancelar si eres el que reservó, o si eres admin y el slot está reservado.
-            // Ahora se permite cancelar mientras el turno no haya terminado (end > now).
-            sv.canCancel = reservado && slotEndsInFuture && s != null && (reservadoPorMi || isAdmin);
+            // Se permite cancelar mientras el turno no haya empezado (start > now).
+            sv.canCancel = reservado && slotStartsInFuture && s != null && (reservadoPorMi || isAdmin);
             sv.shiftId = s != null ? s.getId() : null;
             if (s != null) {
                 sv.bookings = new ArrayList<>(s.getBookings());

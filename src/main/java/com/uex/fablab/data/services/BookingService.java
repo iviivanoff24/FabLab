@@ -32,6 +32,8 @@ public class BookingService {
     public Optional<Booking> findByUserAndShift(User u, Shift s) { return repo.findByUserAndShift(u, s); }
     /** Lista reservas de un usuario. */
     public List<Booking> findByUser(User u) { return repo.findByUser(u); }
+    /** Comprueba si existe alguna reserva para un turno. */
+    public boolean existsByShift(Shift s) { return repo.existsByShift(s); }
     /** Guarda una reserva. */
     public Booking save(Booking b) { return repo.save(b); }
     /** Elimina una reserva por id. */

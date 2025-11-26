@@ -38,9 +38,10 @@
 
           <div>
             <div th:if="${!enrolled and available}">
-              <form th:action="@{/courses/{id}/inscribe(id=${course.id})}" method="post" th:if="${currentUserId != null}">
-                <button type="submit" class="btn btn-primary">Inscribirme</button>
-              </form>
+                <div th:if="${currentUserId != null}">
+                  <!-- Inscripción mediante pago: redirect a la página de pago -->
+                  <a th:href="@{/payment(type='course', itemId=${course.id}, itemName=${course.name}, amount=${course.precio}, returnUrl='/courses/' + ${course.id})}" class="btn btn-outline-success">Pagar e inscribirse</a>
+                </div>
               <a th:if="${currentUserId == null}" th:href="@{/login}" class="btn btn-primary">Iniciar sesión para inscribirse</a>
             </div>
 
@@ -64,10 +65,9 @@
               <div class="small text-muted" th:text="${ins.date}">2025-01-01</div>
             </div>
             <div>
-              <form th:action="@{/courses/{id}/cancel(id=${course.id})}" method="post" th:if="${isAdmin or (currentUserId != null and currentUserId == ins.user.id)}">
-                <input type="hidden" name="inscriptionId" th:value="${ins.id}" />
-                <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar suscripción</button>
-              </form>
+              <div th:if="${isAdmin or (currentUserId != null and currentUserId == ins.user.id)}">
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelInscriptionModal" th:attr="data-inscription-id=${ins.id}">Cancelar suscripción</button>
+              </div>
             </div>
           </li>
         </ul>
@@ -94,7 +94,45 @@
         </div>
       </div>
     </div>
+    <!-- Modal: Confirmar cancelación de inscripción -->
+    <div class="modal fade" id="cancelInscriptionModal" tabindex="-1" aria-labelledby="cancelInscriptionModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="cancelInscriptionModalLabel">Confirmar cancelación</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Seguro que deseas cancelar esta inscripción?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, volver</button>
+            <button type="button" id="confirmCancelInscriptionBtn" class="btn btn-danger">Sí, cancelar inscripción</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form id="cancelInscriptionForm" method="post" th:action="@{/courses/{id}/cancel(id=${course.id})}" class="d-none">
+      <input type="hidden" name="inscriptionId" id="cancelInscriptionId" />
+    </form>
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/main.js" defer></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      var modal = document.getElementById('cancelInscriptionModal');
+      var cancelInput = document.getElementById('cancelInscriptionId');
+      var confirmBtn = document.getElementById('confirmCancelInscriptionBtn');
+      if (!modal) return;
+      modal.addEventListener('show.bs.modal', function(ev){
+        var btn = ev.relatedTarget; if(!btn) return;
+        var insId = btn.getAttribute('data-inscription-id') || '';
+        if (cancelInput) cancelInput.value = insId;
+      });
+      if (confirmBtn) confirmBtn.addEventListener('click', function(){
+        var f = document.getElementById('cancelInscriptionForm'); if (f) f.submit();
+      });
+    });
+    </script>
   </body>
 </html>

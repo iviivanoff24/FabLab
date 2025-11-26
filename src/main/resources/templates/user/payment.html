@@ -1,0 +1,131 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pago</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/main.css}" />
+</head>
+<body>
+<div th:insert="fragments/header :: header"></div>
+
+<div class="container mt-4">
+    <br>
+    <h2>Pago</h2>
+    <div th:if="${param.paymentSuccess}">
+        <div class="alert alert-success" th:text="${param.paymentSuccess}"></div>
+    </div>
+    <div th:if="${param.paymentError}">
+        <div class="alert alert-danger" th:text="${param.paymentError}"></div>
+    </div>
+
+    <form method="post" th:action="@{/payment/process}">
+        <input type="hidden" name="type" th:value="${type}" />
+        <input type="hidden" name="itemId" th:value="${itemId}" />
+        <input type="hidden" name="itemName" th:value="${itemName}" />
+        <input type="hidden" name="returnUrl" th:value="${returnUrl}" />
+        <input type="hidden" name="shiftId" th:value="${shiftId}" />
+        <input type="hidden" name="startHour" th:value="${startHour}" />
+        <input type="hidden" name="date" th:value="${date}" />
+
+        <div class="mb-3">
+                     <label class="form-label">Descripción</label>
+                     <input class="form-control-plaintext" readonly
+                         th:value="${type == null ? 'Pago' : (type + (itemName != null ? ' - ' + itemName : ''))}" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Importe (€)</label>
+            <input type="hidden" name="amount" th:value="${amount} ?: ''" />
+            <input class="form-control-plaintext" readonly th:value="${amount} ?: ''" />
+        </div>
+
+        <input type="hidden" name="paymentMethod" id="paymentMethod" value="Tarjeta" />
+        <input type="hidden" name="onlineProvider" id="onlineProvider" value="" />
+
+        <div class="mb-3">
+            <label class="form-label">Método de pago</label>
+            <div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="pm" id="pmTarjeta" value="Tarjeta" checked />
+                    <label class="form-check-label" for="pmTarjeta">Tarjeta</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="pm" id="pmEfectivo" value="Efectivo" />
+                    <label class="form-check-label" for="pmEfectivo">Efectivo</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="pm" id="pmOnline" value="Online" />
+                    <label class="form-check-label" for="pmOnline">Pago online</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="cardFields">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nombre en la tarjeta</label>
+                    <input name="cardName" class="form-control" placeholder="Titular" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input name="email" type="email" class="form-control" placeholder="tu@ejemplo.com" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Número de tarjeta</label>
+                <input name="cardNumber" class="form-control" placeholder="0000 0000 0000 0000" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Expiración (MM/AA)</label>
+                    <input name="exp" class="form-control" placeholder="MM/AA" />
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label class="form-label">CVV</label>
+                    <input name="cvv" class="form-control" placeholder="123" />
+                </div>
+            </div>
+        </div>
+
+        <div id="onlineFields" style="display:none;">
+            <div class="mb-3">
+                <label class="form-label">Proveedor online</label>
+                <select id="onlineSelect" class="form-select">
+                    <option value="">Selecciona...</option>
+                    <option value="Bizum">Bizum</option>
+                    <option value="PayPal">PayPal</option>
+                </select>
+                <div class="form-text">El proveedor redirigirá a una página de pago simulada.</div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Pagar</button>
+            <a th:href="${returnUrl != null ? returnUrl : '/'}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script src="/js/main.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    function updateVisibility() {
+        const pm = document.querySelector('input[name=pm]:checked')?.value || 'Tarjeta';
+        document.getElementById('paymentMethod').value = pm;
+        document.getElementById('cardFields').style.display = pm === 'Tarjeta' ? '' : 'none';
+        document.getElementById('onlineFields').style.display = pm === 'Online' ? '' : 'none';
+    }
+    document.querySelectorAll('input[name=pm]').forEach(r => r.addEventListener('change', updateVisibility));
+    const onlineSel = document.getElementById('onlineSelect');
+    if (onlineSel) onlineSel.addEventListener('change', function(){ document.getElementById('onlineProvider').value = this.value; });
+    updateVisibility();
+});
+</script>
+</body>
+</html>

@@ -1,6 +1,9 @@
 package com.uex.fablab.data.model;
 
-// Valores mapeados al ENUM de la base de datos (Turno.estado_turno)
+/**
+ * Estado de un {@link com.uex.fablab.data.model.Shift} (turno).
+ * Los valores se utilizan para mapear el estado en la base de datos.
+ */
 public enum ShiftStatus {
     Disponible,
     Reservado,
