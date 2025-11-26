@@ -45,7 +45,7 @@
             </div>
 
             <div th:if="${enrolled}" class="alert alert-info">Ya estás inscrito en este curso.</div>
-            <div th:if="${!enrolled and !available}" class="alert alert-warning">No hay plazas disponibles.</div>
+              <div th:if="${!enrolled and !available}" class="alert alert-warning" th:text="${notAvailableReason} ?: 'No hay plazas disponibles.'">No hay plazas disponibles.</div>
           </div>
 
           <div th:if="${isAdmin}" class="mt-3">

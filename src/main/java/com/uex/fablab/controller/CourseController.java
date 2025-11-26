@@ -5,6 +5,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +105,20 @@ public class CourseController {
                 }
             }
         }
-        boolean available = course.getCapacity() == null ? false : (course.getCapacity() > enrolledCount);
+        // Disponible sólo si hay plazas y el curso aún no ha empezado
+        boolean notStarted = course.getStartDate() == null || course.getStartDate().isAfter(LocalDate.now());
+        boolean available = course.getCapacity() != null && course.getCapacity() > enrolledCount && notStarted;
+        // Motivo por el que no está disponible (para mostrar en la vista)
+        String notAvailableReason = null;
+        if (!available && !enrolled) {
+            if (course.getStartDate() != null && !course.getStartDate().isAfter(LocalDate.now())) {
+                notAvailableReason = "El curso ya ha empezado";
+            } else if (course.getCapacity() == null) {
+                notAvailableReason = "Plazas no configuradas";
+            } else if (course.getCapacity() <= enrolledCount) {
+                notAvailableReason = "No quedan plazas";
+            }
+        }
         if (successParam != null) model.addAttribute("messageSuccess", "Inscripción realizada correctamente.");
         if (canceledParam != null) model.addAttribute("messageSuccess", "Inscripción cancelada correctamente.");
         if (errorParam != null) model.addAttribute("messageError", errorParam);
@@ -114,6 +128,7 @@ public class CourseController {
         model.addAttribute("courseImageUrl", resolveImageUrl(course.getId()));
         model.addAttribute("enrolled", enrolled);
         model.addAttribute("available", available);
+        model.addAttribute("notAvailableReason", notAvailableReason);
         model.addAttribute("enrolledCount", enrolledCount);
         return "course-details";
     }
@@ -182,6 +197,10 @@ public class CourseController {
         }
         Course course = copt.get();
         int enrolledCount = course.getInscriptions() != null ? course.getInscriptions().size() : 0;
+        // No permitir inscripción si el curso ya ha empezado
+        if (course.getStartDate() != null && !course.getStartDate().isAfter(LocalDate.now())) {
+            return "redirect:/courses/" + id + "?error=" + java.net.URLEncoder.encode("El curso ya ha empezado", java.nio.charset.StandardCharsets.UTF_8);
+        }
         if (course.getCapacity() != null && course.getCapacity() <= enrolledCount) {
             return "redirect:/courses/" + id + "?error=" + java.net.URLEncoder.encode("No quedan plazas", java.nio.charset.StandardCharsets.UTF_8);
         }
