@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editar Curso - FabLab</title>
+  <link rel="icon" href="/img/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/main.css" />
+  <style>.img-preview { max-width: 260px; max-height: 180px; object-fit: cover; }</style>
+  <script>
+    function getParam(name) { const url=new URL(window.location.href); return url.searchParams.get(name); }
+    async function findImageUrl(id){ const bases=[`.jpg`,`.png`,`.gif`]; for(const ext of bases){ const url=`/img/upload/courses/course-${id}${ext}`; try{ const r=await fetch(url,{method:'HEAD'}); if(r.ok) return url;}catch{} } return '/img/logo.png'; }
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const id = getParam('id');
+      const titleSpan = document.getElementById('courseIdSpan'); if (id) titleSpan.textContent = `#${id}`;
+      try{ const r = await fetch('/api/session/me'); if (r.ok) { const d = await r.json(); if(!d.admin){ document.getElementById('editForm').classList.add('d-none'); document.getElementById('adminGuard').classList.remove('d-none'); } } } catch{}
+      const form = document.getElementById('courseForm'); if (id) form.action = `/admin/courses/${id}`;
+      const img = document.getElementById('currentImage'); if (id) {
+        try{
+          // Obtener datos desde la API 
+          const resp = await fetch(`/api/courses/${id}`);
+          if (resp.ok){
+            const data = await resp.json();
+            if(img) img.src = data.imageUrl || await findImageUrl(id);
+            const title = document.getElementById('title');
+            const description = document.getElementById('description');
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+            const capacity = document.getElementById('capacity');
+            const price = document.getElementById('price');
+            if(title && data.name) title.value = data.name;
+            if(description && data.description) description.value = data.description;
+            if(startDate && data.startDate) startDate.value = data.startDate;
+            if(endDate && data.endDate) endDate.value = data.endDate;
+            if(capacity && data.capacity != null) capacity.value = data.capacity;
+            // Precio puede venir en 'precio' o 'price' según el DTO; manejar ambos
+            if(price) {
+              if(data.precio != null) price.value = data.precio;
+              else if(data.price != null) price.value = data.price;
+            }
+          } else {
+            if(img) img.src = await findImageUrl(id);
+          }
+        } catch(err){
+          if(img) img.src = await findImageUrl(id);
+        }
+      }
+      form.addEventListener('submit', e => { form.classList.add('was-validated'); });
+    });
+  </script>
+</head>
+<body>
+  <div th:replace="fragments/header :: siteHeader('')"></div>
+  <main class="container" id="editForm">
+    <br>
+    <h1 class="h4 mb-3">Editar curso <span id="courseIdSpan" class="text-secondary"></span></h1>
+    <div id="adminGuard" class="alert alert-warning d-none">Solo administradores pueden editar cursos.</div>
+
+    <div class="mb-3">
+      <label class="form-label">Imagen actual</label><br />
+      <img id="currentImage" class="border rounded img-preview" src="/img/logo.png" alt="Imagen actual" />
+      <div class="form-text">Si subes una nueva, la anterior se reemplaza.</div>
+    </div>
+
+    <form id="courseForm" method="post" action="#" enctype="multipart/form-data" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="title" class="form-label">Título</label>
+        <input type="text" class="form-control" id="title" name="title" />
+        <div class="form-text">Déjalo vacío para mantener el actual.</div>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Descripción</label>
+        <textarea class="form-control" id="description" name="description" rows="4" maxlength="300"></textarea>
+        <div class="form-text">Máximo 300 caracteres. Vacío para mantener la actual.</div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="startDate" class="form-label">Fecha inicio</label>
+          <input type="date" class="form-control" id="startDate" name="startDate" />
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="endDate" class="form-label">Fecha fin</label>
+          <input type="date" class="form-control" id="endDate" name="endDate" />
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="capacity" class="form-label">Capacidad (plazas)</label>
+        <input type="number" min="1" step="1" class="form-control" id="capacity" name="capacity" />
+      </div>
+      <div class="mb-3">
+        <label for="image" class="form-label">Nueva imagen (opcional)</label>
+        <div class="input-group">
+          <input type="file" class="form-control" id="image" name="image" accept="image/*" />
+          <label class="input-group-text" for="image">Subir</label>
+        </div>
+        <div class="form-text">Formatos: JPG, PNG o GIF. Máx 2 MB.</div>
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Precio (€)</label>
+        <div class="input-group">
+          <span class="input-group-text">€</span>
+          <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" placeholder="0.00" />
+        </div>
+        <div class="form-text">Vacío para mantener el actual.</div>
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      <a href="/courses" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+    <br>
+  </main>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

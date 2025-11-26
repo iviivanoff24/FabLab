@@ -1,18 +1,32 @@
-/* From Uiverse.io by rmdhnkhsn */ 
+/* From Uiverse.io by rmdhnkhsn */
+.container {
+    width: 1000px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* centra las tarjetas en cada fila */
+    align-items: center; /* centra verticalmente dentro de la fila */
+    row-gap: 32px; /* espacio vertical entre filas */
+    column-gap: 20px; /* espacio horizontal entre tarjetas */
+}
+
 .card {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  flex-direction: row;
   align-items: flex-start;
   /* center the card horizontally by default */
   margin: 0 auto;
   padding: 28px;
   max-width: 340px;
+  min-width: 300px;
   border-radius: 30px;
   background: #f8bc1e;
   box-shadow: 0px 0px 14px 0px rgba(192, 192, 192, 0.2);
   /* explicitly include background-color in the transition */
-  transition: background-color 450ms ease, color 450ms ease, box-shadow 450ms ease, transform 450ms ease;
+  transition: background-color 450ms ease, color 450ms ease,
+    box-shadow 450ms ease, transform 450ms ease;
   overflow: hidden;
 }
 
@@ -71,7 +85,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 56px;
+  width: auto;
   height: 56px;
   border-radius: 6px;
   background: #ffde8b;
@@ -93,7 +107,6 @@
   transition: 1s all;
   margin: 1rem 0;
   color: #072713;
-
 }
 .subtitle {
   color: #fff;

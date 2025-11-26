@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuevo Curso - FabLab</title>
+  <link rel="icon" href="/img/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <div th:replace="fragments/header :: siteHeader('')"></div>
+
+  <main class="container">
+    <br>
+    <h1 class="h4 mb-3">Registrar nuevo curso</h1>
+    <div id="adminGuard" class="alert alert-warning d-none">Solo administradores pueden crear cursos.</div>
+
+    <form id="courseForm" method="post" action="/admin/courses" enctype="multipart/form-data" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="title" class="form-label">Título</label>
+        <input type="text" class="form-control" id="title" name="title" required />
+        <div class="invalid-feedback">Ingrese un título.</div>
+      </div>
+      <div class="mb-3">
+        <label for="instructor" class="form-label">Profesor / Impartido por</label>
+        <input type="text" class="form-control" id="instructor" name="instructor" />
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Descripción</label>
+        <textarea class="form-control" id="description" name="description" rows="4" maxlength="300"></textarea>
+        <div class="form-text">Máximo 300 caracteres.</div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="startDate" class="form-label">Fecha inicio</label>
+          <input type="date" class="form-control" id="startDate" name="startDate" />
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="endDate" class="form-label">Fecha fin</label>
+          <input type="date" class="form-control" id="endDate" name="endDate" />
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="capacity" class="form-label">Capacidad (plazas)</label>
+        <input type="number" min="1" step="1" class="form-control" id="capacity" name="capacity" />
+      </div>
+      <div class="mb-3">
+        <label for="image" class="form-label">Imagen del curso (opcional)</label>
+        <div class="input-group">
+          <input type="file" class="form-control" id="image" name="image" accept="image/*" />
+          <label class="input-group-text" for="image">Subir</label>
+        </div>
+        <div class="invalid-feedback">La imagen debe pesar menos de 2 MB.</div>
+        <div class="form-text">Formatos: JPG, PNG o GIF. Máx 2 MB.</div>
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Precio (€)</label>
+        <div class="input-group">
+          <span class="input-group-text">€</span>
+          <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" placeholder="0.00" />
+        </div>
+        <div class="form-text">Dejar vacío para gratuito.</div>
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar curso</button>
+      <a href="/courses" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+  </main>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js" defer></script>
+  <script>
+    // Guard client-side + validación
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const serverError = params.get('error');
+      if (serverError) {
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger';
+        alert.textContent = decodeURIComponent(serverError);
+        document.querySelector('main.container').insertBefore(alert, document.getElementById('courseForm'));
+      }
+
+      fetch('/api/session/me').then(r=>r.json()).then(data => {
+        if (!data.admin) {
+          document.getElementById('courseForm').classList.add('d-none');
+          document.getElementById('adminGuard').classList.remove('d-none');
+        }
+      }).catch(()=>{});
+
+      const form = document.getElementById('courseForm');
+      const imgInput = document.getElementById('image');
+      const validateImage = () => {
+        const f = imgInput.files && imgInput.files[0];
+        if (f && f.size > 2000000) {
+          imgInput.setCustomValidity('La imagen supera 2 MB');
+        } else {
+          imgInput.setCustomValidity('');
+        }
+      };
+      imgInput.addEventListener('change', validateImage);
+      form.addEventListener('submit', e => {
+        validateImage();
+        if (!form.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
+        form.classList.add('was-validated');
+      });
+    });
+  </script>
+</body>
+</html>
