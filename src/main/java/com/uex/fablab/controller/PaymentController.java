@@ -60,7 +60,7 @@ public class PaymentController {
      * Muestra la página de pago. Requiere usuario logueado.
      */
     @GetMapping("/payment")
-        public String showPaymentPage(@RequestParam(value = "type", required = false) String type,
+    public String showPaymentPage(@RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "itemId", required = false) Long itemId,
             @RequestParam(value = "itemName", required = false) String itemName,
             @RequestParam(value = "amount", required = false) String amount,
@@ -88,8 +88,10 @@ public class PaymentController {
                 int sids = (shiftIds != null) ? (int) shiftIds.stream().filter(java.util.Objects::nonNull).count() : 0;
                 int shours = (startHours != null) ? startHours.size() : 0;
                 selectedCount = sids + shours;
-                if (selectedCount == 0) selectedCount = 1; // fallback visual
-                if (amount == null || amount.isBlank()) {
+                if (selectedCount == 0) {
+                    selectedCount = 1; // fallback visual
+
+                                }if (amount == null || amount.isBlank()) {
                     amount = String.format("%.2f", unitPrice * selectedCount);
                 }
             }
@@ -111,7 +113,9 @@ public class PaymentController {
         if (shiftIds != null && !shiftIds.isEmpty()) {
             selectedShifts = new java.util.ArrayList<>();
             for (Long sidShift : shiftIds) {
-                if (sidShift == null) continue;
+                if (sidShift == null) {
+                    continue;
+                }
                 shiftService.findById(sidShift).ifPresent(selectedShifts::add);
             }
         } else if (shiftId != null) {
@@ -124,6 +128,17 @@ public class PaymentController {
         model.addAttribute("selectedHours", startHours);
         model.addAttribute("currentUserId", (Long) sid);
         return "user/payment";
+    }
+
+    private String buildReservationConcept(com.uex.fablab.data.model.Machine machine, int count, String dateStr) {
+        String concepto = "Reserva máquina " + (machine != null ? machine.getName() : "N/D");
+        if (count > 1) {
+            concepto += " " + count + " turno(s)";
+        }
+        if (dateStr != null && !dateStr.isBlank()) {
+            concepto += " " + dateStr;
+        }
+        return concepto;
     }
 
     /**
@@ -185,7 +200,7 @@ public class PaymentController {
                     computedAmount = 0.0;
                 }
             }
-            amount = String.format(java.util.Locale.US, "%.2f", computedAmount != null ? computedAmount : 0.0);
+            // amount = String.format(java.util.Locale.US, "%.2f", computedAmount != null ? computedAmount : 0.0);
 
             String pm = paymentMethod != null ? paymentMethod : "Tarjeta";
             if ("Efectivo".equalsIgnoreCase(pm)) {
@@ -194,7 +209,17 @@ public class PaymentController {
                 r.setUser(user);
                 r.setTotalPrice(computedAmount != null ? computedAmount : 0.0);
                 r.setMetodoPago(PaymentMethod.Efectivo);
-                r.setEstadoRecibo(ReceiptStatus.Pagado);
+                // For cash payments, the receipt remains pending until confirmation
+                r.setEstadoRecibo(ReceiptStatus.Pendiente);
+                // Si es pago de curso, asociar curso y concepto
+                if ("course".equalsIgnoreCase(type) && itemId != null) {
+                    var copt2 = courseService.findById(itemId);
+                    if (copt2.isPresent()) {
+                        var c = copt2.get();
+                        r.setCourse(c);
+                        r.setConcepto("Inscripción curso " + c.getName());
+                    }
+                }
                 // Set machine and concepto for reservations
                 if (("reservation".equalsIgnoreCase(type) || "reservation_multi".equalsIgnoreCase(type)) && itemId != null) {
                     var mopt2 = machineService.findById(itemId);
@@ -203,14 +228,14 @@ public class PaymentController {
                     cnt2 += (shiftIds != null) ? (int) shiftIds.stream().filter(java.util.Objects::nonNull).count() : 0;
                     cnt2 += (startHours != null) ? startHours.size() : 0;
                     String fechaTxt2 = (dateStr != null && !dateStr.isBlank()) ? dateStr : java.time.LocalDate.now().toString();
-                    r.setConcepto("Reserva máquina" + (mopt2.isPresent() ? (" " + mopt2.get().getName()) : "") + " · " + cnt2 + " turno(s) · " + fechaTxt2);
+                    r.setConcepto(buildReservationConcept(mopt2.orElse(null), cnt2, fechaTxt2));
                 }
                 // Asociar turnos si es múltiple
                 if ("reservation_multi".equalsIgnoreCase(type)) {
                     if (shiftIds != null) {
-                    for (Long sidShift : shiftIds) {
-                        shiftService.findById(sidShift).ifPresent(r::addShift);
-                    }
+                        for (Long sidShift : shiftIds) {
+                            shiftService.findById(sidShift).ifPresent(r::addShift);
+                        }
                     }
                     // startHours se asociarán tras crear el Shift en performPostPaymentAction
                 } else if (shiftId != null) {
@@ -226,6 +251,15 @@ public class PaymentController {
                 r.setTotalPrice(computedAmount != null ? computedAmount : 0.0);
                 r.setMetodoPago(PaymentMethod.Online);
                 r.setEstadoRecibo(ReceiptStatus.Pendiente);
+                // Si es pago de curso, asociar curso y concepto
+                if ("course".equalsIgnoreCase(type) && itemId != null) {
+                    var copt2 = courseService.findById(itemId);
+                    if (copt2.isPresent()) {
+                        var c = copt2.get();
+                        r.setCourse(c);
+                        r.setConcepto("Inscripción curso " + c.getName());
+                    }
+                }
                 if (("reservation".equalsIgnoreCase(type) || "reservation_multi".equalsIgnoreCase(type)) && itemId != null) {
                     var mopt2 = machineService.findById(itemId);
                     mopt2.ifPresent(r::setMachine);
@@ -233,14 +267,14 @@ public class PaymentController {
                     cnt2 += (shiftIds != null) ? (int) shiftIds.stream().filter(java.util.Objects::nonNull).count() : 0;
                     cnt2 += (startHours != null) ? startHours.size() : 0;
                     String fechaTxt2 = (dateStr != null && !dateStr.isBlank()) ? dateStr : java.time.LocalDate.now().toString();
-                    r.setConcepto("Reserva máquina" + (mopt2.isPresent() ? (" " + mopt2.get().getName()) : "") + " · " + cnt2 + " turno(s) · " + fechaTxt2);
+                    r.setConcepto(buildReservationConcept(mopt2.orElse(null), cnt2, fechaTxt2));
                 }
                 // Asociar turnos si es múltiple
                 if ("reservation_multi".equalsIgnoreCase(type)) {
                     if (shiftIds != null) {
-                    for (Long sidShift : shiftIds) {
-                        shiftService.findById(sidShift).ifPresent(r::addShift);
-                    }
+                        for (Long sidShift : shiftIds) {
+                            shiftService.findById(sidShift).ifPresent(r::addShift);
+                        }
                     }
                     // startHours se asociarán tras crear el Shift en performPostPaymentAction
                 } else if (shiftId != null) {
@@ -264,6 +298,15 @@ public class PaymentController {
             r.setTotalPrice(computedAmount != null ? computedAmount : 0.0);
             r.setMetodoPago(PaymentMethod.Tarjeta);
             r.setEstadoRecibo(ReceiptStatus.Pagado);
+            // Si es pago de curso, asociar curso y concepto
+            if ("course".equalsIgnoreCase(type) && itemId != null) {
+                var copt2 = courseService.findById(itemId);
+                if (copt2.isPresent()) {
+                    var c = copt2.get();
+                    r.setCourse(c);
+                    r.setConcepto("Inscripción curso " + c.getName());
+                }
+            }
             if (("reservation".equalsIgnoreCase(type) || "reservation_multi".equalsIgnoreCase(type)) && itemId != null) {
                 var mopt2 = machineService.findById(itemId);
                 mopt2.ifPresent(r::setMachine);
@@ -271,7 +314,7 @@ public class PaymentController {
                 cnt2 += (shiftIds != null) ? (int) shiftIds.stream().filter(java.util.Objects::nonNull).count() : 0;
                 cnt2 += (startHours != null) ? startHours.size() : 0;
                 String fechaTxt2 = (dateStr != null && !dateStr.isBlank()) ? dateStr : java.time.LocalDate.now().toString();
-                r.setConcepto("Reserva máquina" + (mopt2.isPresent() ? (" " + mopt2.get().getName()) : "") + " · " + cnt2 + " turno(s) · " + fechaTxt2);
+                r.setConcepto(buildReservationConcept(mopt2.orElse(null), cnt2, fechaTxt2));
             }
             if ("reservation_multi".equalsIgnoreCase(type) && shiftIds != null) {
                 for (Long sidShift : shiftIds) {
@@ -342,6 +385,13 @@ public class PaymentController {
 
     private String performPostPaymentAction(String type, Long itemId, Long shiftId, String startHourStr, String dateStr, User user, java.util.List<Long> shiftIds, Long receiptId, java.util.List<Integer> startHours) {
         try {
+            boolean receiptPaid = true;
+            if (receiptId != null) {
+                var ropt = receiptService.findById(receiptId);
+                if (ropt.isPresent()) {
+                    receiptPaid = ropt.get().getEstadoRecibo() == ReceiptStatus.Pagado;
+                }
+            }
             if ("course".equalsIgnoreCase(type) && itemId != null) {
                 var copt = courseService.findById(itemId);
                 if (copt.isEmpty()) {
@@ -353,12 +403,17 @@ public class PaymentController {
                 if (already) {
                     return "redirect:/courses/" + course.getId() + "?error=" + URLEncoder.encode("Ya estás inscrito", StandardCharsets.UTF_8);
                 }
-                Inscription ins = new Inscription();
-                ins.setUser(user);
-                ins.setCourse(course);
-                ins.setDate(LocalDate.now());
-                inscriptionService.save(ins);
-                return "redirect:/courses/" + course.getId() + "?success=1";
+                if (receiptPaid) {
+                    Inscription ins = new Inscription();
+                    ins.setUser(user);
+                    ins.setCourse(course);
+                    ins.setDate(LocalDate.now());
+                    inscriptionService.save(ins);
+                    return "redirect:/courses/" + course.getId() + "?success=1";
+                } else {
+                    // Receipt pending: do not create inscription yet, admin will confirm later
+                    return "redirect:/courses/" + course.getId() + "?pending=1";
+                }
             } else if (("reservation".equalsIgnoreCase(type) || "reservation_multi".equalsIgnoreCase(type)) && itemId != null) {
                 var mopt = machineService.findById(itemId);
                 if (mopt.isEmpty()) {
@@ -376,50 +431,62 @@ public class PaymentController {
                 if ("reservation_multi".equalsIgnoreCase(type)) {
                     // reservar por ids existentes
                     if (shiftIds != null && !shiftIds.isEmpty()) {
-                    for (Long sidShift : shiftIds) {
-                        var shOpt = shiftService.findById(sidShift);
-                        if (shOpt.isEmpty()) {
-                            continue;
+                        for (Long sidShift : shiftIds) {
+                            var shOpt = shiftService.findById(sidShift);
+                            if (shOpt.isEmpty()) {
+                                continue;
+                            }
+                            Shift s = shOpt.get();
+                            if (!s.getMachine().getId().equals(machine.getId())) {
+                                continue;
+                            }
+                            if (bookingService.findByUserAndShift(user, s).isPresent()) {
+                                continue;
+                            }
+                            if (s.getStatus() != ShiftStatus.Disponible && bookingService.findByUserAndShift(user, s).isEmpty()) {
+                                continue;
+                            }
+                            Booking b = new Booking();
+                            b.setUser(user);
+                            b.setShift(s);
+                            b.setFechaReserva(LocalDate.now());
+                            bookingService.save(b);
+                            if (receiptPaid) {
+                                if (s.getStatus() == ShiftStatus.Disponible) {
+                                    s.setStatus(ShiftStatus.Reservado);
+                                    shiftService.save(s);
+                                }
+                            }
                         }
-                        Shift s = shOpt.get();
-                        if (!s.getMachine().getId().equals(machine.getId())) {
-                            continue;
-                        }
-                        if (bookingService.findByUserAndShift(user, s).isPresent()) {
-                            continue;
-                        }
-                        if (s.getStatus() != ShiftStatus.Disponible && bookingService.findByUserAndShift(user, s).isEmpty()) {
-                            continue;
-                        }
-                        Booking b = new Booking();
-                        b.setUser(user);
-                        b.setShift(s);
-                        b.setFechaReserva(LocalDate.now());
-                        bookingService.save(b);
-                        if (s.getStatus() == ShiftStatus.Disponible) {
-                            s.setStatus(ShiftStatus.Reservado);
-                            shiftService.save(s);
-                        }
-                    }
                     }
                     // crear y reservar por horas seleccionadas
                     if (startHours != null && !startHours.isEmpty()) {
                         date = LocalDate.now();
                         if (dateStr != null && !dateStr.isBlank()) {
-                            try { date = LocalDate.parse(dateStr); } catch (Exception ignored) {}
+                            try {
+                                date = LocalDate.parse(dateStr);
+                            } catch (Exception ignored) {
+                            }
                         }
                         // obtener recibo para asociar los nuevos shifts
                         Receipt recForAssoc = null;
                         if (receiptId != null) {
                             var rOpt = receiptService.findById(receiptId);
-                            if (rOpt.isPresent()) recForAssoc = rOpt.get();
+                            if (rOpt.isPresent()) {
+                                recForAssoc = rOpt.get();
+                            }
                         }
                         for (Integer hourSel : startHours) {
-                            if (hourSel == null) continue;
+                            if (hourSel == null) {
+                                continue;
+                            }
                             java.time.LocalTime start = java.time.LocalTime.of(hourSel, 0);
                             Shift found = null;
                             for (Shift s : shiftService.findByMachineAndDate(machine, date)) {
-                                if (s.getStartTime().equals(start)) { found = s; break; }
+                                if (s.getStartTime().equals(start)) {
+                                    found = s;
+                                    break;
+                                }
                             }
                             if (found == null) {
                                 Shift ns = new Shift();
@@ -433,16 +500,22 @@ public class PaymentController {
                             if (recForAssoc != null) {
                                 recForAssoc.addShift(found);
                             }
-                            if (bookingService.findByUserAndShift(user, found).isPresent()) { continue; }
-                            if (found.getStatus() != ShiftStatus.Disponible && bookingService.findByUserAndShift(user, found).isEmpty()) { continue; }
+                            if (bookingService.findByUserAndShift(user, found).isPresent()) {
+                                continue;
+                            }
+                            if (found.getStatus() != ShiftStatus.Disponible && bookingService.findByUserAndShift(user, found).isEmpty()) {
+                                continue;
+                            }
                             Booking b = new Booking();
                             b.setUser(user);
                             b.setShift(found);
                             b.setFechaReserva(LocalDate.now());
                             bookingService.save(b);
-                            if (found.getStatus() == ShiftStatus.Disponible) {
-                                found.setStatus(ShiftStatus.Reservado);
-                                shiftService.save(found);
+                            if (receiptPaid) {
+                                if (found.getStatus() == ShiftStatus.Disponible) {
+                                    found.setStatus(ShiftStatus.Reservado);
+                                    shiftService.save(found);
+                                }
                             }
                         }
                         if (recForAssoc != null) {
@@ -505,9 +578,11 @@ public class PaymentController {
                 b.setShift(shift);
                 b.setFechaReserva(LocalDate.now());
                 bookingService.save(b);
-                if (shift.getStatus() == ShiftStatus.Disponible) {
-                    shift.setStatus(ShiftStatus.Reservado);
-                    shiftService.save(shift);
+                if (receiptPaid) {
+                    if (shift.getStatus() == ShiftStatus.Disponible) {
+                        shift.setStatus(ShiftStatus.Reservado);
+                        shiftService.save(shift);
+                    }
                 }
                 return "redirect:/machines/" + machine.getId() + "/reserve?success=1&date=" + date + (receiptId != null ? "&paymentSuccess=Recibo+" + receiptId : "");
             }

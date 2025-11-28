@@ -3,14 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <title>Panel de Administración</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" th:href="@{/css/main.css}" href="/css/main.css" />
 </head>
 <body>
-    <div th:replace="fragments/header :: siteHeader('admin')"></div>
+    <div th:replace="~{fragments/header :: siteHeader('admin')}"></div>
     <div class="container mt-4">
         <h1>Panel de Administración</h1>
-        <p>Bienvenido al panel de administración. Aquí podrás gestionar las funcionalidades de administrador.</p>
-        <!-- Aquí se añadirán las funcionalidades específicas para admins -->
+        <p>Bienvenido al panel de administración. Aquí podrás ver las tablas importantes de la base de datos.</p>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation"><button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">Usuarios</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="machines-tab" data-bs-toggle="tab" data-bs-target="#machines" type="button" role="tab">Máquinas</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab">Reservas</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="shifts-tab" data-bs-toggle="tab" data-bs-target="#shifts" type="button" role="tab">Turnos</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="courses-tab" data-bs-toggle="tab" data-bs-target="#courses" type="button" role="tab">Cursos</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="inscriptions-tab" data-bs-toggle="tab" data-bs-target="#inscriptions" type="button" role="tab">Inscripciones</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="receipts-tab" data-bs-toggle="tab" data-bs-target="#receipts" type="button" role="tab">Recibos</button></li>
+        </ul>
+
+        <div class="tab-content border p-3" id="adminTabsContent">
+            <div class="tab-pane fade show active" id="users" role="tabpanel">
+                <h5>Usuarios</h5>
+                <div th:if="${#lists.isEmpty(users)}" class="alert alert-info">No hay usuarios.</div>
+                <div class="mb-2 d-flex">
+                    <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar usuarios..." data-target="users" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 table-search-clear" data-target="users">Limpiar</button>
+                </div>
+                <div th:if="${!#lists.isEmpty(users)}" class="table-responsive">
+                    <table class="table table-sm admin-table" data-entity="users">
+                        <thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Admin</th><th>Fecha registro</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                                <tr th:each="u : ${users}" th:attr="data-admin=${u.admin}">
+                                <td th:text="${u.id}"></td>
+                                <td th:text="${u.name}"></td>
+                                <td th:text="${u.email}"></td>
+                                <td th:text="${u.admin}"></td>
+                                <td th:text="${#temporals.format(u.fechaRegistro,'yyyy-MM-dd')}"></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a th:href="@{'/admin/modify-user?id=' + ${u.id}}" class="btn btn-outline-secondary">Editar</a>
+                                        <form th:action="@{'/admin/users/' + ${u.id} + '/role'}" method="post" style="display:inline">
+                                            <input type="hidden" name="admin" th:value="${!u.admin}" />
+                                            <button type="submit" class="btn btn-outline-secondary" title="Cambiar rol">Rol</button>
+                                        </form>
+                                        <button type="button" class="btn btn-outline-danger btn-delete" th:attr="data-action=@{'/admin/users/{id}/delete'(id=${u.id})}, data-entity='usuario', data-id=${u.id}" title="Borrar">Borrar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="machines" role="tabpanel">
+                <h5>Máquinas</h5>
+                <div th:if="${#lists.isEmpty(machines)}" class="alert alert-info">No hay máquinas.</div>
+                <div class="mb-2 d-flex">
+                    <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar máquinas..." data-target="machines" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 table-search-clear" data-target="machines">Limpiar</button>
+                </div>
+                <div th:if="${!#lists.isEmpty(machines)}" class="table-responsive">
+                    <table class="table table-sm admin-table" data-entity="machines">
+                        <thead><tr><th>ID</th><th>Nombre</th><th>Ubicación</th><th>Estado</th><th>Precio/h</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                                <tr th:each="m : ${machines}" th:attr="data-status=${m.status}">
+                                <td th:text="${m.id}"></td>
+                                <td th:text="${m.name}"></td>
+                                <td th:text="${m.location}"></td>
+                                <td th:text="${m.status}"></td>
+                                <td th:text="${#numbers.formatDecimal(m.hourlyPrice,1,2)}"></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{'/admin/modify-machine?id=' + ${m.id}}" class="btn btn-outline-secondary">Editar</a>
+                                        <button type="button" class="btn btn-outline-danger btn-delete" th:attr="data-action=@{'/admin/machines/{id}/delete'(id=${m.id})}, data-entity='máquina', data-id=${m.id}">Borrar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="bookings" role="tabpanel">
+                <h5>Reservas</h5>
+                <div th:if="${#lists.isEmpty(bookings)}" class="alert alert-info">No hay reservas.</div>
+                <div class="mb-2 d-flex">
+                    <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar reservas..." data-target="bookings" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 table-search-clear" data-target="bookings">Limpiar</button>
+                </div>
+                <div th:if="${!#lists.isEmpty(bookings)}" class="table-responsive">
+                    <table class="table table-sm admin-table" data-entity="bookings">
+                        <thead><tr><th>ID</th><th>Usuario</th><th>Turno</th><th>Máquina</th><th>Fecha reserva</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                                <tr th:each="b : ${bookings}" th:attr="data-estado=${b.estado}">
+                                    <td th:text="${b.id}"></td>
+                                <td th:text="${b.user != null ? b.user.name : ''}"></td>
+                                <td th:text="${b.shift != null ? (b.shift.startTime + ' · ' + b.shift.date) : ''}"></td>
+                                <td th:text="${b.shift != null && b.shift.machine != null ? b.shift.machine.name : ''}"></td>
+                                <td th:text="${#temporals.format(b.fechaReserva,'yyyy-MM-dd')}"></td>
+                                <td><button type="button" class="btn btn-outline-danger btn-delete" th:attr="data-action=@{'/admin/bookings/{id}/delete'(id=${b.id})}, data-entity='reserva', data-id=${b.id}">Borrar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="shifts" role="tabpanel">
+                <h5>Turnos</h5>
+                <div th:if="${#lists.isEmpty(shifts)}" class="alert alert-info">No hay turnos.</div>
+                <div class="mb-2 d-flex">
+                    <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar turnos..." data-target="shifts" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 table-search-clear" data-target="shifts">Limpiar</button>
+                </div>
+                <div th:if="${!#lists.isEmpty(shifts)}" class="table-responsive">
+                    <table class="table table-sm admin-table" data-entity="shifts">
+                        <thead><tr><th>ID</th><th>Máquina</th><th>Fecha</th><th>Inicio</th><th>Fin</th><th>Estado</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                                <tr th:each="s : ${shifts}" th:attr="data-status=${s.status}">
+                                    <td th:text="${s.id}"></td>
+                                <td th:text="${s.machine != null ? s.machine.name : ''}"></td>
+                                <td th:text="${#temporals.format(s.date,'yyyy-MM-dd')}"></td>
+                                <td th:text="${s.startTime}"></td>
+                                <td th:text="${s.endTime}"></td>
+                                <td th:text="${s.status}"></td>
+                                <td><button type="button" class="btn btn-outline-danger btn-delete" th:attr="data-action=@{'/admin/shifts/{id}/delete'(id=${s.id})}, data-entity='turno', data-id=${s.id}">Borrar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="courses" role="tabpanel">
+                <h5>Cursos</h5>
+                <div th:if="${#lists.isEmpty(courses)}" class="alert alert-info">No hay cursos.</div>
+                <div class="mb-2 d-flex">
+                    <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar cursos..." data-target="courses" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 table-search-clear" data-target="courses">Limpiar</button>
+                </div>
+                <div th:if="${!#lists.isEmpty(courses)}" class="table-responsive">
+                    <table class="table table-sm admin-table" data-entity="courses">
+                        <thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Precio</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                                <tr th:each="c : ${courses}" th:attr="data-estado=${c.estado}">
+                                    <td th:text="${c.id}"></td>
+                                <td th:text="${c.name}"></td>
+                                <td th:text="${c.description}"></td>
+                                <td th:text="${#numbers.formatDecimal(c.precio,1,2)}"></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{'/admin/modify-course?id=' + ${c.id}}" class="btn btn-outline-secondary">Editar</a>
+                                        <button type="button" class="btn btn-outline-danger btn-delete" th:attr="data-action=@{'/admin/courses/{id}/delete'(id=${c.id})}, data-entity='curso', data-id=${c.id}">Borrar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="inscriptions" role="tabpanel">
+                <h5>Inscripciones</h5>
+                <div th:if="${#lists.isEmpty(inscriptions)}" class="alert alert-info">No hay inscripciones.</div>
+                <div class="mb-2 d-flex">
+                    <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar inscripciones..." data-target="inscriptions" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 table-search-clear" data-target="inscriptions">Limpiar</button>
+                </div>
+                <div th:if="${!#lists.isEmpty(inscriptions)}" class="table-responsive">
+                    <table class="table table-sm admin-table" data-entity="inscriptions">
+                        <thead><tr><th>ID</th><th>Curso</th><th>Usuario</th><th>Fecha</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                                <tr th:each="i : ${inscriptions}" th:attr="data-estado=${i.estado}">
+                                    <td th:text="${i.id}"></td>
+                                    <td th:text="${i.course != null ? i.course.name : ''}"></td>
+                                    <td th:text="${i.user != null ? i.user.name : ''}"></td>
+                                    <td th:text="${#temporals.format(i.date,'yyyy-MM-dd')}"></td>
+                                <td><button type="button" class="btn btn-outline-danger btn-delete" th:attr="data-action=@{'/admin/inscriptions/{id}/delete'(id=${i.id})}, data-entity='inscripción', data-id=${i.id}">Borrar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="receipts" role="tabpanel">
+                <h5>Recibos</h5>
+                <div th:if="${#lists.isEmpty(receipts)}" class="alert alert-info">No hay recibos.</div>
+                <div class="mb-2 d-flex">
+                    <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar recibos..." data-target="receipts" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 table-search-clear" data-target="receipts">Limpiar</button>
+                </div>
+                <div th:if="${!#lists.isEmpty(receipts)}" class="table-responsive">
+                    <table class="table table-sm admin-table" data-entity="receipts">
+                        <thead><tr><th>ID</th><th>Usuario</th><th>Concepto</th><th>Curso</th><th>Máquina</th><th>Método pago</th><th>Importe</th><th>Fecha</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                                <tr th:each="r : ${receipts}" th:attr="data-status=${r.estadoRecibo}, data-method=${r.metodoPago}">
+                                <td th:text="${r.id}"></td>
+                                <td th:text="${r.user != null ? r.user.name : ''}"></td>
+                                <td th:text="${r.concepto != null ? r.concepto : ''}"></td>
+                                <td th:text="${r.course != null ? (r.course.id + ' · ' + r.course.name) : ''}"></td>
+                                <td th:text="${r.machine != null ? (r.machine.id + ' · ' + r.machine.name) : ''}"></td>
+                                <td th:text="${r.metodoPago != null ? r.metodoPago : ''}"></td>
+                                <td th:text="${#numbers.formatDecimal(r.totalPrice,1,2)}"></td>
+                                <td th:text="${#temporals.format(r.fechaEmision,'yyyy-MM-dd')}"></td>
+                                <td>
+                                    <form th:action="@{/admin/receipts/{id}/status(id=${r.id})}" method="post" class="d-flex gap-1 align-items-center">
+                                        <select name="status" class="form-select form-select-sm" style="width:auto;">
+                                            <option th:each="st : ${T(com.uex.fablab.data.model.ReceiptStatus).values()}" th:value="${st}" th:text="${st}" th:selected="${st.name() == r.estadoRecibo.name()}"></option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Cambiar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Confirm modal for destructive actions -->
+        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar acción</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="confirmMessage">¿Estás seguro?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form id="confirmForm" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-danger">Sí, borrar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
+
+<script>
+    (function(){
+        document.addEventListener('DOMContentLoaded', function(){
+            var confirmModalEl = document.getElementById('confirmModal');
+            if(!confirmModalEl) return;
+            var confirmForm = document.getElementById('confirmForm');
+            var confirmMessage = document.getElementById('confirmMessage');
+            var modal = new bootstrap.Modal(confirmModalEl);
+
+            document.querySelectorAll('.btn-delete').forEach(function(btn){
+                btn.addEventListener('click', function(e){
+                    var action = btn.getAttribute('data-action');
+                    var entity = btn.getAttribute('data-entity') || 'item';
+                    var id = btn.getAttribute('data-id') || '';
+                    confirmForm.setAttribute('action', action);
+                    var label = id ? (entity + ' #' + id) : entity;
+                    confirmMessage.textContent = '¿Confirma que desea borrar ' + label + '?';
+                    modal.show();
+                });
+            });
+        });
+    })();
+</script>
+<script>
+    (function(){
+        function normalize(s){ return (s||'').toString().toLowerCase(); }
+
+        function rowMatchesFilters(row, query, filters){
+            if(query && normalize(row.textContent).indexOf(normalize(query)) === -1) return false;
+            for(var i=0;i<filters.length;i++){
+                var f = filters[i];
+                var key = f.getAttribute('data-key');
+                if(!key) continue;
+                var val = f.value;
+                if(!val) continue; // empty means 'all'
+                var rowVal = row.dataset ? (row.dataset[key] || '') : '';
+                if(normalize(rowVal) !== normalize(val)) return false;
+            }
+            return true;
+        }
+
+        function applyFilters(entity){
+            var table = document.querySelector('table[data-entity="'+entity+'"]');
+            if(!table) return;
+            var rows = table.tBodies[0] ? Array.from(table.tBodies[0].rows) : [];
+            var queryEl = document.querySelector('.table-search[data-target="'+entity+'"]');
+            var q = queryEl ? queryEl.value : '';
+            var filters = Array.from(document.querySelectorAll('.table-filter[data-target="'+entity+'"]'));
+            rows.forEach(function(r){
+                r.style.display = rowMatchesFilters(r, q, filters) ? '' : 'none';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            document.querySelectorAll('.table-search').forEach(function(input){
+                var target = input.getAttribute('data-target');
+                input.addEventListener('input', function(){ applyFilters(target); });
+            });
+            document.querySelectorAll('.table-filter').forEach(function(sel){
+                var target = sel.getAttribute('data-target');
+                sel.addEventListener('change', function(){ applyFilters(target); });
+            });
+            document.querySelectorAll('.table-search-clear').forEach(function(btn){
+                var target = btn.getAttribute('data-target');
+                btn.addEventListener('click', function(){
+                    var inp = document.querySelector('.table-search[data-target="'+target+'"]');
+                    if(inp){ inp.value = ''; }
+                    document.querySelectorAll('.table-filter[data-target="'+target+'"]').forEach(function(f){
+                        if(f.tagName.toLowerCase() === 'select') f.selectedIndex = 0; else f.value = '';
+                    });
+                    applyFilters(target);
+                });
+            });
+            // initial apply to respect default select state
+            document.querySelectorAll('table.admin-table').forEach(function(t){
+                var entity = t.getAttribute('data-entity'); if(entity) applyFilters(entity);
+            });
+        });
+    })();
+</script>
 </body>
 </html>

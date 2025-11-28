@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Modificar Usuario</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" th:href="@{/css/main.css}" href="/css/main.css" />
+</head>
+<body>
+<div th:replace="~{fragments/header :: siteHeader('admin')}"></div>
+<div class="container mt-4">
+    <h1>Modificar Usuario</h1>
+    <div th:if="${param.error != null}" class="alert alert-danger" th:text="${param.error}"></div>
+    <div th:if="${user == null}" class="alert alert-warning">Usuario no encontrado.</div>
+
+    <form th:if="${user != null}" th:action="@{'/admin/users/' + ${user.id}}" method="post" class="needs-validation" novalidate>
+        <input type="hidden" name="id" th:value="${user.id}" />
+        <div class="mb-3">
+            <label for="name" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="name" name="name" th:value="${user.name}" required />
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required />
+        </div>
+        <div class="mb-3">
+            <label for="admin" class="form-label">Administrador</label>
+            <select id="admin" name="admin" class="form-select">
+                <option th:value="${true}" th:selected="${user.admin}">Sí</option>
+                <option th:value="${false}" th:selected="${!user.admin}">No</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="currentPassword" class="form-label">Contraseña actual</label>
+            <input type="password" class="form-control" id="currentPassword" disabled placeholder="********" />
+        </div>
+        <div class="mb-3">
+            <label for="newPassword" class="form-label">Nueva contraseña</label>
+            <input type="password" class="form-control" id="newPassword" name="newPassword" minlength="6" />
+        </div>
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirmar nueva contraseña</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" minlength="6" />
+            <div class="form-text">Introduce la misma contraseña que en "Nueva contraseña".</div>
+        </div>
+        <div class="mb-3">
+            <label for="fechaRegistro" class="form-label">Fecha registro</label>
+            <input type="text" class="form-control" id="fechaRegistro" th:value="${#temporals.format(user.fechaRegistro,'yyyy-MM-dd')}" disabled />
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a th:href="@{/admin/admin}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
+<script>
+    (function(){
+        document.addEventListener('DOMContentLoaded', function(){
+            var form = document.querySelector('form[th\\:if]') || document.querySelector('form');
+            if (!form) return;
+            form.addEventListener('submit', function(e){
+                var newP = document.getElementById('newPassword').value;
+                var confirmP = document.getElementById('confirmPassword').value;
+                if ((newP || confirmP) && newP !== confirmP) {
+                    e.preventDefault();
+                    alert('La nueva contraseña y la confirmación no coinciden.');
+                    return false;
+                }
+            });
+        });
+    })();
+</script>
+</body>
+</html>

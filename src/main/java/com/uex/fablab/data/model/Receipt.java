@@ -74,6 +74,11 @@ public class Receipt {
     @JoinColumn(name = "id_m", nullable = true)
     private Machine machine;
 
+    // Asociación opcional con Curso (id_c)
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "id_c", nullable = true)
+    private Course course;
+
     public Long getId() {
         return id;
     }
@@ -150,5 +155,13 @@ public class Receipt {
 
     public void setMachine(Machine machine) {
         this.machine = machine;
+    }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
     }
 }
