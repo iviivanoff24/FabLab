@@ -31,7 +31,13 @@
   <div th:if="${messageError}" class="alert alert-danger py-1" th:text="${messageError}"></div>
 
   <h3 class="h6" th:text="${'Turnos del día ' + selectedDate}">Turnos</h3>
-  <div class="list-group mb-4">
+  <form id="multiReserveForm" method="get" th:action="@{/payment}" class="list-group mb-4">
+    <input type="hidden" name="type" value="reservation_multi" />
+    <input type="hidden" name="itemId" th:value="${machine.id}" />
+    <input type="hidden" name="itemName" th:value="${machine.name}" />
+    <input type="hidden" name="date" th:value="${selectedDate}" />
+    <input type="hidden" name="returnUrl" th:value="${'/machines/' + machine.id + '/reserve?date=' + selectedDate}" />
+    <!-- inputs dinámicos: shiftIds (existentes) y startHours (para crear en pago) -->
     <div class="list-group-item d-flex justify-content-between align-items-center" th:each="slot : ${slots}">
       <div>
         <span class="fw-semibold" th:text="${slot.startTime + ' - ' + slot.endTime}">09:00 - 10:00</span>
@@ -42,11 +48,17 @@
         <span class="badge bg-danger" th:if="${!slot.reservado and !slot.canReserve}">No disponible</span>
       </div>
       <div class="d-flex align-items-center">
-        <div class="d-flex">
-          <!-- Pago y reservar: redirige a la página de pago, que creará la reserva tras el pago -->
-          <a th:if="${slot.canReserve}" th:href="@{/payment(type='reservation', itemId=${machine.id}, itemName=${machine.name}, date=${selectedDate}, startHour=${slot.hour}, amount=${machine.hourlyPrice}, returnUrl='/machines/' + ${machine.id} + '?date=' + ${selectedDate})}" class="btn btn-sm btn-outline-success">Pagar y reservar</a>
+        <div class="d-flex align-items-center gap-2">
+          <!-- Selección múltiple -->
+          <div class="form-check" th:if="${slot.canReserve}">
+            <input class="form-check-input" type="checkbox"
+                   th:data-shift-id="${slot.shiftId}"
+                   th:data-hour="${slot.hour}"
+                   th:data-date="${selectedDate}"
+                   />
+            <label class="form-check-label">Seleccionar</label>
+          </div>
         </div>
-        <button th:if="${!slot.canReserve}" class="btn btn-sm btn-outline-secondary" disabled>Reservar</button>
         <!-- Mostrar lista de reservas y botón Cancelar por reserva (visible a admin o al usuario propietario) -->
         <div th:if="${slot.reservado}" class="ms-2">
           <ul class="list-unstyled mb-0">
@@ -64,7 +76,17 @@
         </div>
       </div>
     </div>
-  </div>
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      <div class="text-muted small">
+        <span>Seleccionados: </span>
+        <strong id="selectedCount">0</strong>
+        <span> · Total estimado: € </span>
+        <strong id="selectedTotal">0.00</strong>
+        <span class="ms-2" th:if="${#lists.isEmpty(slots)}">No hay turnos seleccionables este día.</span>
+      </div>
+      <button type="submit" id="paySelectedBtn" class="btn btn-primary btn-sm" disabled>Pagar seleccionados</button>
+    </div>
+  </form>
   <p class="text-muted small">Selecciona un turno disponible para realizar la reserva. Si un turno ya está reservado por ti, aparecerá indicado.</p>
 
   <!-- Modal cancelación -->
@@ -97,6 +119,45 @@
 <script src="/js/main.js" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  // Dinámica de selección múltiple: contar y totalizar
+  const pricePerHour = parseFloat(('[[${machine.hourlyPrice}]]' || '0').replace(',', '.')) || 0;
+  const countEl = document.getElementById('selectedCount');
+  const totalEl = document.getElementById('selectedTotal');
+  const payBtn = document.getElementById('paySelectedBtn');
+  const form = document.getElementById('multiReserveForm');
+  function updateSelectionSummary(){
+    const checks = document.querySelectorAll('#multiReserveForm input[type=checkbox]:checked');
+    const count = checks.length;
+    const total = (count * pricePerHour);
+    if (countEl) countEl.textContent = String(count);
+    if (totalEl) totalEl.textContent = total.toFixed(2);
+    if (payBtn) payBtn.disabled = count === 0;
+  }
+  function syncHiddenInputs(){
+    // limpiar previos
+    form.querySelectorAll('input[name="shiftIds"], input[name="startHours"]').forEach(el => el.remove());
+    // por cada checkbox:
+    document.querySelectorAll('#multiReserveForm input[type=checkbox]:checked').forEach(cb => {
+      const sid = cb.getAttribute('data-shift-id');
+      const hour = cb.getAttribute('data-hour');
+      if (sid && sid !== 'null') {
+        const i = document.createElement('input');
+        i.type = 'hidden'; i.name = 'shiftIds'; i.value = sid; form.appendChild(i);
+      } else if (hour) {
+        const i = document.createElement('input');
+        i.type = 'hidden'; i.name = 'startHours'; i.value = hour; form.appendChild(i);
+      }
+    });
+  }
+  document.querySelectorAll('#multiReserveForm input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', function(){
+      syncHiddenInputs();
+      updateSelectionSummary();
+    });
+  });
+  form.addEventListener('submit', function(){ syncHiddenInputs(); });
+  updateSelectionSummary();
+
   var modal=document.getElementById('cancelBookingModal');
   var dateInput=document.getElementById('cancelDate');
   var hourInput=document.getElementById('cancelStartHour');

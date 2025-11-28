@@ -26,6 +26,12 @@
         <input type="hidden" name="itemName" th:value="${itemName}" />
         <input type="hidden" name="returnUrl" th:value="${returnUrl}" />
         <input type="hidden" name="shiftId" th:value="${shiftId}" />
+        <div th:if="${shiftIds != null}">
+            <input type="hidden" name="shiftIds" th:each="sid : ${shiftIds}" th:value="${sid}" />
+        </div>
+        <div th:if="${startHours != null}">
+            <input type="hidden" name="startHours" th:each="h : ${startHours}" th:value="${h}" />
+        </div>
         <input type="hidden" name="startHour" th:value="${startHour}" />
         <input type="hidden" name="date" th:value="${date}" />
 
@@ -39,6 +45,27 @@
             <label class="form-label">Importe (€)</label>
             <input type="hidden" name="amount" th:value="${amount} ?: ''" />
             <input class="form-control-plaintext" readonly th:value="${amount} ?: ''" />
+        </div>
+
+        <div class="mb-2" th:if="${unitPrice != null}">
+            <div class="text-muted small">
+                <span th:text="${'Precio por turno: € ' + #numbers.formatDecimal(unitPrice,1,2)}"></span>
+                <span th:if="${selectedCount > 0}" th:text="${' · Turnos: ' + selectedCount}"></span>
+            </div>
+        </div>
+
+        <div class="mb-3" th:if="${selectedShifts != null and !#lists.isEmpty(selectedShifts)}">
+            <label class="form-label">Turnos seleccionados</label>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge text-bg-secondary" th:each="s : ${selectedShifts}" th:text="${s.date + ' · ' + s.startTime + ' - ' + s.endTime}"></span>
+            </div>
+        </div>
+
+        <div class="mb-3" th:if="${selectedHours != null and !#lists.isEmpty(selectedHours)}">
+            <label class="form-label">Horas seleccionadas sin turno</label>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge text-bg-secondary" th:each="h : ${selectedHours}" th:text="${date + ' · ' + (h < 10 ? '0' + h : h) + ':00 - ' + (h < 9 ? '0' + (h+1) : (h+1)) + ':00'}"></span>
+            </div>
         </div>
 
         <input type="hidden" name="paymentMethod" id="paymentMethod" value="Tarjeta" />
@@ -105,7 +132,7 @@
 
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary">Pagar</button>
-            <a th:href="${returnUrl != null ? returnUrl : '/'}" class="btn btn-secondary">Cancelar</a>
+            <button type="button" id="cancelBtn" class="btn btn-secondary" th:attr="data-return=${returnUrl}">Cancelar</button>
         </div>
     </form>
 
@@ -125,6 +152,27 @@ document.addEventListener('DOMContentLoaded', function(){
     const onlineSel = document.getElementById('onlineSelect');
     if (onlineSel) onlineSel.addEventListener('change', function(){ document.getElementById('onlineProvider').value = this.value; });
     updateVisibility();
+    const cancelBtn = document.getElementById('cancelBtn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function(){
+            const ret = this.getAttribute('data-return');
+            // Usar returnUrl solo si parece una ruta local segura (empieza por '/')
+            // o es una URL absoluta con el mismo origen. En caso contrario, volver atrás.
+            try {
+                if (ret && ret !== 'null' && ret !== '') {
+                    // Normalizar URL relativa
+                    const candidate = new URL(ret, window.location.origin);
+                    if (candidate.origin === window.location.origin && candidate.pathname.startsWith('/')) {
+                        window.location.href = candidate.href;
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Si la URL es inválida, caeremos al history.back()
+            }
+            history.back();
+        });
+    }
 });
 </script>
 </body>

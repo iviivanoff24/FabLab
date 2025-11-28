@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}" href="/css/main.css" />
+</head>
+<body>
+    <div th:replace="fragments/header :: siteHeader('admin')"></div>
+    <div class="container mt-4">
+        <h1>Panel de Administración</h1>
+        <p>Bienvenido al panel de administración. Aquí podrás gestionar las funcionalidades de administrador.</p>
+        <!-- Aquí se añadirán las funcionalidades específicas para admins -->
+    </div>
+</body>
+</html>
