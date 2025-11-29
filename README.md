@@ -1,4 +1,11 @@
+
 # FabLab (aplicación web)
+
+<!-- Badges -->
+[![Project Status](https://img.shields.io/badge/status-acad%C3%A9mico-blue)](https://github.com/calvarezju/ProyectoMDAI)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.x-brightgreen)](https://spring.io/projects/spring-boot)
+[![Thymeleaf](https://img.shields.io/badge/Thymeleaf-enabled-orange)](https://www.thymeleaf.org/)
+[![Maven](https://img.shields.io/badge/Maven-wrapper-blue)](https://maven.apache.org/)
 
 ---
 

@@ -3,20 +3,109 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fablab</title>
+    <title>README — FabLab Mérida</title>
     <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="img/logo.png" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/main.css" />
+    <style>
+      .hero { padding: 4rem 1rem; background: linear-gradient(90deg,#0d6efd22,#6c757d11); }
+      .feature { padding: 1.25rem; }
+      .logo-lg { width:96px; height:96px; object-fit:contain; }
+      .kbd { background:#f8f9fa; border:1px solid #e9ecef; padding:.25rem .5rem; border-radius:.25rem }
+    </style>
   </head>
   <body>
     <div th:replace="~{fragments/header :: siteHeader('readme')}"></div>
 
-    <br />
+    <main class="container">
+      <section class="hero text-center my-4 rounded-3 shadow-sm">
+        <div class="d-flex align-items-center justify-content-center gap-3">
+          <img src="img/logo.png" alt="Logo FabLab" class="logo-lg">
+          <div class="text-start">
+            <h1 class="h2 mb-1">FabLab Mérida</h1>
+            <p class="text-muted mb-0">El futuro se fabrica aquí — plataforma de gestión del laboratorio de fabricación digital.</p>
+          </div>
+        </div>
+      </section>
 
-    <main>
+      <section class="row align-items-start my-4">
+        <div class="col-md-8">
+          <h2>Resumen</h2>
+          <p>Aplicación web para gestionar usuarios, máquinas, reservas y cursos del FabLab. Incluye interfaz pública, panel administrativo y catálogo de recursos.</p>
+
+          <h3 class="mt-4">Características principales</h3>
+          <div class="row">
+            <div class="col-sm-6 feature">
+              <h5>Usuarios</h5>
+              <p class="text-muted mb-0">Registro, inicio de sesión y gestión de suscripciones.</p>
+            </div>
+            <div class="col-sm-6 feature">
+              <h5>Máquinas y reservas</h5>
+              <p class="text-muted mb-0">Catálogo de máquinas, disponibilidad y sistema de reservas con calendario.</p>
+            </div>
+            <div class="col-sm-6 feature">
+              <h5>Cursos y talleres</h5>
+              <p class="text-muted mb-0">Listado de cursos, inscripción y gestión de plazas.</p>
+            </div>
+            <div class="col-sm-6 feature">
+              <h5>Panel administrativo</h5>
+              <p class="text-muted mb-0">CRUD para máquinas, cursos y usuarios.</p>
+            </div>
+          </div>
+
+          <h3 class="mt-4">A futuro</h3>
+          <ul>
+            <li>Habilitar notificaciones por correo para reservas y recordatorios.</li>
+            <li>Registrar historial de uso por usuario para auditoría.</li>
+            <li>Incluir galería de proyectos y tienda en línea como extensiones futuras.</li>
+          </ul>
+        </div>
+
+        <aside class="col-md-4">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Instalación rápida</h5>
+              <p class="card-text small">Desde PowerShell, dentro de la carpeta del proyecto:</p>
+              <pre class="small"><code class="kbd">./mvnw.cmd spring-boot:run</code></pre>
+              <p class="small text-muted mb-0">O crear JAR:</p>
+              <pre class="small"><code class="kbd">./mvnw.cmd -DskipTests package
+java -jar target\fablab-0.0.1-SNAPSHOT.jar</code></pre>
+            </div>
+          </div>
+
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6>Configuración</h6>
+              <p class="small text-muted">Ajusta `application.properties` con tu conexión a MySQL (ver carpeta <code>Documentacion/</code>).</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <h6>Autores</h6>
+              <p class="mb-0">Iván Herculano García — 80100837W</p>
+              <p class="mb-0">Carmen Álvarez Murillo — 80230317S</p>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="my-4">
+        <h3>Estructura del proyecto</h3>
+        <ul>
+          <li><code>src/main/java</code> — Código Java (Spring Boot)</li>
+          <li><code>src/main/resources/templates</code> — Vistas Thymeleaf</li>
+          <li><code>pom.xml</code> — Dependencias y configuración Maven</li>
+          <li><code>Documentacion/</code> — Scripts SQL y notas (MySQL / Docker)</li>
+        </ul>
+      </section>
 
     </main>
+
+    <footer class="text-center py-4 text-muted small">
+      <div class="container">Proyecto académico — FabLab Mérida. Código disponible en este repositorio.</div>
+    </footer>
 
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="/js/main.js" defer></script>
