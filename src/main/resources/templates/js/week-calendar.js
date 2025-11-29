@@ -184,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="px-2 slot-medium">&nbsp;</div><div>50-75%</div>
       <div class="px-2 slot-high">&nbsp;</div><div>75-99%</div>
       <div class="px-2 slot-full">&nbsp;</div><div>100%</div>
-      <div class="px-2 slot-unavailable">&nbsp;</div><div>No disponible</div>
     `;
 
     container.appendChild(table);

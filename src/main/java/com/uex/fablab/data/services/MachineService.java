@@ -1,5 +1,6 @@
 package com.uex.fablab.data.services;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -61,7 +62,7 @@ public class MachineService {
             try {
                 Path p = uploadsDir.resolve("machine-" + id + ext);
                 Files.deleteIfExists(p);
-            } catch (Exception ignored) {
+            } catch (IOException ignored) {
             }
         }
     }
