@@ -49,7 +49,7 @@
                   <span class="badge" th:classappend="${spotsFull} ? ' text-bg-danger' : ' text-bg-success'">Plazas: <span th:text="${c.inscriptions.size()}"></span>/<span th:text="${c.capacity}"></span></span>
                 </p>
                 <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>
-                    <a th:if="${isAdmin or statusName != 'Plazas_completas'}" th:href="@{/courses/{id}/enroll(id=${c.id})}" class='btn btn-sm btn-warning'>Inscribirse</a>
+                  <a th:href="@{/courses/{id}(id=${c.id})}" class='btn btn-sm btn-light'>Saber más</a>
                     <a th:if="${isAdmin}" th:href="@{/admin/modify-course(id=${c.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
                     <form th:if="${isAdmin}" th:id="${'form-delete-course-' + c.id}" th:action="@{/admin/courses/{id}/delete(id=${c.id})}" method='post' class='d-inline'></form>
                     <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteCourseModal' 
