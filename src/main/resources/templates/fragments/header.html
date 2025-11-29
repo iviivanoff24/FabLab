@@ -1,5 +1,5 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="siteHeader(active)">
-  <header class="border-bottom bg-white">
+  <header class="border-0 bg-white">
     <div class="container py-2 d-flex justify-content-between align-items-center">
       <!-- LOGO -->
       <div class="d-flex align-items-center">
@@ -16,7 +16,7 @@
     </div>
 
     <!-- NAV LINKS (DEBAJO DEL LOGO) -->
-    <nav class="border-top">
+    <nav class="border-0">
       <div class="container">
         <ul class="nav nav-underline">
           <li class="nav-item"><a th:classappend="${active}=='home'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/">Inicio</a></li>
