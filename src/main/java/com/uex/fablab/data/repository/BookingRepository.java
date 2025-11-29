@@ -23,4 +23,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     /** Comprueba si existe alguna reserva para un turno. */
     boolean existsByShift(Shift shift);
+
+    /** Lista reservas cuyo turno está en la lista dada (consulta en lote). */
+    List<Booking> findByShiftIn(List<Shift> shifts);
 }

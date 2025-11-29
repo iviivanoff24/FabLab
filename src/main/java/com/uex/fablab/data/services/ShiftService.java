@@ -26,6 +26,8 @@ public class ShiftService {
     public Optional<Shift> findById(Long id) { return repo.findById(id); }
     /** Lista turnos por máquina y fecha. */
     public List<Shift> findByMachineAndDate(Machine m, LocalDate d) { return repo.findByMachineAndDate(m, d); }
+    /** Busca turnos en un rango de fechas. */
+    public List<Shift> findByDateBetween(LocalDate start, LocalDate end) { return repo.findByDateBetween(start, end); }
     /** Guarda turno. */
     public Shift save(Shift s) { return repo.save(s); }
     /** Elimina turno por id. */

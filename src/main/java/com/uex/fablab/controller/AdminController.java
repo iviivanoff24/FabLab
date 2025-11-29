@@ -87,14 +87,56 @@ public class AdminController {
     }
 
     @GetMapping("/admin/admin")
-    public String adminPanel(Model model) {
-        model.addAttribute("users", adminService.listAllUsers());
+    public String adminPanel(Model model,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "sortUsers", required = false) String sortUsers,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "dirUsers", required = false) String dirUsers,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "sortBookings", required = false) String sortBookings,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "dirBookings", required = false) String dirBookings,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "sortShifts", required = false) String sortShifts,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "dirShifts", required = false) String dirShifts,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "sortInscriptions", required = false) String sortInscriptions,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "dirInscriptions", required = false) String dirInscriptions,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "sortReceipts", required = false) String sortReceipts,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "dirReceipts", required = false) String dirReceipts) {
+
+        // Users: default order by fechaRegistro desc (nuevas -> antiguas)
+        var users = adminService.listAllUsers();
+        java.util.Comparator<com.uex.fablab.data.model.User> userComp = java.util.Comparator.comparing(u -> u.getFechaRegistro(), java.util.Comparator.nullsLast(java.time.LocalDate::compareTo));
+        if (dirUsers == null || !"asc".equalsIgnoreCase(dirUsers)) {
+            users.sort(userComp.reversed());
+        } else {
+            users.sort(userComp);
+        }
+        model.addAttribute("users", users);
+
         model.addAttribute("machines", machineService.listAll());
-        model.addAttribute("bookings", bookingService.listAll());
-        model.addAttribute("shifts", shiftService.listAll());
+
+        // Bookings: default by fechaReserva desc
+        var bookings = bookingService.listAll();
+        java.util.Comparator<com.uex.fablab.data.model.Booking> bookingComp = java.util.Comparator.comparing(b -> b.getFechaReserva(), java.util.Comparator.nullsLast(java.time.LocalDate::compareTo));
+        if (dirBookings == null || !"asc".equalsIgnoreCase(dirBookings)) bookings.sort(bookingComp.reversed()); else bookings.sort(bookingComp);
+        model.addAttribute("bookings", bookings);
+
+        // Shifts: default by date desc
+        var shifts = shiftService.listAll();
+        java.util.Comparator<com.uex.fablab.data.model.Shift> shiftComp = java.util.Comparator.comparing(s -> s.getDate(), java.util.Comparator.nullsLast(java.time.LocalDate::compareTo));
+        if (dirShifts == null || !"asc".equalsIgnoreCase(dirShifts)) shifts.sort(shiftComp.reversed()); else shifts.sort(shiftComp);
+        model.addAttribute("shifts", shifts);
+
         model.addAttribute("courses", courseService.listAll());
-        model.addAttribute("inscriptions", inscriptionService.listAll());
-        model.addAttribute("receipts", receiptService.listAll());
+
+        // Inscriptions: default by date desc
+        var inscriptions = inscriptionService.listAll();
+        java.util.Comparator<com.uex.fablab.data.model.Inscription> insComp = java.util.Comparator.comparing(i -> i.getDate(), java.util.Comparator.nullsLast(java.time.LocalDate::compareTo));
+        if (dirInscriptions == null || !"asc".equalsIgnoreCase(dirInscriptions)) inscriptions.sort(insComp.reversed()); else inscriptions.sort(insComp);
+        model.addAttribute("inscriptions", inscriptions);
+
+        // Receipts: default by fechaEmision desc
+        var receipts = receiptService.listAll();
+        java.util.Comparator<com.uex.fablab.data.model.Receipt> recComp = java.util.Comparator.comparing(r -> r.getFechaEmision(), java.util.Comparator.nullsLast(java.time.LocalDate::compareTo));
+        if (dirReceipts == null || !"asc".equalsIgnoreCase(dirReceipts)) receipts.sort(recComp.reversed()); else receipts.sort(recComp);
+        model.addAttribute("receipts", receipts);
+
         return "admin/admin";
     }
 

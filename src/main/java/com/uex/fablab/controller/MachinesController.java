@@ -91,7 +91,7 @@ public class MachinesController {
                 return "/img/upload/machines/machine-" + id + ext;
             }
         }
-        return "/img/logo.png";
+        return "/img/maquina.png";
     }
 
     /**

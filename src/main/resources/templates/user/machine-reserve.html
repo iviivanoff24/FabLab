@@ -134,18 +134,27 @@ document.addEventListener('DOMContentLoaded',function(){
     if (payBtn) payBtn.disabled = count === 0;
   }
   function syncHiddenInputs(){
-    // limpiar previos
-    form.querySelectorAll('input[name="shiftIds"], input[name="startHours"]').forEach(el => el.remove());
-    // por cada checkbox:
+    // limpiar previos (incluye inputs de fecha pareados)
+    form.querySelectorAll('input[name="shiftIds"], input[name="startHours"], input[name="shiftDates"], input[name="startDates"]').forEach(el => el.remove());
+    // obtener la fecha seleccionada del formulario (campo date ya presente)
+    const selectedDateInput = form.querySelector('input[name="date"]');
+    const selectedDateValue = selectedDateInput ? selectedDateInput.value : '';
+    // por cada checkbox seleccionado:
     document.querySelectorAll('#multiReserveForm input[type=checkbox]:checked').forEach(cb => {
       const sid = cb.getAttribute('data-shift-id');
       const hour = cb.getAttribute('data-hour');
       if (sid && sid !== 'null') {
         const i = document.createElement('input');
         i.type = 'hidden'; i.name = 'shiftIds'; i.value = sid; form.appendChild(i);
+        // enviar la fecha asociada al shift (por si el backend necesita el pairing)
+        const d = document.createElement('input');
+        d.type = 'hidden'; d.name = 'shiftDates'; d.value = selectedDateValue; form.appendChild(d);
       } else if (hour) {
         const i = document.createElement('input');
         i.type = 'hidden'; i.name = 'startHours'; i.value = hour; form.appendChild(i);
+        // enviar la fecha asociada a la hora creada para que el pago reserve ese día, no el día del recibo
+        const d = document.createElement('input');
+        d.type = 'hidden'; d.name = 'startDates'; d.value = selectedDateValue; form.appendChild(d);
       }
     });
   }

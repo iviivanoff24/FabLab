@@ -95,3 +95,106 @@ header {
 
 /* Si aún hay riesgo de cálculo distinto por el navegador, recorta discretamente */
 #fabcalDays { width: 100%; min-width: 0; overflow-x: clip; }
+
+/* === Calendario semanal por franjas horarias === */
+#weekSchedule {
+  overflow-x: auto;
+}
+.week-grid {
+  display: grid;
+  grid-template-columns: 8rem repeat(7, minmax(6rem, 1fr));
+  gap: 0.25rem;
+  align-items: stretch;
+}
+.week-grid .cell {
+  border: 1px solid #e9ecef;
+  padding: 0.35rem;
+  min-height: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+.week-grid .header {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+.slot-legend { font-size: 0.85rem; }
+
+/* Tabla semanal alternativa */
+.week-table {
+  width: 100%;
+  /* Usar separate para que el border-radius funcione y no haya colapsado de bordes */
+  border-collapse: separate;
+  /* separación suave entre celdas */
+  border-spacing: 6px;
+  border: none;
+  border-radius: 6px; /* redondeo suave */
+  overflow: hidden; /* recorta los pseudo-elementos/filas para respetar el radio */
+}
+.week-table th, .week-table td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.15rem 0.12rem; /* reducir padding para tabla más compacta */
+  min-width: 1.8rem;
+  border: none; /* quitar bordes visibles */
+  /* esquinas ligeramente redondeadas en cada celda */
+  border-radius: 6px;
+  overflow: hidden;
+  background-clip: padding-box; /* hace que el fondo respete el radio */
+}
+.week-table thead th {
+  background: #f8f9fa;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.3rem;
+}
+.week-table tbody th {
+  text-align: center;
+  background: #fff;
+  color: #6c757d;
+  font-size: 0.78rem;
+  padding: 0.12rem 0.2rem;
+}
+.week-table td.slot-empty { background: #f8f9fa; }
+.week-table td.slot-available { background: var(--secondary-color, #28a745); color: #fff; }
+.week-table td.slot-medium { background: #ffc107; color: #212529; }
+.week-table td.slot-high { background: #fd7e14; color: #fff; }
+.week-table td.slot-full { background: #dc3545; color: #fff; }
+/* Slot sin máquinas/turnos: no disponible */
+.week-table td.slot-unavailable { background: #6c757d; color: #fff; opacity: 0.95; }
+
+/* Forzar tamaño cuadrado para las celdas coloreadas y quitar contenido visible */
+.week-table td {
+  /* width: 2.1rem; */
+  height: 2.1rem;
+  padding: 0;
+}
+.week-table td::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ajustes responsive: aún más pequeño en pantallas estrechas */
+@media (max-width: 720px) {
+  .week-table th, .week-table td { min-width: 1.6rem; }
+  .week-table td { width: 1.6rem; height: 1.6rem; }
+  .week-table thead th { font-size: 0.7rem; }
+}
+.week-grid .hour {
+  background: #ffffff;
+  color: #6c757d;
+}
+.slot-available { background: #28a745; color: #fff; }
+.slot-medium { background: #ffc107; color: #212529; }
+.slot-high { background: #fd7e14; color: #fff; }
+.slot-full { background: #dc3545; color: #fff; }
+.slot-empty { background: #e9ecef; color: #6c757d; }
+.slot-legend { font-size: 0.85rem; }
+
+@media (max-width: 720px) {
+  .week-grid { grid-template-columns: 5.5rem repeat(7, minmax(5rem, 1fr)); }
+  .week-grid .cell { font-size: 0.78rem; padding: 0.25rem; }
+}

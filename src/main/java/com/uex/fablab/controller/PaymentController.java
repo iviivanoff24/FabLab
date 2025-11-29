@@ -84,7 +84,6 @@ public class PaymentController {
             if (mopt.isPresent() && mopt.get().getHourlyPrice() != null) {
                 unitPrice = mopt.get().getHourlyPrice().doubleValue();
                 // contar solo ids válidos
-                selectedCount = 0;
                 int sids = (shiftIds != null) ? (int) shiftIds.stream().filter(java.util.Objects::nonNull).count() : 0;
                 int shours = (startHours != null) ? startHours.size() : 0;
                 selectedCount = sids + shours;
@@ -133,10 +132,10 @@ public class PaymentController {
     private String buildReservationConcept(com.uex.fablab.data.model.Machine machine, int count, String dateStr) {
         String concepto = "Reserva máquina " + (machine != null ? machine.getName() : "N/D");
         if (count > 1) {
-            concepto += " " + count + " turno(s)";
+            concepto += " · " + count + " turno(s)";
         }
         if (dateStr != null && !dateStr.isBlank()) {
-            concepto += " " + dateStr;
+            concepto += " · " + dateStr;
         }
         return concepto;
     }

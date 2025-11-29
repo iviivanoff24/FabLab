@@ -352,7 +352,7 @@ public class CourseController {
             Path p = getUploadsDir().resolve("course-" + id + ext);
             if (Files.exists(p)) return "/img/upload/courses/course-" + id + ext;
         }
-        return "/img/logo.png";
+        return "/img/curso.png";
     }
 
     private void deleteCourseImages(Long id) {
