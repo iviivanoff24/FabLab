@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +29,6 @@ public class AvailabilityController {
     private final MachineService machineService;
     private final ShiftService shiftService;
     private final BookingService bookingService;
-    private static final Logger log = LoggerFactory.getLogger(AvailabilityController.class);
 
     public AvailabilityController(MachineService machineService, ShiftService shiftService, BookingService bookingService) {
         this.machineService = machineService;
