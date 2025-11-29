@@ -21,6 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
   }
 
+  function formatDateLocal(d) {
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    return y + '-' + (m < 10 ? '0' + m : m) + '-' + (day < 10 ? '0' + day : day);
+  }
+
   function render(){
     const y = view.getFullYear();
     const m = view.getMonth();
@@ -37,7 +44,19 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.textContent=d;
       const thisDate = new Date(y,m,d);
       if (sameDay(thisDate, selected)) btn.classList.add('selected');
-      btn.addEventListener('click', () => { selected = thisDate; render(); });
+      btn.addEventListener('click', () => {
+        selected = thisDate;
+        render();
+        try {
+          // Emitir evento custom con timestamp (más robusto que serializar Date)
+          const payload = { ts: thisDate.getTime(), iso: formatDateLocal(thisDate) };
+          console.debug('calendar: dispatch daySelected', payload);
+          const ev = new CustomEvent('fablab:daySelected', { detail: payload });
+          document.dispatchEvent(ev);
+        } catch (e) {
+          console.warn('calendar: error dispatching event', e);
+        }
+      });
       daysEl.appendChild(btn);
     }
   }

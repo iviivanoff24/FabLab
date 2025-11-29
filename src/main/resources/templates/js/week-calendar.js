@@ -27,6 +27,27 @@ document.addEventListener('DOMContentLoaded', () => {
   if (weekPrev) weekPrev.addEventListener('click', () => { view.setDate(view.getDate() - 7); render(); });
   if (weekNext) weekNext.addEventListener('click', () => { view.setDate(view.getDate() + 7); render(); });
 
+  // Escuchar evento global cuando el calendario mensual selecciona un día
+  document.addEventListener('fablab:daySelected', (ev) => {
+    try {
+      console.debug('week-calendar: received fablab:daySelected', ev && ev.detail);
+      const d = ev && ev.detail && ev.detail.ts ? new Date(Number(ev.detail.ts)) : (ev && ev.detail && ev.detail.iso ? new Date(ev.detail.iso + 'T00:00') : null);
+      if (!d || isNaN(d.getTime())) {
+        console.warn('week-calendar: invalid date in event', ev && ev.detail);
+        return;
+      }
+      // Calcular lunes de la semana del día seleccionado
+      const monday = new Date(d);
+      monday.setHours(0,0,0,0);
+      monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+      console.debug('week-calendar: switching view to monday', monday.toISOString().slice(0,10));
+      view = monday;
+      render();
+    } catch (e) {
+      console.error('week-calendar: error handling fablab:daySelected', e);
+    }
+  });
+
   // Generador de fechas de la semana (lunes..domingo)
   function weekDates(start) {
     const arr = [];
