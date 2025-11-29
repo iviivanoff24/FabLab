@@ -35,8 +35,20 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 /**
- * API REST de cursos.
- * Permite listar, crear, consultar, actualizar y eliminar cursos.
+ * Controlador para la gestión de cursos.
+ *
+ * <p>Expone tanto API REST (endpoints bajo <code>/api/courses</code>) como
+ * las páginas HTML y formularios administrativos relacionados con cursos
+ * (listado, detalle, alta, modificación y eliminación). Delega la lógica de
+ * negocio y persistencia a los servicios inyectados (<code>CourseService</code>,
+ * <code>InscriptionService</code>, <code>UserService</code>).</p>
+ *
+ * <p>Comportamiento importante:
+ * - Las vistas Thymeleaf utilizan los métodos que llenan el {@code Model}.
+ * - Los endpoints REST devuelven objetos {@code Course} y códigos HTTP
+ *   apropiados (201, 200, 404, 204).
+ * - Las operaciones que gestionan imágenes validan tamaño y tipo y las
+ *   almacenan en el directorio de uploads del proyecto.</p>
  */
 @Controller
 @Validated
@@ -58,6 +70,13 @@ public class CourseController {
     }
 
     // --- HTML views and admin form handlers (moved here) ---
+    /**
+     * Página con el listado de cursos.
+     *
+     * @param session sesión HTTP (se consulta atributo USER_ADMIN)
+     * @param model modelo Thymeleaf donde se añaden atributos
+     * @return nombre de la vista que renderiza el listado
+     */
     @GetMapping("/courses")
     public String coursesPage(HttpSession session, Model model) {
         boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
@@ -73,6 +92,14 @@ public class CourseController {
     @GetMapping("/admin/courses/new")
     public String newCoursePage() { return "admin/add-course"; }
 
+    /**
+     * Página de modificación de un curso (administradores).
+     *
+     * @param id id del curso
+     * @param session sesión HTTP
+     * @param model modelo de la vista
+     * @return vista de modificación o redirección con mensaje de error
+     */
     @GetMapping("/admin/modify-course")
     public String modifyCoursePage(@RequestParam("id") Long id, HttpSession session, Model model) {
         var opt = courseService.findById(id);
@@ -88,6 +115,17 @@ public class CourseController {
         return "admin/modify-course";
     }
 
+    /**
+     * Detalle público de un curso.
+     *
+     * @param id id del curso
+     * @param session sesión HTTP (para identificar usuario y permisos)
+     * @param successParam parámetro opcional que indica éxito de operación
+     * @param canceledParam parámetro opcional que indica cancelación
+     * @param errorParam parámetro opcional con texto de error
+     * @param model modelo de la vista
+     * @return nombre de la vista de detalle o redirección si no existe
+     */
     @GetMapping("/courses/{id}")
         public String courseDetailsPage(@PathVariable("id") Long id, HttpSession session,
             @RequestParam(value = "success", required = false) String successParam,
@@ -146,7 +184,19 @@ public class CourseController {
     }
 
     @PostMapping("/courses/{id}/cancel")
-    public String cancelInscription(@PathVariable("id") Long id,
+        /**
+         * Cancela una inscripción en un curso.
+         * <p>Los administradores pueden cancelar inscripciones de otros usuarios
+         * mediante parámetros; los usuarios normales solo pueden cancelar su propia
+         * inscripción.</p>
+         *
+         * @param id id del curso
+         * @param inscriptionId id de la inscripción a borrar (opcional)
+         * @param userId id del usuario objetivo (opcional, admin)
+         * @param session sesión HTTP
+         * @return redirección con indicador de resultado
+         */
+        public String cancelInscription(@PathVariable("id") Long id,
             @RequestParam(value = "inscriptionId", required = false) Long inscriptionId,
             @RequestParam(value = "userId", required = false) Long userId,
             HttpSession session) {
@@ -193,6 +243,14 @@ public class CourseController {
     }
 
     @PostMapping("/courses/{id}/inscribe")
+    /**
+     * Inscribe al usuario autenticado en el curso indicado si hay plazas y no
+     * ha comenzado.
+     *
+     * @param id id del curso
+     * @param session sesión HTTP (contiene {@code USER_ID})
+     * @return redirección con resultado (success o error)
+     */
     public String inscribeCourse(@PathVariable("id") Long id, HttpSession session) {
         Object userId = session.getAttribute("USER_ID");
         if (!(userId instanceof Long)) {
@@ -269,6 +327,21 @@ public class CourseController {
         }
     }
 
+    /**
+     * Actualiza un curso desde el formulario administrativo y gestiona la
+     * posible subida/actualización de la imagen asociada.
+     *
+     * @param id id del curso a actualizar
+     * @param title título (opcional)
+     * @param description descripción (opcional)
+     * @param startDate fecha inicio (ISO, opcional)
+     * @param endDate fecha fin (ISO, opcional)
+     * @param capacity plazas (opcional)
+     * @param price precio (opcional)
+     * @param image imagen a subir (opcional)
+     * @return redirección al listado o a la página de edición con error
+     */
+
     @PostMapping("/admin/courses/{id}")
     public String updateCourseFromForm(@PathVariable("id") Long id,
             @RequestParam(value = "title", required = false) String title,
@@ -303,12 +376,19 @@ public class CourseController {
         }
     }
 
+    /**
+     * Elimina un curso y sus imágenes asociadas (si existieran).
+     *
+     * @param id id del curso
+     * @return redirección al listado de cursos
+     */
     @PostMapping("/admin/courses/{id}/delete")
     public String deleteCourseFromForm(@PathVariable("id") Long id) {
         try { courseService.delete(id); deleteCourseImages(id); } catch (Exception ignored) {}
         return "redirect:/courses";
     }
 
+    /** API REST: crea un curso desde JSON y devuelve 201 Created. */
     @PostMapping("/api/courses")
     @ResponseBody
     public ResponseEntity<Course> create(@Valid @RequestBody Course course) {
@@ -316,12 +396,14 @@ public class CourseController {
         return ResponseEntity.created(URI.create("/api/courses/" + saved.getId())).body(saved);
     }
 
+    /** API REST: obtiene un curso por su id (200) o 404 si no existe. */
     @GetMapping("/api/courses/{id}")
     @ResponseBody
     public ResponseEntity<Course> one(@PathVariable Long id) {
         return courseService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    /** API REST: actualiza campos de un curso existente. */
     @PutMapping("/api/courses/{id}")
     @ResponseBody
     public ResponseEntity<Course> update(@PathVariable Long id, @Valid @RequestBody Course input) {
@@ -338,6 +420,7 @@ public class CourseController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    /** API REST: elimina un curso por id (204) o 404 si no existe. */
     @DeleteMapping("/api/courses/{id}")
     @ResponseBody
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -354,7 +437,11 @@ public class CourseController {
         }
         return "/img/curso.png";
     }
-
+    /**
+     * Elimina los archivos de imagen asociados a un curso (si existen).
+     *
+     * @param id id del curso
+     */
     private void deleteCourseImages(Long id) {
         if (id == null) return;
         String[] exts = {".jpg",".png",".gif"};
@@ -363,6 +450,12 @@ public class CourseController {
         }
     }
 
+    /**
+     * Obtiene el directorio de uploads para imágenes de cursos. Intenta la
+     * ruta del módulo y, si no existe, usa la ruta local del proyecto.
+     *
+     * @return {@code Path} al directorio de uploads
+     */
     private Path getUploadsDir() {
         Path moduleDir = Path.of("ProyectoMDAI","src","main","resources","templates","img","upload","courses");
         if (Files.exists(moduleDir.getParent() != null ? moduleDir.getParent().getParent() : moduleDir)) return moduleDir;

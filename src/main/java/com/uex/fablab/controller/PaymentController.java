@@ -30,9 +30,20 @@ import com.uex.fablab.data.services.UserService;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * Controlador simple para la página de pago. Esta implementación ofrece una
- * vista de pago y una acción simulada de procesamiento. En producción hay que
- * integrar un proveedor de pagos (Stripe, PayPal, etc.)
+ * Controlador para la página y proceso de pago.
+ *
+ * <p>Proporciona una vista para iniciar pagos y endpoints que simulan el
+ * flujo de pago. Está pensado como ejemplo/poC: en un entorno real debería
+ * integrarse con un proveedor de pagos (Stripe, PayPal, etc.).</p>
+ *
+ * <p>Responsabilidades:
+ * <ul>
+ *   <li>Mostrar la página de pago con datos resumidos del elemento a pagar.</li>
+ *   <li>Procesar la petición de pago (simulada) y crear recibos.</li>
+ *   <li>Tras marcar un recibo como pagado, realizar la acción posterior
+ *       correspondiente (crear inscripción o reservas).</li>
+ * </ul>
+ * </p>
  */
 @Controller
 public class PaymentController {
@@ -57,7 +68,26 @@ public class PaymentController {
     }
 
     /**
-     * Muestra la página de pago. Requiere usuario logueado.
+        * Muestra la página de pago.
+        *
+        * <p>Prepara los datos necesarios para la vista de pago (tipo de pago,
+        * importe, elementos/turnos seleccionados, etc.). Requiere que el usuario
+        * esté autenticado (se comprueba el atributo {@code USER_ID} en la sesión).
+        * Si no hay usuario redirige a login con un mensaje.</p>
+        *
+        * @param type tipo de compra ("course","reservation","reservation_multi",...)
+        * @param itemId id del recurso (curso o máquina) relacionado con el pago
+        * @param itemName nombre legible del elemento a pagar (opcional)
+        * @param amount importe mostrado en la UI (opcional; se recomputa cuando procede)
+        * @param returnUrl URL de retorno tras el pago (opcional)
+        * @param date fecha asociada a la reserva (opcional)
+        * @param startHour hora asociada a la reserva (opcional)
+        * @param shiftId id de turno (opcional)
+        * @param shiftIds lista de ids de turnos (opcional, para multi-reserva)
+        * @param startHours lista de horas seleccionadas (opcional, para multi-reserva)
+        * @param session sesión HTTP que contiene datos de usuario
+        * @param model modelo Thymeleaf donde se añaden atributos para la vista
+        * @return nombre de la vista {@code user/payment} o redirección a login
      */
     @GetMapping("/payment")
     public String showPaymentPage(@RequestParam(value = "type", required = false) String type,
@@ -130,6 +160,7 @@ public class PaymentController {
     }
 
     private String buildReservationConcept(com.uex.fablab.data.model.Machine machine, int count, String dateStr) {
+        /** Construye el texto de concepto para una reserva. */
         String concepto = "Reserva máquina " + (machine != null ? machine.getName() : "N/D");
         if (count > 1) {
             concepto += " · " + count + " turno(s)";
@@ -141,8 +172,34 @@ public class PaymentController {
     }
 
     /**
-     * Procesa (simula) el pago y, según el tipo, crea la inscripción o la
-     * reserva.
+     * Procesa la petición de pago (simulada) y crea el recibo asociado.
+     *
+     * <p>El método soporta diferentes {@code type}:
+     * <ul>
+     *   <li>{@code course}: pago de una inscripción a curso.</li>
+     *   <li>{@code reservation}: pago de una única reserva.</li>
+     *   <li>{@code reservation_multi}: pago de varias reservas/horas.</li>
+     * </ul></p>
+     *
+     * <p>Dependiendo del método de pago (efectivo, online, tarjeta) el recibo
+     * se marca como pagado o pendiente y luego se invoca
+     * {@link #performPostPaymentAction} para crear la inscripción/reserva si
+     * procede.</p>
+     *
+     * @param type tipo de pago (ver arriba)
+     * @param itemId id del recurso relacionado (curso o máquina)
+     * @param itemName nombre legible del recurso (opcional)
+     * @param amount importe recibido desde la UI (opcional)
+     * @param paymentMethod método de pago (Tarjeta, Efectivo, Online)
+     * @param onlineProvider proveedor online (opcional)
+     * @param returnUrl URL de retorno tras pago online (opcional)
+     * @param shiftId id de turno (opcional)
+     * @param shiftIds lista de ids para multi-reserva (opcional)
+     * @param startHours lista de horas seleccionadas para crear turnos (opcional)
+     * @param startHourStr hora seleccionada (opcional)
+     * @param dateStr fecha asociada (opcional)
+     * @param session sesión HTTP con {@code USER_ID}
+     * @return redirección a la vista correspondiente según el resultado
      */
     @PostMapping("/payment/process")
     public String processPayment(@RequestParam(value = "type", required = false) String type,
@@ -347,6 +404,11 @@ public class PaymentController {
             @RequestParam(value = "shiftIds", required = false) String shiftIdsCsv,
             @RequestParam(value = "startHours", required = false) String startHoursCsv,
             @RequestParam(value = "returnUrl", required = false) String returnUrl) {
+        /*
+         * Callback simulado tras pago online: marca el recibo como pagado y
+         * delega en performPostPaymentAction para completar la operación.
+         * Parámetros CSV son convertidos a listas si están presentes.
+         */
         var ropt = receiptService.findById(receiptId);
         if (ropt.isPresent()) {
             Receipt rec = ropt.get();
@@ -383,6 +445,14 @@ public class PaymentController {
     }
 
     private String performPostPaymentAction(String type, Long itemId, Long shiftId, String startHourStr, String dateStr, User user, java.util.List<Long> shiftIds, Long receiptId, java.util.List<Integer> startHours) {
+        /**
+         * Ejecuta la acción posterior al pago: crear inscripción o reservas.
+         *
+         * <p>Si el recibo está marcado como pagado realiza las operaciones
+         * correspondientes de forma inmediata; si el recibo está pendiente
+         * (por ejemplo, pago en efectivo), devuelve una redirección indicando
+         * el estado pendiente para que un administrador lo confirme.</p>
+         */
         try {
             boolean receiptPaid = true;
             if (receiptId != null) {

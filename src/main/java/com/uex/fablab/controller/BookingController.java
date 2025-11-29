@@ -28,8 +28,24 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  * Controlador de reservas de máquinas.
- * Migrado a Thymeleaf: ya no se genera HTML por concatenación, se pasa
- * información de slots y máquina al modelo.
+ *
+ * <p>Gestiona las vistas y acciones relacionadas con la reserva y
+ * cancelación de turnos para las máquinas. Está pensado para ser usado
+ * por capas de presentación basadas en Thymeleaf: los métodos preparan
+ * información en el {@code Model} y devuelven nombres de vistas o
+ * redirecciones con parámetros de estado.</p>
+ *
+ * <p>Responsabilidades principales:
+ * - Mostrar la página de reserva de una máquina con sus franjas horarias.
+ * - Crear reservas para usuarios autenticados, validando reglas de negocio
+ *   (no reservar en fines de semana, no reservar en el pasado, controlar
+ *   duplicados, etc.).
+ * - Cancelar reservas por el usuario que reservó o por un administrador
+ *   siempre que el turno no haya comenzado.</p>
+ *
+ * <p>El controlador delega la lógica de acceso y persistencia a los
+ * servicios inyectados: {@code MachineService}, {@code ShiftService},
+ * {@code BookingService} y {@code UserService}.</p>
  */
 @Controller
 public class BookingController {
@@ -55,7 +71,20 @@ public class BookingController {
     }
 
     /**
-     * Página de reserva para una máquina específica (vista Thymeleaf).
+     * Muestra la página de reserva para una máquina específica (vista Thymeleaf).
+     *
+     * <p>Prepara los slots horarios de la máquina para la fecha seleccionada,
+     * añade flags de estado en el modelo (si el usuario es admin, mensajes de
+     * éxito/error) y devuelve la vista {@code user/machine-reserve}.</p>
+     *
+     * @param machineId id de la máquina
+     * @param session sesión HTTP (contiene {@code USER_ID})
+     * @param dateStr fecha seleccionada en formato ISO (opcional)
+     * @param successParam indicador de operación exitosa (opcional)
+     * @param canceledParam indicador de cancelación (opcional)
+     * @param errorParam texto de error (opcional)
+     * @param model modelo de la vista donde se añaden atributos
+     * @return nombre de la vista Thymeleaf
      */
     @GetMapping("/machines/{id}/reserve")
     public String reserveMachinePage(@PathVariable("id") Long machineId, HttpSession session,
@@ -327,7 +356,7 @@ public class BookingController {
         }
     }
 
-    /** DTO simple para representar un slot horario en la vista */
+    /** DTO simple para representar un slot horario en la vista. */
     public static class SlotView {
         public int hour;
         public LocalTime startTime;
@@ -340,6 +369,20 @@ public class BookingController {
         public Long shiftId;
     }
 
+    /**
+     * Construye la lista de {@link SlotView} para la vista de reserva de la
+     * máquina.
+     *
+     * <p>Genera slots horarios desde las 09:00 hasta las 20:00 teniendo en
+     * cuenta la existencia de turnos, reservas, si el usuario es administrador
+     * o el propietario de la reserva, y si la franja está en el futuro.</p>
+     *
+     * @param existing lista de turnos existentes para la máquina y fecha
+     * @param machine la máquina consultada
+     * @param date la fecha objetivo
+     * @param userId id del usuario en sesión (puede ser null)
+     * @return lista ordenada de {@link SlotView}
+     */
     private List<SlotView> buildSlots(List<Shift> existing, Machine machine, LocalDate date, Object userId) {
         java.util.Map<LocalTime, Shift> shiftByStart = new java.util.HashMap<>();
         for (Shift s : existing) {

@@ -15,7 +15,19 @@ import com.uex.fablab.data.services.ShiftService;
 import com.uex.fablab.data.services.UserService;
 
 /**
- * Controlador simple para las vistas del panel de administración.
+ * Controlador para las vistas del panel de administración.
+ *
+ * <p>Este controlador agrupa las rutas necesarias para la gestión administrativa
+ * del sistema: listado y modificación de usuarios, gestión de máquinas,
+ * reservas, turnos, cursos, inscripciones y recibos. Proporciona enlaces a
+ * servicios de dominio (AdminService, MachineService, BookingService, etc.) y
+ * centraliza la lógica de flujo de operaciones que afectan a varias entidades
+ * (por ejemplo, confirmar reservas al marcar un recibo como pagado).</p>
+ *
+ * <p>Notas:
+ * - Las rutas relativas comienzan por <code>/admin/...</code>.
+ * - Se delega la lógica de negocio en los servicios inyectados.
+ * - Los métodos de controlador devuelven nombres de vistas o redirecciones.</p>
  */
 @Controller
 public class AdminController {
@@ -58,6 +70,22 @@ public class AdminController {
     }
 
     @org.springframework.web.bind.annotation.PostMapping("/admin/users/{id}")
+    /**
+     * Actualiza los datos de un usuario a partir de un formulario.
+     *
+     * <p>Se permite actualizar nombre, email, teléfono y (opcionalmente)
+     * contraseña. Si se marca el parámetro <code>admin</code>, se delega al
+     * servicio <code>AdminService</code> para cambiar el rol del usuario.</p>
+     *
+     * @param id              identificador del usuario a actualizar
+     * @param name            nuevo nombre (opcional)
+     * @param email           nuevo correo (opcional)
+     * @param newPassword     nueva contraseña (opcional)
+     * @param confirmPassword confirmación de la contraseña (opcional)
+     * @param telefono        teléfono (opcional)
+     * @param adminFlag       si true, asignar rol de administrador
+     * @return redirección a la página de administración o a la edición con error
+     */
     public String updateUserFromForm(@org.springframework.web.bind.annotation.PathVariable("id") Long id,
                                      @org.springframework.web.bind.annotation.RequestParam(value = "name", required = false) String name,
                                      @org.springframework.web.bind.annotation.RequestParam(value = "email", required = false) String email,
@@ -87,6 +115,25 @@ public class AdminController {
     }
 
     @GetMapping("/admin/admin")
+    /**
+     * Muestra el panel de administración con listados (usuarios, máquinas,
+     * reservas, turnos, cursos, inscripciones y recibos).
+     *
+     * <p>Admite parámetros de ordenación y dirección para varios listados.</p>
+     *
+     * @param model          modelo de la vista
+     * @param sortUsers      campo para ordenar usuarios (no obligatorio)
+     * @param dirUsers       dirección del orden (asc|desc)
+     * @param sortBookings   campo de orden para reservas
+     * @param dirBookings    dirección para reservas
+     * @param sortShifts     campo de orden para turnos
+     * @param dirShifts      dirección para turnos
+     * @param sortInscriptions campo de orden para inscripciones
+     * @param dirInscriptions dirección para inscripciones
+     * @param sortReceipts   campo de orden para recibos
+     * @param dirReceipts    dirección para recibos
+     * @return nombre de la vista del panel de administración
+     */
     public String adminPanel(Model model,
                              @org.springframework.web.bind.annotation.RequestParam(value = "sortUsers", required = false) String sortUsers,
                              @org.springframework.web.bind.annotation.RequestParam(value = "dirUsers", required = false) String dirUsers,
@@ -179,6 +226,15 @@ public class AdminController {
 
     // Cambiar estado de un recibo (Pagado / Pendiente / Anulado)
     @org.springframework.web.bind.annotation.PostMapping("/admin/receipts/{id}/status")
+    /**
+     * Cambia el estado de un recibo. Si el recibo se marca como "Pagado",
+     * realiza acciones asociadas: confirma inscripciones, confirma o crea
+     * reservas y marca turnos como reservados cuando procede.
+     *
+     * @param id     identificador del recibo
+     * @param status nombre del estado (por ejemplo: "Pagado", "Pendiente", "Anulado")
+     * @return redirección al panel de administración o con parámetro de error
+     */
     public String changeReceiptStatus(@org.springframework.web.bind.annotation.PathVariable("id") Long id,
                                       @org.springframework.web.bind.annotation.RequestParam("status") String status) {
         try {

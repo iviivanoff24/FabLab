@@ -23,6 +23,20 @@ import com.uex.fablab.data.services.ShiftService;
 
 /**
  * Endpoint REST para exponer ocupación semanal por franjas horarias.
+ *
+ * <p>Proporciona un endpoint que devuelve, para una semana (empezando por el
+ * lunes indicado), la ocupación por franjas horarias en formato simple.
+ * La información de salida está pensada para ser consumida desde una UI que
+ * muestra la disponibilidad por hora y día.</p>
+ *
+ * <p>Comportamiento relevante:
+ * - Solo se cuentan las máquinas cuyo estado sea <code>Disponible</code>; si
+ *   no hay ninguna, se consideran todas las máquinas como total.
+ * - Las franjas horarias consultadas van de 09:00 a 20:00 (inclusive).
+ * - Sábados y domingos se marcan con <code>total=0</code> (no reservables).
+ *</p>
+ *
+ * <p>Endpoint: <code>GET /api/availability/week?start=YYYY-MM-DD</code></p>
  */
 @RestController
 public class AvailabilityController {
@@ -38,8 +52,28 @@ public class AvailabilityController {
     }
 
     /**
-     * Devuelve un mapa con claves "YYYY-MM-DD|HH:MM" y valores { occupied, total }.
-     * Parámetro `start` esperado en formato ISO (YYYY-MM-DD) que indica el lunes de la semana.
+     * Devuelve la disponibilidad semanal en forma de mapa.
+     *
+     * <p>La respuesta contiene dos entradas principales:
+     * <ul>
+     *   <li><b>slots</b>: un mapa cuyas claves son cadenas con el formato
+     *       <code>YYYY-MM-DD|HH:MM</code> (p. ej. <code>2025-12-01|09:00</code>)
+     *       y cuyos valores son mapas con las claves <code>occupied</code>
+     *       (número de puestos ocupados) y <code>total</code> (número total de
+     *       máquinas disponibles en esa franja).</li>
+     *   <li><b>totalMachines</b>: número total de máquinas consideradas en el
+     *       pool (solo las marcadas como <code>Disponible</code>, o todas si no
+     *       hay ninguna marcada).</li>
+     * </ul></p>
+     *
+     * <p>Notas:
+     * - El parámetro <code>start</code> debe ser una fecha ISO que representa
+     *   el lunes del que se desea obtener la semana.
+     * - Sábados y domingos aparecerán con <code>total=0</code> porque no son
+     *   reservables según la lógica del servicio.</p>
+     *
+     * @param start fecha (ISO) que indica el lunes de la semana a consultar
+     * @return un mapa con las claves <code>slots</code> y <code>totalMachines</code>
      */
     @GetMapping("/api/availability/week")
     public Map<String, Object> weekAvailability(@RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start) {
