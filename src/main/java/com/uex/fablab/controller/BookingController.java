@@ -1,6 +1,7 @@
 package com.uex.fablab.controller;
 
 import java.nio.charset.StandardCharsets;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -126,6 +127,11 @@ public class BookingController {
                 date = LocalDate.parse(dateStr);
             } catch (Exception ignored) {
             }
+        }
+        // No permitir reservas en fines de semana
+        if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            return "redirect:/machines/" + machineId + 
+                    "/reserve?error=" + java.net.URLEncoder.encode("No se puede reservar fines de semana", StandardCharsets.UTF_8) + "&date=" + date;
         }
         Long uid = (Long) userId;
         var userOpt = userService.findById(uid);
@@ -346,6 +352,7 @@ public class BookingController {
             var uopt = userService.findById(aLong);
             if (uopt.isPresent()) isAdmin = uopt.get().isAdmin();
         }
+        boolean isWeekend = date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
         for (int hour = 9; hour < 21; hour++) {
             LocalTime start = LocalTime.of(hour, 0);
             LocalTime end = start.plusHours(1);
@@ -373,7 +380,7 @@ public class BookingController {
             sv.endTime = end;
             sv.reservado = reservado;
             sv.reservadoPorMi = reservadoPorMi;
-            sv.canReserve = !reservado && maquinaDisponible && slotStartsInFuture;
+            sv.canReserve = !reservado && maquinaDisponible && slotStartsInFuture && !isWeekend;
             // Permitir cancelar si eres el que reservó, o si eres admin y el slot está reservado.
             // Se permite cancelar mientras el turno no haya empezado (start > now).
             sv.canCancel = reservado && slotStartsInFuture && s != null && (reservadoPorMi || isAdmin);

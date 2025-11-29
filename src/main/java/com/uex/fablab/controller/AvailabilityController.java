@@ -1,5 +1,6 @@
 package com.uex.fablab.controller;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -65,14 +66,16 @@ public class AvailabilityController {
             for (Machine m : machines) if (m.getId() != null) availableMachineIds.add(m.getId());
         }
 
-        // Inicializar slots con 0 ocupadas
+        // Inicializar slots con 0 ocupadas. Marcar sábados y domingos como no disponibles (total = 0)
         for (int d = 0; d < 7; d++) {
             LocalDate date = start.plusDays(d);
+            boolean isWeekend = date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
             for (int h = fromHour; h <= toHour; h++) {
                 String key = date.toString() + "|" + (h < 10 ? "0" + h : h) + ":00";
                 Map<String, Integer> info = new HashMap<>();
                 info.put("occupied", 0);
-                info.put("total", totalMachines);
+                // Si es fin de semana no hay máquinas disponibles para reservar
+                info.put("total", isWeekend ? 0 : totalMachines);
                 slots.put(key, info);
             }
         }
