@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar Máquina - FabLab</title>
+    <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="img/logo.png" />
   <link rel="icon" href="/img/logo.png" type="image/png" />
   <link rel="stylesheet" href="/css/bootstrap.min.css" />
   <link rel="stylesheet" href="/css/main.css" />
@@ -81,7 +83,7 @@
   </script>
 </head>
 <body>
-  <div th:replace="fragments/header :: siteHeader('')"></div>
+  <div th:replace="~{fragments/header :: siteHeader('')}"></div>
 
   <main class="container" id="editForm">
     <br>

@@ -4,11 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title th:text="${course.name} + ' · Curso'">Detalle del curso</title>
+    <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="img/logo.png" />
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/css/main.css" />
   </head>
   <body>
-    <div th:replace="fragments/header :: siteHeader('courses')"></div>
+    <div th:replace="~{fragments/header :: siteHeader('courses')}"></div>
     <main class="container mt-4">
       <div class="row">
         <div class="col-md-5">
