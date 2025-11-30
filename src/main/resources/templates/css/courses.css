@@ -130,3 +130,11 @@
   color: #f8bc1e;
   transition: 1s all;
 }
+footer {
+    border-top: 1px solid #eaeaea;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    background-color: #fff;
+    position: relative;
+    z-index: 2;
+}

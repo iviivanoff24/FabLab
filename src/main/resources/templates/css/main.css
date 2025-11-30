@@ -213,3 +213,11 @@ header {
   .week-grid { grid-template-columns: 5.5rem repeat(7, minmax(5rem, 1fr)); }
   .week-grid .cell { font-size: 0.78rem; padding: 0.25rem; }
 }
+footer {
+    border-top: 1px solid #eaeaea;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    background-color: #fff;
+    position: relative;
+    z-index: 2;
+}
