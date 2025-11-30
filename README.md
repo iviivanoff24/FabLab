@@ -1,93 +1,236 @@
+# Aplicación web del Fablab (Mérida)
 
-# FabLab (aplicación web)
+**Metodología y Desarrollo de Aplicaciones para Internet – Curso 2025/26**
 
+---
 <!-- Badges -->
 [![Project Status](https://img.shields.io/badge/status-acad%C3%A9mico-blue)](https://github.com/calvarezju/ProyectoMDAI)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.x-brightgreen)](https://spring.io/projects/spring-boot)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-enabled-orange)](https://www.thymeleaf.org/)
-[![Maven](https://img.shields.io/badge/Maven-wrapper-blue)](https://maven.apache.org/)
+[![Maven](https://img.shields.io/badge/Maven-wrapper-yellow)](https://maven.apache.org/)
+[![Docker](https://img.shields.io/badge/Docker-ready-pink)](https://www.docker.com/)
 
 ---
 
-## LOGO
-<img src="https://smartopenlab.com/storage/2022/02/logofablabMerida.png" alt="Logo del FabLab" width="200">
-
-
----
-
-## Integrantes
-------------------------------------------------
-| Iván, Herculano García, 80100837W   | Foto   |
-------------------------------------------------
-| Carmen Álvarez Murillo, 80230317S   | Foto   |
-------------------------------------------------
+## 1. LOGO
+<img src="src/main/resources/templates/img/logo.png" width="200">
 
 ---
 
-## Eslogan
-> El futuro se fabrica aquí.
+## 2. Integrantes   
+
+| Nombre | DNI | Foto |
+| :--- | :---: | :---: |
+| **Iván Herculano García** | 80100837W | <img src="src/main/resources/templates/img/ivan.png" alt="Foto Iván" width="200"> |
+| **Carmen Álvarez Murillo** | 80230317S | <img src="src/main/resources/templates/img/carmen.png" alt="Foto Carmen" width="200"> |
 
 ---
 
-## Resumen
-La aplicación web del FabLab de Mérida busca ser una plataforma para la gestión y difusión de los servicios del laboratorio de fabricación digital de la Universidad de Mérida.  
+## 3. Eslogan
+
+> "El futuro se fabrica aquí."
 
 ---
 
-## Descripción
-La aplicación web del FabLab Mérida es una aplicación que permitirá a los usuarios gestionar de forma sencilla el acceso a los servicios del laboratorio de fabricación digital.  
+## 4. Resumen
 
-Permitirá a los usuarios:
-- Registrarse, suscribirse y gestionar su suscripción.  
-- Consultar la disponibilidad y reservar máquinas mediante un calendario.  
-
-La web ofrecerá también información práctica como:
-- Materiales necesarios,  
-- Normas de uso,  
-- Precios,  
-- Apartado de cursos y talleres con inscripción.  
-
-Además:
-- Tienda online de productos del FabLab.  
-- Espacio para mostrar proyectos, curiosidades y fomentar la comunidad.  
+La aplicación web del FabLab de Mérida busca ser una plataforma para la gestión y difusión de los servicios del laboratorio de fabricación digital de la Universidad de Mérida.
 
 ---
 
-## Funcionalidades, Requisitos, “Pliego de condiciones”
+## 5. Descripción
 
-### Funcionalidades principales
-- **Gestión de usuarios**: registro e inicio de sesión.  
-- **Máquinas y recursos**: catálogo con información, materiales, precios y disponibilidad.  
-- **Reservas**: calendario y tabla para reservar máquinas.  
-- **Cursos y talleres**: listado, inscripción y gestión de plazas.  
-- **Información general**: presentación del FabLab, normas, contacto y ubicación.  
-- **Catálogo online**: productos y materiales disponibles.  
+La aplicación web del FabLab Mérida permitirá a los usuarios gestionar de forma sencilla el acceso a los servicios del laboratorio de fabricación digital.
 
-### Requisitos
+**Permitirá a los usuarios:**
+* Registrarse e iniciar sesión.
+* Ver los cursos disponibles.
+* Consultar el catálogo de máquinas.
+* Ver la disponibilidad mediante un calendario y realizar reservas.
 
-#### Funcionales (RF)
-- Registro/login.  
-- Consulta de máquinas.  
-- Reservas.  
-- Inscripción a cursos.  
-- Gestión por administradores.  
-
-#### No funcionales (RNF)
-- Interfaz clara y responsive.  
-- Seguridad de datos.  
-- Rapidez en la navegación.  
-
-### Pliego de condiciones
-- Desarrollo en **HTML, CSS y JavaScript** (con opción a frameworks).  
-- Base de datos para usuarios, máquinas, reservas y cursos.  
-- Uso orientado a estudiantes y administradores.  
-- Compatible con navegadores comunes (Chrome, Firefox, Edge).  
-- Entrega con código fuente, documentación y manual de usuario.  
+La web ofrecerá también información práctica como materiales necesarios, normas de uso y precios.
 
 ---
 
-## Funcionalidades opcionales, recomendables o futuribles
-- Notificaciones por correo sobre reservas, recordatorios de cursos o incidencias.  
-- Historial de uso de máquinas y cursos para cada usuario.  
-- Integración con redes sociales para difundir cursos y proyectos.  
-- Sección de proyectos de usuarios donde compartir trabajos realizados en el FabLab.  
+## 6. Funcionalidades, Requisitos y Pliego de condiciones
+
+### 6.1 Funcionalidades principales
+* **Gestión de usuarios:** Registro e inicio de sesión.
+* **Reservas:** Calendario y tabla para reservar máquinas.
+* **Cursos y talleres:** Listado, inscripción y gestión de plazas.
+* **Información general:** Presentación del FabLab, normas, contacto y ubicación.
+
+### 6.2 Requisitos
+* **Funcionales (RF):** Registro/Login, Consulta de máquinas, Reservas, Inscripción a cursos, Gestión por administradores.
+* **No funcionales (RNF):** Interfaz clara y responsive, Seguridad de datos, Rapidez en la navegación.
+
+### 6.3 Pliego de condiciones
+* Desarrollo en HTML, CSS y JavaScript (con opción a frameworks).
+* Base de datos para usuarios, máquinas, reservas y cursos.
+* Uso orientado a estudiantes y administradores.
+* Compatible con navegadores comunes (Chrome, Firefox, Edge).
+*Entrega con código fuente, documentación y manual de usuario.
+
+### 6.4 Funcionalidades opcionales, recomendables o futuribles 
+* Catálogo online de productos y materiales disponibles.
+* Notificaciones por correo sobre reservas, recordatorios de cursos o incidencias.
+* Historial de uso de máquinas y cursos para cada usuario.
+* Integración con redes sociales para difundir cursos y proyectos.
+* Sección de proyectos de usuarios donde compartir trabajos realizados en el FabLab.
+
+---
+
+## 7. Diagrama
+
+![Diagrama UML](src/main/resources/templates/img/diagrama.png)
+
+---
+
+## 8. Enlace al repositorio
+
+[https://github.com/calvarezju/ProyectoMDAI.git](https://github.com/calvarezju/ProyectoMDAI.git)
+
+---
+
+## 9. Docker: Creación de la Base de Datos
+
+Sigue estos pasos para crear y configurar la base de datos:
+
+1.  **Instalar y arrancar MySQL en Docker:**
+    Ejecuta el siguiente comando en tu terminal:
+    ```bash
+    docker run --name mysql -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=fablabdb -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -p 3307:3306 -v C:\docker\mysql:/var/lib/mysql -d mysql:8.0
+    ```
+
+2.  **Acceder al modo administrador:**
+    ```bash
+    mysql -u root -p
+    ```
+
+3.  **Crear la base de datos y las tablas:**
+    * Ejecutar el contenido del archivo `CREATE fablabdb.sql`.
+
+4.  **Insertar datos de ejemplo:**
+    * Ejecutar el contenido del archivo `insert.sql`.
+
+---
+
+## 10. Batería de tests: Casos de uso
+
+El sistema ha sido diseñado para cubrir los principales flujos de trabajo del FabLab. A continuación se detallan las interacciones principales validadas en los tests de uso (`FablabUseCasesTest`).
+
+
+
+### 10.1 Actor: Usuario (Estudiante/Miembro)
+Estos casos de uso describen las acciones que puede realizar un usuario estándar.
+
+* **Gestión de Cuenta:**
+    * **Registrarse:** Crear cuenta con nombre, email y contraseña.
+    * **Iniciar Sesión:** Acceso seguro mediante credenciales.
+    * **Modificar Perfil:** Actualización de datos personales.
+
+* **Reserva de Máquinas:**
+    * **Consultar Catálogo:** Ver máquinas disponibles (impresoras 3D, láser, CNC...) con características y precios.
+    * **Consultar Disponibilidad:** Verificación de turnos (*shifts*) libres.
+    * **Realizar Reserva:** Bloqueo de un turno de máquina para su uso.
+    * **Cancelar Reserva:** Anulación de una reserva existente.
+
+* **Cursos y Formación:**
+    * **Explorar Cursos:** Visualización de talleres ofertados.
+    * **Inscribirse en Curso:** Registro en una actividad (*inscription*).
+    * **Pagar Inscripción:** Generación del recibo (*receipt*).
+
+### 10.2 Actor: Administrador
+El administrador tiene control total sobre los recursos.
+
+* **Gestión de Recursos (CRUD):**
+    * **Alta de Máquinas:** Registrar máquinas, definiendo ubicación, imagen y coste.
+    * **Gestión de Cursos:** Crear, modificar o eliminar cursos (fechas, aforo, precios).
+
+* **Gestión de Usuarios:**
+    * **Listar Usuarios:** Ver todos los miembros registrados.
+    * **Modificar Roles:** Asignar o revocar permisos de administrador.
+    * **Eliminar Usuarios:** Dar de baja cuentas.
+
+* **Supervisión:**
+    * **Control de Reservas:** Ver reservas activas e históricas.
+    * **Gestión de Turnos:** Configurar horarios disponibles.
+
+### 10.3 Cobertura de Tests (`FablabUseCasesTest`)
+La integridad se garantiza verificando la interacción entre:
+* `UserRepository`: Persistencia de usuarios.
+* `MachineRepository`: Catálogo de recursos.
+* `BookingRepository` & `ShiftRepository`: Lógica de reservas y turnos.
+* `CourseRepository` & `InscriptionRepository`: Gestión académica.
+* `ReceiptRepository`: Registro de transacciones.
+
+---
+
+## 11. Guía de uso
+
+1.  **Base de datos:** Abrir Docker y ejecutar el contenedor (asegurarse de cumplir el paso 9).
+2.  **Arrancar la aplicación:** Ejecutar la clase principal en tu IDE:
+    `FablabApplication.java`
+3.  **Acceder:** Abrir el navegador en la siguiente URL:
+    [http://localhost:8081](http://localhost:8081)
+
+## 12. Tecnologías Utilizadas
+
+Este proyecto utiliza un stack moderno y robusto basado en el ecosistema Java:
+
+| Tecnología | Versión | Uso Principal |
+| :--- | :---: | :--- |
+| **Java** | 21 (LTS) | Lenguaje base del Backend |
+| **Spring Boot** | 3.x | Framework principal de la aplicación |
+| **Spring Data JPA** | - | ORM y persistencia de datos |
+| **Spring Security** | - | Gestión de autenticación y autorización |
+| **Thymeleaf** | - | Motor de plantillas (Frontend SSR) |
+| **Bootstrap** | 5.3 | Framework CSS para diseño responsive |
+| **MySQL** | 8.0 | Base de datos relacional |
+| **Docker** | - | Contenerización de la base de datos |
+
+## 13. Estructura del Proyecto
+
+A continuación se detalla la organización de directorios y archivos principales del código fuente:
+
+```text
+📦ProyectoMDAI
+ ┣ 📂src
+ ┃ ┣ 📂main
+ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┗ 📂uex
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂fablab
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller   # Controladores (Manejo de peticiones HTTP)
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂data
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂model      # Entidades JPA (Base de datos)
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂repository # Interfaces de acceso a datos (Repositories)
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂services     # Lógica de negocio
+ ┃ ┃ ┣ 📂resources
+ ┃ ┃ ┃ ┣ 📂templates          # Vistas HTML (Thymeleaf)
+ ┃ ┃ ┃ ┃ ┣ 📂admin            # Páginas de administración
+ ┃ ┃ ┃ ┃ ┣ 📂css              # Hojas de estilo (Bootstrap y propios)
+ ┃ ┃ ┃ ┃ ┣ 📂fragments        # Componentes reutilizables (Header)
+ ┃ ┃ ┃ ┃ ┣ 📂img              # Imágenes y subidas
+ ┃ ┃ ┃ ┃ ┣ 📂js               # Scripts de funcionalidad (Calendario, etc.)
+ ┃ ┃ ┃ ┃ ┗ 📂user             # Páginas públicas/usuario
+ ┃ ┃ ┃ ┗ 📜application.properties # Configuración de BBDD y servidor
+ ┃ ┗ 📂test                   # Tests unitarios y de integración
+ ┣ 📜mvnw                     # Ejecutable de Maven Wrapper
+ ┣ 📜pom.xml                  # Dependencias del proyecto
+ ┗ 📜README.md                # Documentación
+ ```
+
+## 14. Configuración del Entorno
+
+Para ejecutar el proyecto localmente, asegúrate de que el archivo `src/main/resources/application.properties` tiene configurada la conexión a la base de datos que crearemos con Docker.
+
+**Configuración requerida:**
+```properties
+server.port=8081
+spring.datasource.url=jdbc:mysql://localhost:3307/fablabdb
+spring.datasource.username=admin
+spring.datasource.password=admin
+spring.jpa.hibernate.ddl-auto=update
+# Ruta para subida de imágenes (ajustar según entorno)
+app.storage.location=src/main/resources/static/img/upload
