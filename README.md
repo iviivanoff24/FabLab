@@ -215,3 +215,28 @@ spring.datasource.password=admin
 spring.jpa.hibernate.ddl-auto=update
 # Ruta para subida de imágenes (ajustar según entorno)
 app.storage.location=src/main/resources/static/img/upload
+```
+
+## 13. Enlace a Github
+**Repositorio:**
+    [https://github.com/calvarezju/ProyectoMDAI.git](https://github.com/calvarezju/ProyectoMDAI.git)
+
+## 14. Script de población
+Para garantizar que la aplicación sea funcional y demostrable desde el primer momento, el proyecto incluye un mecanismo de **población de datos**.
+
+> Un **"script de población"** se interpreta en este contexto como el conjunto de instrucciones que llena o administra el contenido de la página web de manera dinámica o automatizada. Su objetivo es cargar contenido inicial desde la base de datos para que la interfaz muestre elementos reales (widgets, catálogos, perfiles) sin necesidad de entrada manual previa.
+
+### Implementación en el Proyecto
+
+Hemos automatizado este proceso mediante el archivo `Documentacion/insert.sql`. Al ejecutar este script en la base de datos Dockerizada, la aplicación web "cobra vida" instantáneamente con el siguiente contenido dinámico:
+
+1.  **Usuarios y Roles:**
+    * Se generan usuarios predefinidos (`admin` y `user`) con contraseñas encriptadas (BCrypt) para probar los sistemas de login y seguridad.
+2.  **Catálogo de Máquinas:**
+    * Puebla la vista `/machines` con equipamiento real (Impresoras 3D, Láser, CNC) incluyendo descripciones, precios y estados.
+3.  **Agenda y Disponibilidad:**
+    * Genera turnos (*shifts*) dinámicos para los días siguientes a la fecha actual (usando funciones `CURDATE()`), permitiendo probar el **Calendario de Reservas** y la **Tabla de Disponibilidad** en la portada inmediatamente.
+4.  **Oferta Académica:**
+    * Carga cursos de ejemplo en la vista `/courses` para validar el flujo de inscripción y pago.
+
+
