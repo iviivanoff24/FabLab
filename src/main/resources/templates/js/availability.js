@@ -6,7 +6,7 @@ function mainAvailability() {
 
     const tableBody = document.getElementById('weekTableBody');
     const selectedLabel = document.getElementById('selectedWeekLabel');
-    const hours = ["09:00", "10:00", "11:00", "12:00", "13:00", "16:00", "17:00", "18:00", "19:00"];
+    const hours = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
     // Devuelve el lunes de la semana para una fecha dada
     function getMonday(d) {
