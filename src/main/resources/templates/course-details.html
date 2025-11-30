@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
@@ -14,7 +14,12 @@
     <main class="container mt-4">
       <div class="row">
         <div class="col-md-5">
-          <img th:src="${courseImageUrl}" th:alt="${course.name}" class="img-fluid" style="max-height:420px; object-fit:contain;" />
+          <img
+            th:src="${courseImageUrl}"
+            th:alt="${course.name}"
+            class="img-fluid"
+            style="max-height: 420px; object-fit: contain"
+          />
         </div>
         <div class="col-md-7">
           <h1 th:text="${course.name}">Nombre del curso</h1>
@@ -25,35 +30,82 @@
           </p>
           <p>
             <strong>Precio:</strong>
-            <span th:text="${#numbers.formatDecimal(course.precio, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+            <span
+              th:text="${#numbers.formatDecimal(course.precio, 1, 'COMMA', 2, 'POINT')}"
+              >0.00</span
+            >
           </p>
           <p>
-            <span class="badge" th:classappend="${available} ? ' bg-success' : ' bg-danger'">Plazas: <span th:text="${enrolledCount}">0</span>/<span th:text="${course.capacity}">0</span></span>
+            <span
+              class="badge"
+              th:classappend="${available} ? ' bg-success' : ' bg-danger'"
+              >Plazas: <span th:text="${enrolledCount}">0</span>/<span
+                th:text="${course.capacity}"
+                >0</span
+              ></span
+            >
           </p>
           <div class="mb-3">
             <h5>Descripción</h5>
             <div th:utext="${course.description}">Descripción del curso</div>
           </div>
 
-          <div th:if="${messageSuccess}" class="alert alert-success" th:text="${messageSuccess}"></div>
-          <div th:if="${messageError}" class="alert alert-danger" th:text="${messageError}"></div>
+          <div
+            th:if="${messageSuccess}"
+            class="alert alert-success"
+            th:text="${messageSuccess}"
+          ></div>
+          <div
+            th:if="${messageError}"
+            class="alert alert-danger"
+            th:text="${messageError}"
+          ></div>
 
           <div>
             <div th:if="${!enrolled and available}">
-                <div th:if="${currentUserId != null}">
-                  <!-- Inscripción mediante pago: redirect a la página de pago -->
-                  <a th:href="@{/payment(type='course', itemId=${course.id}, itemName=${course.name}, amount=${course.precio}, returnUrl='/courses/' + ${course.id})}" class="btn btn-outline-success">Pagar e inscribirse</a>
-                </div>
-              <a th:if="${currentUserId == null}" th:href="@{/login}" class="btn btn-primary">Iniciar sesión para inscribirse</a>
+              <div th:if="${currentUserId != null}">
+                <!-- Inscripción mediante pago: redirect a la página de pago -->
+                <a
+                  th:href="@{/payment(type='course', itemId=${course.id}, itemName=${course.name}, amount=${course.precio}, returnUrl='/courses/' + ${course.id})}"
+                  class="btn btn-outline-success"
+                  >Pagar e inscribirse</a
+                >
+              </div>
+              <a
+                th:if="${currentUserId == null}"
+                th:href="@{/login}"
+                class="btn btn-primary"
+                >Iniciar sesión para inscribirse</a
+              >
             </div>
 
-            <div th:if="${enrolled}" class="alert alert-info">Ya estás inscrito en este curso.</div>
-              <div th:if="${!enrolled and !available}" class="alert alert-warning" th:text="${notAvailableReason} ?: 'No hay plazas disponibles.'">No hay plazas disponibles.</div>
+            <div th:if="${enrolled}" class="alert alert-info">
+              Ya estás inscrito en este curso.
+            </div>
+            <div
+              th:if="${!enrolled and !available}"
+              class="alert alert-warning"
+              th:text="${notAvailableReason} ?: 'No hay plazas disponibles.'"
+            >
+              No hay plazas disponibles.
+            </div>
           </div>
 
           <div th:if="${isAdmin}" class="mt-3">
-            <a th:href="@{/admin/modify-course(id=${course.id})}" class="btn btn-outline-secondary btn-sm">Editar curso</a>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCourseModal" th:attr="data-course-name=${course.name}">Eliminar curso</button>
+            <a
+              th:href="@{/admin/modify-course(id=${course.id})}"
+              class="btn btn-outline-secondary btn-sm"
+              >Editar curso</a
+            >
+            <button
+              type="button"
+              class="btn btn-outline-danger btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteCourseModal"
+              th:attr="data-course-name=${course.name}"
+            >
+              Eliminar curso
+            </button>
           </div>
         </div>
       </div>
@@ -61,83 +113,165 @@
       <section class="mt-3">
         <h5>Inscritos</h5>
         <ul class="list-group">
-          <li class="list-group-item d-flex justify-content-between align-items-center" th:each="ins : ${course.inscriptions}">
+          <li
+            class="list-group-item d-flex justify-content-between align-items-center"
+            th:each="ins : ${course.inscriptions}"
+          >
             <div>
-              <strong th:text="${ins.user != null ? ins.user.name : 'Usuario'}">Usuario</strong>
-              <div class="small text-muted" th:text="${ins.date}">2025-01-01</div>
+              <strong th:text="${ins.user != null ? ins.user.name : 'Usuario'}"
+                >Usuario</strong
+              >
+              <div class="small text-muted" th:text="${ins.date}">
+                2025-01-01
+              </div>
             </div>
             <div>
-              <div th:if="${isAdmin or (currentUserId != null and currentUserId == ins.user.id)}">
-                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelInscriptionModal" th:attr="data-inscription-id=${ins.id}">Cancelar suscripción</button>
+              <div
+                th:if="${isAdmin or (currentUserId != null and currentUserId == ins.user.id)}"
+              >
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#cancelInscriptionModal"
+                  th:attr="data-inscription-id=${ins.id}"
+                >
+                  Cancelar suscripción
+                </button>
               </div>
             </div>
           </li>
         </ul>
       </section>
     </main>
-    
+
     <!-- Modal: Confirmar eliminación de curso -->
-    <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-labelledby="deleteCourseModalLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="deleteCourseModal"
+      tabindex="-1"
+      aria-labelledby="deleteCourseModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="deleteCourseModalLabel">Confirmar eliminación</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            <h1 class="modal-title fs-5" id="deleteCourseModalLabel">
+              Confirmar eliminación
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
           </div>
           <div class="modal-body">
-            <p>¿Seguro que deseas eliminar el curso <strong th:text="${course.name}">Curso</strong>? Esta acción no se puede deshacer.</p>
+            <p>
+              ¿Seguro que deseas eliminar el curso
+              <strong th:text="${course.name}">Curso</strong>? Esta acción no se
+              puede deshacer.
+            </p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <form th:action="@{/admin/courses/{id}/delete(id=${course.id})}" method="post" th:object="${course}">
-              <button type="submit" class="btn btn-danger">Eliminar curso</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <form
+              th:action="@{/admin/courses/{id}/delete(id=${course.id})}"
+              method="post"
+              th:object="${course}"
+            >
+              <button type="submit" class="btn btn-danger">
+                Eliminar curso
+              </button>
             </form>
           </div>
         </div>
       </div>
     </div>
     <!-- Modal: Confirmar cancelación de inscripción -->
-    <div class="modal fade" id="cancelInscriptionModal" tabindex="-1" aria-labelledby="cancelInscriptionModalLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="cancelInscriptionModal"
+      tabindex="-1"
+      aria-labelledby="cancelInscriptionModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="cancelInscriptionModalLabel">Confirmar cancelación</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            <h1 class="modal-title fs-5" id="cancelInscriptionModalLabel">
+              Confirmar cancelación
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
           </div>
           <div class="modal-body">
             <p>¿Seguro que deseas cancelar esta inscripción?</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, volver</button>
-            <button type="button" id="confirmCancelInscriptionBtn" class="btn btn-danger">Sí, cancelar inscripción</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              No, volver
+            </button>
+            <button
+              type="button"
+              id="confirmCancelInscriptionBtn"
+              class="btn btn-danger"
+            >
+              Sí, cancelar inscripción
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <form id="cancelInscriptionForm" method="post" th:action="@{/courses/{id}/cancel(id=${course.id})}" class="d-none">
+    <form
+      id="cancelInscriptionForm"
+      method="post"
+      th:action="@{/courses/{id}/cancel(id=${course.id})}"
+      class="d-none"
+    >
       <input type="hidden" name="inscriptionId" id="cancelInscriptionId" />
     </form>
-    <script src="/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/main.js" defer></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js" defer></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function(){
-      var modal = document.getElementById('cancelInscriptionModal');
-      var cancelInput = document.getElementById('cancelInscriptionId');
-      var confirmBtn = document.getElementById('confirmCancelInscriptionBtn');
-      if (!modal) return;
-      modal.addEventListener('show.bs.modal', function(ev){
-        var btn = ev.relatedTarget; if(!btn) return;
-        var insId = btn.getAttribute('data-inscription-id') || '';
-        if (cancelInput) cancelInput.value = insId;
+      document.addEventListener("DOMContentLoaded", function () {
+        var modal = document.getElementById("cancelInscriptionModal");
+        var cancelInput = document.getElementById("cancelInscriptionId");
+        var confirmBtn = document.getElementById("confirmCancelInscriptionBtn");
+        if (!modal) return;
+        modal.addEventListener("show.bs.modal", function (ev) {
+          var btn = ev.relatedTarget;
+          if (!btn) return;
+          var insId = btn.getAttribute("data-inscription-id") || "";
+          if (cancelInput) cancelInput.value = insId;
+        });
+        if (confirmBtn)
+          confirmBtn.addEventListener("click", function () {
+            var f = document.getElementById("cancelInscriptionForm");
+            if (f) f.submit();
+          });
       });
-      if (confirmBtn) confirmBtn.addEventListener('click', function(){
-        var f = document.getElementById('cancelInscriptionForm'); if (f) f.submit();
-      });
-    });
     </script>
     <footer class="text-center py-4 text-muted small">
-      <div class="container">Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida</div>
+      <div class="container">
+        Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida
+      </div>
     </footer>
   </body>
+  <script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
 </html>
