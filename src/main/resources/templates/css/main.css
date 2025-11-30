@@ -131,3 +131,12 @@ header {
   background: #ffffff;
   color: #6c757d;
 }
+
+footer {
+    border-top: 1px solid #eaeaea;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    background-color: #fff;
+    position: relative;
+    z-index: 2;
+}
