@@ -16,39 +16,76 @@
     <main class="container">
       
       <div class="welcome-card">
-        <div class="row g-5 align-items-start"> <div class="col-lg-8">
+        <div class="row g-5 align-items-start">
+          
+          <div class="col-lg-8">
             <h1 class="display-5 fw-bold mb-3 title-maker">Bienvenido al Fablab Mérida</h1>
-            <p class="lead text-muted mb-4">Tu espacio de fabricación digital en la Universidad de Mérida.</p>
+            <p class="lead text-muted mb-5">Tu espacio de fabricación digital en la Universidad de Mérida.</p>
             
-            <div class="d-flex gap-3 mb-5">
-              <a href="/machines" class="btn btn-primary-fab btn-lg">Ver Máquinas</a>
-              <a href="/courses" class="btn btn-outline-fab btn-lg">Cursos</a>
-            </div>
-
-            <div class="info-panel p-4 rounded-4">
+            <div class="info-panel p-4 rounded-4 mb-5">
                 <div class="row g-4">
                     <div class="col-md-6">
                         <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-geo-alt-fill text-warning me-2"></i>Ubicación y Contacto</h5>
                         <ul class="list-unstyled small text-muted mb-0">
-                            <li class="mb-2">Espacio de creación colaborativa para impulsar la innovación.</li>
                             <li class="mb-2"><i class="bi bi-pin-map me-2"></i> Calle Santa Teresa de Jornet, 38</li>
                             <li class="mb-2"><i class="bi bi-envelope me-2"></i> info@fablabmerida.org</li>
                             <li><i class="bi bi-telephone me-2"></i> 613 006 794</li>
                         </ul>
                     </div>
-
                     <div class="col-md-6 border-start-md ps-md-4">
                         <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-shield-check text-warning me-2"></i>Normas Básicas</h5>
                         <ul class="small text-muted ps-3 mb-0">
-                            <li class="mb-2"><strong>Reserva:</strong> Obligatoria para usar máquinas.</li>
-                            <li class="mb-2"><strong>Seguridad:</strong> Usa gafas y guantes (EPIs).</li>
-                            <li class="mb-2"><strong>Limpieza:</strong> Deja el puesto limpio.</li>
-                            <li><strong>Material:</strong> Trae tus propios consumibles.</li>
+                            <li><strong>Reserva:</strong> Obligatoria.</li>
+                            <li><strong>Seguridad:</strong> Usa EPIs.</li>
+                            <li><strong>Limpieza:</strong> Recoge al terminar.</li>
                         </ul>
                     </div>
                 </div>
             </div>
+
+            <div class="mt-4">
+                <div class="d-flex justify-content-between align-items-end mb-3">
+                    <h4 class="fw-bold m-0"><i class="bi bi-calendar3-week text-warning me-2"></i>Disponibilidad por Horas</h4>
+                    <span class="badge bg-light text-dark border" id="selectedWeekLabel">Selecciona un día en el calendario</span>
+                </div>
+                
+                <div class="week-table-container bg-white rounded shadow-sm p-3">
+                    <table class="week-table w-100 text-center small mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%">Hora</th>
+                                <th style="width: 18%">Lun</th>
+                                <th style="width: 18%">Mar</th>
+                                <th style="width: 18%">Mié</th>
+                                <th style="width: 18%">Jue</th>
+                                <th style="width: 18%">Vie</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weekTableBody">
+                            </tbody>
+                    </table>
+                    
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex flex-wrap gap-4 justify-content-center small fw-bold">
+                            <div class="d-flex align-items-center text-muted">
+                                <span class="legend-box avail-high me-2"></span> Libre
+                            </div>
+                            <div class="d-flex align-items-center text-muted">
+                                <span class="legend-box avail-med me-2"></span> Media Ocupación
+                            </div>
+                            <div class="d-flex align-items-center text-muted">
+                                <span class="legend-box avail-low me-2"></span> Completo
+                            </div>
+                            <div class="d-flex align-items-center text-muted">
+                                <span class="legend-box avail-closed me-2"></span> Cerrado
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
+
+          </div>
 
           <div class="col-lg-4">
             <img src="img/3d.png" alt="Impresora 3D" class="d-block mx-auto img-fluid mb-4 img-float" style="max-width: 80%;" />
@@ -59,12 +96,14 @@
                 <div class="fw-bold text-dark text-uppercase ls-1" id="fabcalMonth"></div>
                 <button class="btn btn-sm btn-icon" id="fabcalNext">›</button>
               </div>
-
               <div class="d-grid mb-2 text-center fw-bold text-muted small" style="grid-template-columns: repeat(7, 1fr);">
                 <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
               </div>
-
               <div id="fabcalDays" class="d-grid gap-1" style="grid-template-columns: repeat(7, 1fr);"></div>
+              
+              <div class="mt-3 text-center small text-muted fst-italic">
+                  Selecciona un día para ver detalle
+              </div>
             </div>
           </div>
 
@@ -79,51 +118,105 @@
 
     <script src="js/bootstrap.bundle.min.js"></script>
     <script>
-        // Lógica del calendario
         document.addEventListener('DOMContentLoaded', function() {
             const date = new Date();
             let currentMonth = date.getMonth();
             let currentYear = date.getFullYear();
             const monthNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
 
-            const prevBtn = document.getElementById('fabcalPrev');
-            const nextBtn = document.getElementById('fabcalNext');
-            const monthDiv = document.getElementById('fabcalMonth');
-            const daysDiv = document.getElementById('fabcalDays');
+            const tableBody = document.getElementById('weekTableBody');
+            const selectedLabel = document.getElementById('selectedWeekLabel');
+            const hours = ["09:00", "10:00", "11:00", "12:00", "13:00", "16:00", "17:00", "18:00", "19:00"];
 
-            if(prevBtn && nextBtn && monthDiv && daysDiv) {
-                function renderCalendar(month, year) {
-                    monthDiv.textContent = monthNames[month] + " " + year;
-                    daysDiv.innerHTML = "";
-                    const firstDay = new Date(year, month, 1).getDay(); 
-                    const startDay = (firstDay === 0) ? 6 : firstDay - 1; 
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+            // 1. Render Tabla
+            function renderWeekTable(startDate) {
+                tableBody.innerHTML = "";
+                selectedLabel.textContent = "Semana del " + startDate.getDate() + " de " + monthNames[startDate.getMonth()];
 
-                    for(let i=0; i < startDay; i++) { daysDiv.appendChild(document.createElement('div')); }
+                hours.forEach(hour => {
+                    const row = document.createElement('tr');
+                    const th = document.createElement('th');
+                    th.textContent = hour;
+                    row.appendChild(th);
 
-                    const today = new Date();
-                    for(let i=1; i <= daysInMonth; i++) {
-                        const dayCell = document.createElement('div');
-                        dayCell.textContent = i;
-                        dayCell.className = 'py-1 text-center rounded small cursor-default';
+                    for(let i=0; i<5; i++) {
+                        const td = document.createElement('td');
                         
-                        // Estilo día actual
-                        if(i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                            dayCell.style.backgroundColor = '#f8bc1e'; // Amarillo Fablab
-                            dayCell.style.color = '#fff';
-                            dayCell.style.fontWeight = 'bold';
+                        // Lógica simulada:
+                        // Hora de comer (14-15h) cerrado
+                        if (hour === "14:00" || hour === "15:00") {
+                             td.className = 'avail-closed';
                         } else {
-                            dayCell.classList.add('text-dark');
-                            dayCell.onmouseover = function(){ this.style.backgroundColor = '#f1f3f5'; };
-                            dayCell.onmouseout = function(){ if(this.style.backgroundColor !== 'rgb(248, 188, 30)') this.style.backgroundColor = 'transparent'; };
+                            const rand = Math.random();
+                            // Asignar clases de color según disponibilidad
+                            if(rand > 0.7) { 
+                                td.className = 'avail-high'; // Verde
+                                td.title = "Libre";
+                            } else if(rand > 0.4) {
+                                td.className = 'avail-med'; // Amarillo
+                                td.title = "Media ocupación";
+                            } else {
+                                td.className = 'avail-low'; // Rojo
+                                td.title = "Completo";
+                            }
                         }
-                        daysDiv.appendChild(dayCell);
+                        row.appendChild(td);
                     }
-                }
-                prevBtn.addEventListener('click', () => { currentMonth--; if(currentMonth < 0) { currentMonth=11; currentYear--; } renderCalendar(currentMonth, currentYear); });
-                nextBtn.addEventListener('click', () => { currentMonth++; if(currentMonth > 11) { currentMonth=0; currentYear++; } renderCalendar(currentMonth, currentYear); });
-                renderCalendar(currentMonth, currentYear);
+                    tableBody.appendChild(row);
+                });
             }
+
+            // 2. Render Calendario
+            function renderCalendar(month, year) {
+                const monthDiv = document.getElementById('fabcalMonth');
+                const daysDiv = document.getElementById('fabcalDays');
+                monthDiv.textContent = monthNames[month] + " " + year;
+                daysDiv.innerHTML = "";
+                
+                const firstDay = new Date(year, month, 1).getDay(); 
+                const startDay = (firstDay === 0) ? 6 : firstDay - 1; 
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                for(let i=0; i < startDay; i++) { daysDiv.appendChild(document.createElement('div')); }
+
+                const today = new Date();
+                for(let i=1; i <= daysInMonth; i++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.textContent = i;
+                    dayCell.className = 'py-1 text-center rounded small cursor-pointer calendar-day';
+                    
+                    const checkDate = new Date(year, month, i);
+                    const dayOfWeek = checkDate.getDay();
+
+                    if (dayOfWeek === 0 || dayOfWeek === 6) {
+                        dayCell.style.color = '#ccc'; // Fines de semana
+                    } else {
+                        // Colorear días aleatoriamente para simular la ocupación general del día
+                        const rand = Math.random();
+                        if(rand > 0.6) dayCell.classList.add('avail-high'); 
+                        else if(rand > 0.3) dayCell.classList.add('avail-med');
+                        else dayCell.classList.add('avail-low');
+                    }
+
+                    dayCell.addEventListener('click', function() {
+                        document.querySelectorAll('#fabcalDays div').forEach(d => d.style.border = 'none');
+                        this.style.border = '2px solid #333'; // Selección
+                        renderWeekTable(new Date(year, month, i));
+                    });
+
+                    if(i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        dayCell.style.fontWeight = '900';
+                        dayCell.style.border = '2px solid #f8bc1e';
+                    }
+                    daysDiv.appendChild(dayCell);
+                }
+            }
+
+            document.getElementById('fabcalPrev').addEventListener('click', () => { currentMonth--; if(currentMonth < 0) { currentMonth=11; currentYear--; } renderCalendar(currentMonth, currentYear); });
+            document.getElementById('fabcalNext').addEventListener('click', () => { currentMonth++; if(currentMonth > 11) { currentMonth=0; currentYear++; } renderCalendar(currentMonth, currentYear); });
+            
+            renderCalendar(currentMonth, currentYear);
+            renderWeekTable(new Date());
         });
     </script>
   </body>
