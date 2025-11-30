@@ -5,7 +5,7 @@
 ---
 <!-- Badges -->
 [![Project Status](https://img.shields.io/badge/status-acad%C3%A9mico-blue)](https://github.com/calvarezju/ProyectoMDAI)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.x-brightgreen)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen)](https://spring.io/projects/spring-boot)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-enabled-orange)](https://www.thymeleaf.org/)
 [![Maven](https://img.shields.io/badge/Maven-wrapper-yellow)](https://maven.apache.org/)
 [![Docker](https://img.shields.io/badge/Docker-ready-pink)](https://www.docker.com/)
@@ -78,16 +78,16 @@ La web ofrecerá también información práctica como los precios.
 
 ## 7. Tecnologías Utilizadas
 
-Este proyecto utiliza un stack moderno y robusto basado en el ecosistema Java:
-
 | Tecnología | Versión | Uso Principal |
 | :--- | :---: | :--- |
-| **Java** | 21 (LTS) | Lenguaje base del Backend |
-| **Spring Boot** | 3.x | Framework principal de la aplicación |
-| **Thymeleaf** | - | Motor de plantillas (Frontend SSR) |
-| **Bootstrap** | 5.3 | Framework CSS para diseño responsive |
-| **MySQL** | 8.0 | Base de datos relacional |
-| **Docker** | - | Contenerización de la base de datos |
+| **Java** | 21 | Lenguaje base |
+| **Spring Boot** | 3.5.6 | Framework principal |
+| **Spring Data JPA** | 3.5.6 | Persistencia de datos |
+| **Thymeleaf** | 3.1.3 | Motor de plantillas |
+| **Bootstrap** | 5.3 | Diseño responsive |
+| **MySQL** | 8.0 | Base de datos |
+| **Docker** | - | Contenerización |
+| **Maven** | - | Gestión del proyecto |
 
 ---
 
