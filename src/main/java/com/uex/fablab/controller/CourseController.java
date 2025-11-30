@@ -81,8 +81,35 @@ public class CourseController {
     public String coursesPage(HttpSession session, Model model) {
         boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
         var list = courseService.listAll();
+        Object userId = session.getAttribute("USER_ID");
+        Long currentUserId = userId instanceof Long ? (Long) userId : null;
+
+        // Construir mapa de estados por curso para la vista: "Inscrito", "No disponible", "Plazas_completas", "Disponible"
+        Map<Long, String> courseStatus = new HashMap<>();
+        for (var c : list) {
+            boolean enrolled = false;
+            if (currentUserId != null) {
+                for (Inscription ins : inscriptionService.listAll()) {
+                    if (ins.getCourse() != null && ins.getCourse().getId() != null && ins.getCourse().getId().equals(c.getId())
+                            && ins.getUser() != null && ins.getUser().getId() != null && ins.getUser().getId().equals(currentUserId)) {
+                        enrolled = true; break;
+                    }
+                }
+            }
+            boolean started = c.getStartDate() != null && !c.getStartDate().isAfter(LocalDate.now());
+            boolean spotsFull = c.getCapacity() != null && c.getInscriptions() != null && c.getInscriptions().size() >= c.getCapacity();
+
+            String status;
+            if (enrolled) status = "Inscrito";
+            else if (started) status = "No_disponible";
+            else if (spotsFull) status = "Plazas_completas";
+            else status = "Disponible";
+            courseStatus.put(c.getId(), status);
+        }
+
         model.addAttribute("courses", list);
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("courseStatus", courseStatus);
         Map<Long,String> imageUrls = new HashMap<>();
         for (Course c : list) { imageUrls.put(c.getId(), resolveImageUrl(c.getId())); }
         model.addAttribute("courseImageUrls", imageUrls);

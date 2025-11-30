@@ -32,7 +32,10 @@
 
         <div th:if="${!#lists.isEmpty(courses)}" class="d-flex flex-wrap gap-4">
           <div class="card" th:each="c : ${courses}"
-               th:with="spotsFull=${c.capacity != null and c.inscriptions.size() >= c.capacity}, statusName=${spotsFull ? 'Plazas_completas' : 'Disponible'}, statusClass=${statusName == 'Plazas_completas' ? ' text-bg-secondary' : (statusName == 'Disponible' ? ' text-bg-success' : ' text-bg-secondary')}, statusText=${statusName == 'Plazas_completas' ? 'Plazas completas' : (statusName == 'Disponible' ? 'Disponible' : statusName)}">
+            th:with="spotsFull=${c.capacity != null and c.inscriptions.size() >= c.capacity},
+                  statusName=${courseStatus[c.id]},
+                  statusClass=${statusName == 'Inscrito' ? ' text-bg-info' : (statusName == 'No_disponible' ? ' text-bg-secondary' : (statusName == 'Plazas_completas' ? ' text-bg-danger' : ' text-bg-success'))},
+                  statusText=${statusName == 'Inscrito' ? 'Inscrito' : (statusName == 'No_disponible' ? 'No disponible' : (statusName == 'Plazas_completas' ? 'Plazas completas' : 'Disponible'))}">
             <div class="face face1">
               <div class="content">
                 <img th:src="${courseImageUrls[c.id]}" alt="Imagen curso" />
