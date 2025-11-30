@@ -18,28 +18,24 @@
 ---
 
 ## 2. Integrantes   
-
 | Nombre | DNI | Foto |
 | :--- | :---: | :---: |
-| **Iván Herculano García** | 80100837W | <img src="src/main/resources/templates/img/ivan.png" alt="Foto Iván" width="200"> |
-| **Carmen Álvarez Murillo** | 80230317S | <img src="src/main/resources/templates/img/carmen.png" alt="Foto Carmen" width="200"> |
+| **Iván Herculano García** | 80100837W | <img src="src/main/resources/templates/img/ivan.png" alt="Foto Iván" width="150"> |
+| **Carmen Álvarez Murillo** | 80230317S | <img src="src/main/resources/templates/img/carmen.png" alt="Foto Carmen" width="150"> |
 
 ---
 
 ## 3. Eslogan
-
 > "El futuro se fabrica aquí."
 
 ---
 
 ## 4. Resumen
-
 La aplicación web del FabLab de Mérida busca ser una plataforma para la gestión y difusión de los servicios del laboratorio de fabricación digital de la Universidad de Mérida.
 
 ---
 
 ## 5. Descripción
-
 La aplicación web del FabLab Mérida permitirá a los usuarios gestionar de forma sencilla el acceso a los servicios del laboratorio de fabricación digital.
 
 **Permitirá a los usuarios:**
@@ -48,7 +44,7 @@ La aplicación web del FabLab Mérida permitirá a los usuarios gestionar de for
 * Consultar el catálogo de máquinas.
 * Ver la disponibilidad mediante un calendario y realizar reservas.
 
-La web ofrecerá también información práctica como materiales necesarios, normas de uso y precios.
+La web ofrecerá también información práctica como los precios.
 
 ---
 
@@ -80,24 +76,55 @@ La web ofrecerá también información práctica como materiales necesarios, nor
 
 ---
 
-## 7. Diagrama
+## 7. Tecnologías Utilizadas
 
-![Diagrama UML](src/main/resources/templates/img/diagrama.png)
+Este proyecto utiliza un stack moderno y robusto basado en el ecosistema Java:
+
+| Tecnología | Versión | Uso Principal |
+| :--- | :---: | :--- |
+| **Java** | 21 (LTS) | Lenguaje base del Backend |
+| **Spring Boot** | 3.x | Framework principal de la aplicación |
+| **Thymeleaf** | - | Motor de plantillas (Frontend SSR) |
+| **Bootstrap** | 5.3 | Framework CSS para diseño responsive |
+| **MySQL** | 8.0 | Base de datos relacional |
+| **Docker** | - | Contenerización de la base de datos |
 
 ---
 
-## 8. Enlace al repositorio
+## 8. Estructura del Proyecto
 
-[https://github.com/calvarezju/ProyectoMDAI.git](https://github.com/calvarezju/ProyectoMDAI.git)
-
----
-
+```text
+📦ProyectoMDAI
+ ┣ 📂src
+ ┃ ┣ 📂main
+ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┗ 📂uex
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂fablab
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller   # Controladores (Manejo de peticiones HTTP)
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂data
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂model      # Entidades JPA (Base de datos)
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂repository # Interfaces de acceso a datos (Repositories)
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂services     # Lógica de negocio
+ ┃ ┃ ┣ 📂resources
+ ┃ ┃ ┃ ┣ 📂templates          # Vistas HTML (Thymeleaf)
+ ┃ ┃ ┃ ┃ ┣ 📂admin            # Páginas de administración
+ ┃ ┃ ┃ ┃ ┣ 📂css              # Hojas de estilo (Bootstrap y propios)
+ ┃ ┃ ┃ ┃ ┣ 📂fragments        # Componentes reutilizables (Header)
+ ┃ ┃ ┃ ┃ ┣ 📂img              # Imágenes y subidas
+ ┃ ┃ ┃ ┃ ┣ 📂js               # Scripts de funcionalidad (Calendario, etc.)
+ ┃ ┃ ┃ ┃ ┗ 📂user             # Páginas públicas/usuario
+ ┃ ┃ ┃ ┗ 📜application.properties # Configuración de BBDD y servidor
+ ┃ ┗ 📂test                   # Tests unitarios y de integración
+ ┣ 📜mvnw                     # Ejecutable de Maven Wrapper
+ ┣ 📜pom.xml                  # Dependencias del proyecto
+ ┗ 📜README.md                # Documentación
+ ```
 ## 9. Docker: Creación de la Base de Datos
 
 Sigue estos pasos para crear y configurar la base de datos:
 
 1.  **Instalar y arrancar MySQL en Docker:**
-    Ejecuta el siguiente comando en tu terminal:
     ```bash
     docker run --name mysql -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=fablabdb -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -p 3307:3306 -v C:\docker\mysql:/var/lib/mysql -d mysql:8.0
     ```
@@ -118,8 +145,6 @@ Sigue estos pasos para crear y configurar la base de datos:
 ## 10. Batería de tests: Casos de uso
 
 El sistema ha sido diseñado para cubrir los principales flujos de trabajo del FabLab. A continuación se detallan las interacciones principales validadas en los tests de uso (`FablabUseCasesTest`).
-
-
 
 ### 10.1 Actor: Usuario (Estudiante/Miembro)
 Estos casos de uso describen las acciones que puede realizar un usuario estándar.
@@ -174,54 +199,10 @@ La integridad se garantiza verificando la interacción entre:
 3.  **Acceder:** Abrir el navegador en la siguiente URL:
     [http://localhost:8081](http://localhost:8081)
 
-## 12. Tecnologías Utilizadas
+---
 
-Este proyecto utiliza un stack moderno y robusto basado en el ecosistema Java:
 
-| Tecnología | Versión | Uso Principal |
-| :--- | :---: | :--- |
-| **Java** | 21 (LTS) | Lenguaje base del Backend |
-| **Spring Boot** | 3.x | Framework principal de la aplicación |
-| **Spring Data JPA** | - | ORM y persistencia de datos |
-| **Spring Security** | - | Gestión de autenticación y autorización |
-| **Thymeleaf** | - | Motor de plantillas (Frontend SSR) |
-| **Bootstrap** | 5.3 | Framework CSS para diseño responsive |
-| **MySQL** | 8.0 | Base de datos relacional |
-| **Docker** | - | Contenerización de la base de datos |
-
-## 13. Estructura del Proyecto
-
-A continuación se detalla la organización de directorios y archivos principales del código fuente:
-
-```text
-📦ProyectoMDAI
- ┣ 📂src
- ┃ ┣ 📂main
- ┃ ┃ ┣ 📂java
- ┃ ┃ ┃ ┗ 📂com
- ┃ ┃ ┃ ┃ ┗ 📂uex
- ┃ ┃ ┃ ┃ ┃ ┗ 📂fablab
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller   # Controladores (Manejo de peticiones HTTP)
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂data
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂model      # Entidades JPA (Base de datos)
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂repository # Interfaces de acceso a datos (Repositories)
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂services     # Lógica de negocio
- ┃ ┃ ┣ 📂resources
- ┃ ┃ ┃ ┣ 📂templates          # Vistas HTML (Thymeleaf)
- ┃ ┃ ┃ ┃ ┣ 📂admin            # Páginas de administración
- ┃ ┃ ┃ ┃ ┣ 📂css              # Hojas de estilo (Bootstrap y propios)
- ┃ ┃ ┃ ┃ ┣ 📂fragments        # Componentes reutilizables (Header)
- ┃ ┃ ┃ ┃ ┣ 📂img              # Imágenes y subidas
- ┃ ┃ ┃ ┃ ┣ 📂js               # Scripts de funcionalidad (Calendario, etc.)
- ┃ ┃ ┃ ┃ ┗ 📂user             # Páginas públicas/usuario
- ┃ ┃ ┃ ┗ 📜application.properties # Configuración de BBDD y servidor
- ┃ ┗ 📂test                   # Tests unitarios y de integración
- ┣ 📜mvnw                     # Ejecutable de Maven Wrapper
- ┣ 📜pom.xml                  # Dependencias del proyecto
- ┗ 📜README.md                # Documentación
- ```
-
-## 14. Configuración del Entorno
+## 12. Configuración del Entorno
 
 Para ejecutar el proyecto localmente, asegúrate de que el archivo `src/main/resources/application.properties` tiene configurada la conexión a la base de datos que crearemos con Docker.
 
