@@ -71,3 +71,11 @@ body {
 
 .img-float { filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); transition: transform 0.3s; }
 .img-float:hover { transform: scale(1.03) rotate(-2deg); }
+footer {
+    border-top: 1px solid #eaeaea;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    background-color: #fff;
+    position: relative;
+    z-index: 2;
+}
