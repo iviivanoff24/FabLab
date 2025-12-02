@@ -300,3 +300,26 @@ footer {
     position: relative;
     z-index: 2;
 }
+
+/* =========================================
+   9. NUEVO ESTILO: CARRUSEL CORTO (Ajuste a 50px)
+   ========================================= */
+
+.carousel-short {
+    max-width: 100%;
+    /* Altura forzada a 50px para el contenedor del carrusel */
+    max-height: 300px; 
+    overflow: hidden; 
+    border-radius: 16px; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Asegura que las imágenes y contenedores internos se ajusten a la altura de 50px */
+.carousel-short .carousel-inner, 
+.carousel-short .carousel-item, 
+.carousel-short img {
+    height: auto;
+    max-height: 300px; 
+    /* Esta propiedad es clave para rellenar el espacio sin distorsión */
+    object-fit: cover; 
+}

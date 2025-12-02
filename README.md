@@ -94,6 +94,11 @@ La web ofrecerá también información práctica como los precios.
 ## 8. Estructura del Proyecto
 
 ```text
+📦docker
+ ┣ 📂mysql
+ ┃ ┣ 📂init
+ ┃ ┃ ┣ 📂01_CREATE            # Creación de la base de datos
+ ┃ ┃ ┣ 📂02_POPULATE          # Inserts de la base de datos
 📦ProyectoMDAI
  ┣ 📂src
  ┃ ┣ 📂main
@@ -122,24 +127,22 @@ La web ofrecerá también información práctica como los precios.
  ```
 ## 9. Docker: Creación de la Base de Datos
 
-Sigue estos pasos para crear y configurar la base de datos:
+Abre un nuevo terminal desde la carpeta general ("Proyecto Final") y ejecuta los siguentes comandos:
+```bash
+docker network create fablab_net
 
-1.  **Instalar y arrancar MySQL en Docker:**
-    ```bash
-    docker run --name mysql -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=fablabdb -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -p 3307:3306 -v C:\docker\mysql:/var/lib/mysql -d mysql:8.0
-    ```
-
-2.  **Acceder al modo administrador:**
-    ```bash
-    mysql -u root -p
-    ```
-
-3.  **Crear la base de datos y las tablas:**
-    * Ejecutar el contenido del archivo `CREATE fablabdb.sql`.
-
-4.  **Insertar datos de ejemplo:**
-    * Ejecutar el contenido del archivo `insert.sql`.
-
+$root = (Get-Location).Path
+docker run --name fablab-mysql `
+  --network fablab_net `
+  -e MYSQL_ROOT_PASSWORD=admin `
+  -e MYSQL_DATABASE=fablabdb `
+  -e MYSQL_USER=admin `
+  -e MYSQL_PASSWORD=admin `
+  -p 3307:3306 `
+  -v fablab_mysql_data:/var/lib/mysql `
+  -v "$root\docker\mysql\init:/docker-entrypoint-initdb.d:ro" `
+  -d mysql:8.0 `
+```
 ---
 
 ## 10. Batería de tests: Casos de uso
@@ -193,7 +196,7 @@ La integridad se garantiza verificando la interacción entre:
 
 ## 11. Guía de uso
 
-1.  **Base de datos:** Abrir Docker y ejecutar el contenedor (asegurarse de cumplir el paso 9).
+1.  **Base de datos:** Consultar punto 9.
 2.  **Arrancar la aplicación:** Ejecutar la clase principal en tu IDE:
     `FablabApplication.java`
 3.  **Acceder:** Abrir el navegador en la siguiente URL:
