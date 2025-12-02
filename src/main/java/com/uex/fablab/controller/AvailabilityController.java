@@ -105,7 +105,8 @@ public class AvailabilityController {
             LocalDate date = start.plusDays(d);
             boolean isWeekend = date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
             for (int h = fromHour; h <= toHour; h++) {
-                String key = date.toString() + "|" + (h < 10 ? "0" + h : h) + ":00";
+                // Clave estandarizada a formato HH:MM (sin segundos) para alinear con la UI
+                String key = date.toString() + "|" + String.format("%02d:00", h);
                 Map<String, Integer> info = new HashMap<>();
                 info.put("occupied", 0);
                 // Si es fin de semana no hay máquinas disponibles para reservar
@@ -134,7 +135,8 @@ public class AvailabilityController {
             if (date == null || st == null) continue;
             int h = st.getHour();
             if (h < fromHour || h > toHour) continue;
-            String key = date.toString() + "|" + (h < 10 ? "0" + h : h) + ":00";
+            // Misma normalización HH:MM
+            String key = date.toString() + "|" + String.format("%02d:00", h);
             boolean occupied = shiftsWithBookings.contains(s.getId()) || s.getStatus() == ShiftStatus.Reservado;
             if (occupied) {
                 Map<String, Integer> info = slots.get(key);

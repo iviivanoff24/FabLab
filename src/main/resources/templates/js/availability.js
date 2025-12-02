@@ -65,24 +65,8 @@ function mainAvailability() {
                 } else {
                     const dayDate = new Date(monday);
                     dayDate.setDate(monday.getDate() + i);
-                    const key = toIsoDate(dayDate) + '|' + hour;
-                    const info = slots[key];
-                    if (!info) {
-                        td.className = 'avail-high';
-                        td.title = 'Libre';
-                    } else {
-                        const occupied = info.occupied || 0;
-                        const total = info.total || 0;
-                        if (total === 0) {
-                            td.className = 'avail-closed';
-                            td.title = 'Cerrado';
-                        } else {
-                            const ratio = occupied / total;
-                            if (ratio <= 0.3) { td.className = 'avail-high'; td.title = 'Libre'; }
-                            else if (ratio <= 0.7) { td.className = 'avail-med'; td.title = 'Media ocupación'; }
-                            else { td.className = 'avail-low'; td.title = 'Completo'; }
-                        }
-                    }
+                    const info = getSlotForHour(slots, toIsoDate(dayDate), hour);
+                    applyAvailabilityColor(td, info);
                 }
 
                 row.appendChild(td);
@@ -181,11 +165,12 @@ function mainAvailability() {
             let sumOcc = 0;
             let sumTot = 0;
             for (const h of hours) {
-                const key = iso + '|' + h;
-                const info = slots[key];
+                const info = getSlotForHour(slots, iso, h);
                 if (info) {
-                    sumOcc += info.occupied || 0;
-                    sumTot += info.total || 0;
+                    const total = deriveTotal(info);
+                    const occ = deriveOccupied(info, total);
+                    sumOcc += occ;
+                    sumTot += total;
                 }
             }
             if (sumTot === 0) {
@@ -205,6 +190,75 @@ function mainAvailability() {
 
     renderCalendar(currentMonth, currentYear);
     renderWeekTable(new Date());
+}
+
+// --- Helpers de disponibilidad robustos ---
+function getSlotForHour(slots, isoDate, hourStr) {
+    if (!slots) return null;
+    // Variantes de formato de hora: HH:MM, HH:MM:SS, H:MM, HH.00, etc.
+    const h = (hourStr || '').trim();
+    const [hh, mm] = h.split(':');
+    const hh2 = (hh || '').padStart(2, '0');
+    const base = `${isoDate}|${hh2}:${mm || '00'}`;
+    const candidates = [
+        base,
+        `${base}:00`,              // HH:MM:SS
+        `${isoDate}|${hh}:${mm}`,  // sin pad
+        `${isoDate}|${hh2}:${mm}`, // pad solo hora
+        `${isoDate}|${hh2}.${mm || '00'}`, // con punto
+        `${isoDate}|${hh2}`,       // solo hora
+    ];
+    for (const k of candidates) {
+        if (k in slots) return slots[k];
+    }
+    // Buscar por aproximación: mismas fecha y hora prefix
+    const prefix = `${isoDate}|${hh2}`;
+    for (const k in slots) {
+        if (k.startsWith(prefix)) return slots[k];
+    }
+    return null;
+}
+function deriveTotal(info) {
+    return info?.total ?? info?.capacity ?? info?.max ?? 0;
+}
+
+function deriveOccupied(info, total) {
+    if (!info) return 0;
+    // Si el backend manda disponibles
+    if ('available' in info && total > 0) return Math.max(0, total - (info.available ?? 0));
+    if ('free' in info && total > 0) return Math.max(0, total - (info.free ?? 0));
+    // Reservas explícitas
+    if ('reserved' in info) return clamp(info.reserved, 0, total);
+    if ('reservations' in info) return clamp(info.reservations, 0, total);
+    if ('bookings' in info) return clamp(info.bookings, 0, total);
+    // Ocupados directos
+    if ('occupied' in info) {
+        // Heurística: si occupied == total y hay algún indicio de que significa "disponibles" (bandera invertida)
+        // Sin más señales lo tomamos literal pero lo acotamos
+        return clamp(info.occupied, 0, total);
+    }
+    return 0;
+}
+
+function clamp(v, min, max) { return Math.min(Math.max(v ?? 0, min), max); }
+
+function applyAvailabilityColor(td, info) {
+    if (!info) {
+        td.className = 'avail-high';
+        td.title = 'Libre';
+        return;
+    }
+    const total = deriveTotal(info);
+    const occupied = deriveOccupied(info, total);
+    if (total === 0) {
+        td.className = 'avail-closed';
+        td.title = 'Cerrado';
+        return;
+    }
+    const ratio = occupied / total;
+    if (ratio <= 0.3) { td.className = 'avail-high'; td.title = `Libre (${occupied}/${total})`; }
+    else if (ratio <= 0.7) { td.className = 'avail-med'; td.title = `Media ocupación (${occupied}/${total})`; }
+    else { td.className = 'avail-low'; td.title = `Completo (${occupied}/${total})`; }
 }
 
 if (document.readyState === 'loading') {

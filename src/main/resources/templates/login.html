@@ -14,110 +14,119 @@
 
     <br />
 
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card shadow-sm">
-            <div class="card-body p-4">
-              <h1 class="h4 mb-3 text-center">Iniciar sesión</h1>
-              <!-- Alerta de error login (se muestra si ?error=...) -->
-              <div id="loginError" class="alert alert-danger d-none" role="alert">
-                <div class="d-flex align-items-center">
-                  <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                  <span class="alert-text">Error de autenticación.</span>
-                </div>
-              </div>
-              
-              <form action="/login" method="post" id="loginForm" novalidate> <!-- Validacion -->
-                <div class="mb-3">
-                  <label for="email" class="form-label"
-                    >Correo electrónico</label
-                  >
-                  <input
-                    type="email"
-                    class="form-control"
-                    id="email"
-                    name="email"
-                    placeholder="tucorreo@ejemplo.com"
-                    required
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="password" class="form-label">Contraseña</label>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="password"
-                    name="password"
-                    placeholder="********"
-                    required
-                  />
-                </div>
+    <main>
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+              <div class="card-body p-4">
+                <h1 class="h4 mb-3 text-center">Iniciar sesión</h1>
+                <!-- Alerta de error login (se muestra si ?error=...) -->
                 <div
-                  class="d-flex justify-content-between align-items-center mb-3"
+                  id="loginError"
+                  class="alert alert-danger d-none"
+                  role="alert"
                 >
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      id="remember"
-                      name="remember"
-                    />
-                    <label class="form-check-label" for="remember"
-                      >Recordarme</label
-                    >
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span class="alert-text">Error de autenticación.</span>
                   </div>
-                  <a class="small" href="#">¿Olvidaste tu contraseña?</a>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">
-                  Iniciar sesión
-                </button>
-              </form>
-              <p class="text-center small mt-3 mb-0">
-                ¿No tienes cuenta? <a href="/register">Regístrate</a>
-              </p>
+
+                <form action="/login" method="post" id="loginForm" novalidate>
+                  <!-- Validacion -->
+                  <div class="mb-3">
+                    <label for="email" class="form-label"
+                      >Correo electrónico</label
+                    >
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      name="email"
+                      placeholder="tucorreo@ejemplo.com"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password"
+                      name="password"
+                      placeholder="********"
+                      required
+                    />
+                  </div>
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-3"
+                  >
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="remember"
+                        name="remember"
+                      />
+                      <label class="form-check-label" for="remember"
+                        >Recordarme</label
+                      >
+                    </div>
+                    <a class="small" href="#">¿Olvidaste tu contraseña?</a>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">
+                    Iniciar sesión
+                  </button>
+                </form>
+                <p class="text-center small mt-3 mb-0">
+                  ¿No tienes cuenta? <a href="/register">Regístrate</a>
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
     <script src="js/main.js" defer></script>
     <script>
       // Mostrar alerta si hay parámetro error y restaurar valores introducidos.
-      (function(){
+      (function () {
         const params = new URLSearchParams(window.location.search);
-        const errorParam = params.get('error');
-        const alertDiv = document.getElementById('loginError');
-        const form = document.getElementById('loginForm');
-        const emailInput = document.getElementById('email');
-        const passInput = document.getElementById('password');
+        const errorParam = params.get("error");
+        const alertDiv = document.getElementById("loginError");
+        const form = document.getElementById("loginForm");
+        const emailInput = document.getElementById("email");
+        const passInput = document.getElementById("password");
 
         // Restaurar desde sessionStorage si hubo fallo anterior
-        const storedEmail = sessionStorage.getItem('login_email');
-        const storedPass = sessionStorage.getItem('login_password');
+        const storedEmail = sessionStorage.getItem("login_email");
+        const storedPass = sessionStorage.getItem("login_password");
 
         if (errorParam && alertDiv) {
-          alertDiv.classList.remove('d-none');
-          const textNode = alertDiv.querySelector('.alert-text');
+          alertDiv.classList.remove("d-none");
+          const textNode = alertDiv.querySelector(".alert-text");
           if (textNode) textNode.textContent = decodeURIComponent(errorParam);
           if (storedEmail) emailInput.value = storedEmail;
           if (storedPass) passInput.value = storedPass; // Nota: mantener password en cliente, no poner en URL
         } else {
           // Si no hay error, limpiar cualquier dato previo
-          sessionStorage.removeItem('login_email');
-          sessionStorage.removeItem('login_password');
+          sessionStorage.removeItem("login_email");
+          sessionStorage.removeItem("login_password");
         }
 
         if (form) {
-          form.addEventListener('submit', () => {
-            sessionStorage.setItem('login_email', emailInput.value);
-            sessionStorage.setItem('login_password', passInput.value);
+          form.addEventListener("submit", () => {
+            sessionStorage.setItem("login_email", emailInput.value);
+            sessionStorage.setItem("login_password", passInput.value);
           });
         }
       })();
     </script>
     <footer class="text-center py-4 text-muted small">
-      <div class="container">Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida</div>
+      <div class="container">
+        Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida
+      </div>
     </footer>
   </body>
 </html>
