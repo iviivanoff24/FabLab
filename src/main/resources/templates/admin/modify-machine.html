@@ -1,151 +1,213 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Editar Máquina - FabLab</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Máquina - FabLab</title>
     <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="img/logo.png" />
-  <link rel="icon" href="/img/logo.png" type="image/png" />
-  <link rel="stylesheet" href="/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="/css/main.css" />
-  <style>
-    .img-preview { max-width: 260px; max-height: 180px; object-fit: cover; }
-  </style>
-  <script>
-    function getParam(name) {
-      const url = new URL(window.location.href);
-      return url.searchParams.get(name);
-    }
-    async function findImageUrl(id) {
-      const bases = [`.jpg`, `.png`, `.gif`];
-      for (const ext of bases) {
-        const url = `/img/upload/machines/machine-${id}${ext}`;
-        try {
-          const r = await fetch(url, { method: 'HEAD' });
-          if (r.ok) return url;
-        } catch {}
+    <link rel="icon" href="/img/logo.png" type="image/png" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <style>
+      .img-preview {
+        max-width: 260px;
+        max-height: 180px;
+        object-fit: cover;
       }
-      return '/img/logo.png';
-    }
-    document.addEventListener('DOMContentLoaded', async () => {
-      const id = getParam('id');
-      const titleSpan = document.getElementById('machineIdSpan');
-      if (id) { titleSpan.textContent = `#${id}`; }
-
-      // Guardia admin (cliente)
-      try {
-        const r = await fetch('/api/session/me');
-        if (r.ok) {
-          const data = await r.json();
-          if (!data.admin) {
-            document.getElementById('editForm').classList.add('d-none');
-            document.getElementById('adminGuard').classList.remove('d-none');
-          }
+    </style>
+    <script>
+      function getParam(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+      }
+      async function findImageUrl(id) {
+        const bases = [`.jpg`, `.png`, `.gif`];
+        for (const ext of bases) {
+          const url = `/img/upload/machines/machine-${id}${ext}`;
+          try {
+            const r = await fetch(url, { method: "HEAD" });
+            if (r.ok) return url;
+          } catch {}
         }
-      } catch {}
+        return "/img/logo.png";
+      }
+      document.addEventListener("DOMContentLoaded", async () => {
+        const id = getParam("id");
+        const titleSpan = document.getElementById("machineIdSpan");
+        if (id) {
+          titleSpan.textContent = `#${id}`;
+        }
 
-      // Setear action del formulario
-      const form = document.getElementById('machineForm');
-      if (id) form.action = `/admin/machines/${id}`;
-
-      // Cargar datos actuales y pre-rellenar
-      const img = document.getElementById('currentImage');
-      if (id) {
+        // Guardia admin (cliente)
         try {
-          const resp = await fetch(`/api/machines/${id}`);
-          if (resp.ok) {
-            const data = await resp.json();
-            if (img) img.src = data.imageUrl || await findImageUrl(id);
-            const name = document.getElementById('name');
-            const location = document.getElementById('location');
-            const description = document.getElementById('description');
-            const hourlyPrice = document.getElementById('hourlyPrice');
-            const status = document.getElementById('status');
-            if (name && data.name) name.value = data.name;
-            if (location && data.location) location.value = data.location;
-            if (description && data.description) description.value = data.description;
-            if (hourlyPrice && data.hourlyPrice != null) hourlyPrice.value = data.hourlyPrice;
-            if (status && data.status) status.value = data.status;
-          } else {
+          const r = await fetch("/api/session/me");
+          if (r.ok) {
+            const data = await r.json();
+            if (!data.admin) {
+              document.getElementById("editForm").classList.add("d-none");
+              document.getElementById("adminGuard").classList.remove("d-none");
+            }
+          }
+        } catch {}
+
+        // Setear action del formulario
+        const form = document.getElementById("machineForm");
+        if (id) form.action = `/admin/machines/${id}`;
+
+        // Cargar datos actuales y pre-rellenar
+        const img = document.getElementById("currentImage");
+        if (id) {
+          try {
+            const resp = await fetch(`/api/machines/${id}`);
+            if (resp.ok) {
+              const data = await resp.json();
+              if (img) img.src = data.imageUrl || (await findImageUrl(id));
+              const name = document.getElementById("name");
+              const location = document.getElementById("location");
+              const description = document.getElementById("description");
+              const hourlyPrice = document.getElementById("hourlyPrice");
+              const status = document.getElementById("status");
+              if (name && data.name) name.value = data.name;
+              if (location && data.location) location.value = data.location;
+              if (description && data.description)
+                description.value = data.description;
+              if (hourlyPrice && data.hourlyPrice != null)
+                hourlyPrice.value = data.hourlyPrice;
+              if (status && data.status) status.value = data.status;
+            } else {
+              if (img) img.src = await findImageUrl(id);
+            }
+          } catch {
             if (img) img.src = await findImageUrl(id);
           }
-        } catch {
-          if (img) img.src = await findImageUrl(id);
         }
-      }
 
-      // Validación simple
-      form.addEventListener('submit', e => {
-        form.classList.add('was-validated');
+        // Validación simple
+        form.addEventListener("submit", (e) => {
+          form.classList.add("was-validated");
+        });
       });
-    });
-  </script>
-</head>
-<body>
-  <div th:replace="~{fragments/header :: siteHeader('')}"></div>
+    </script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/header :: siteHeader('')}"></div>
 
-  <main class="container" id="editForm">
-    <br>
-    <h1 class="h4 mb-3">Editar máquina <span id="machineIdSpan" class="text-secondary"></span></h1>
-    <div id="adminGuard" class="alert alert-warning d-none">Solo administradores pueden editar máquinas.</div>
+    <main class="container" id="editForm">
+      <br />
+      <h1 class="h4 mb-3">
+        Editar máquina <span id="machineIdSpan" class="text-secondary"></span>
+      </h1>
+      <div id="adminGuard" class="alert alert-warning d-none">
+        Solo administradores pueden editar máquinas.
+      </div>
 
-    <div class="mb-3">
-      <label class="form-label">Imagen actual</label><br />
-      <img id="currentImage" class="border rounded img-preview" src="/img/logo.png" alt="Imagen actual" />
-      <div class="form-text">Si subes una nueva, la anterior se reemplaza.</div>
-    </div>
-
-    <form id="machineForm" method="post" action="#" enctype="multipart/form-data" class="needs-validation" novalidate>
       <div class="mb-3">
-        <label for="name" class="form-label">Nombre</label>
-        <input type="text" class="form-control" id="name" name="name" />
-        <div class="form-text">Déjalo vacío para mantener el actual.</div>
-      </div>
-      <div class="mb-3">
-        <label for="location" class="form-label">Ubicación</label>
-        <input type="text" class="form-control" id="location" name="location" />
-        <div class="form-text">Déjalo vacío para mantener el actual.</div>
-      </div>
-      <div class="mb-3">
-        <label for="description" class="form-label">Descripción</label>
-        <textarea class="form-control" id="description" name="description" rows="4" maxlength="80"></textarea>
-        <div class="form-text">Máximo 80 caracteres. Vacío para mantener la actual.</div>
-      </div>
-      <div class="mb-3">
-        <label for="image" class="form-label">Nueva imagen (opcional)</label>
-        <div class="input-group">
-          <input type="file" class="form-control" id="image" name="image" accept="image/*" />
-          <label class="input-group-text" for="image">Subir</label>
+        <label class="form-label">Imagen actual</label><br />
+        <img
+          id="currentImage"
+          class="border rounded img-preview"
+          src="/img/logo.png"
+          alt="Imagen actual"
+        />
+        <div class="form-text">
+          Si subes una nueva, la anterior se reemplaza.
         </div>
-        <div class="form-text">Formatos: JPG, PNG o GIF. Máx 2 MB.</div>
       </div>
-      <div class="mb-3">
-        <label for="hourlyPrice" class="form-label">Precio por hora (€)</label>
-        <div class="input-group">
-          <span class="input-group-text">€</span>
-          <input type="number" step="0.01" min="0" class="form-control" id="hourlyPrice" name="hourlyPrice" placeholder="0.00" aria-label="Precio por hora" />
-          <span class="input-group-text">.00</span>
+
+      <form
+        id="machineForm"
+        method="post"
+        action="#"
+        enctype="multipart/form-data"
+        class="needs-validation"
+        novalidate
+      >
+        <div class="mb-3">
+          <label for="name" class="form-label">Nombre</label>
+          <input type="text" class="form-control" id="name" name="name" />
+          <div class="form-text">Déjalo vacío para mantener el actual.</div>
         </div>
-        <div class="form-text">Vacío para mantener el actual.</div>
+        <div class="mb-3">
+          <label for="location" class="form-label">Ubicación</label>
+          <input
+            type="text"
+            class="form-control"
+            id="location"
+            name="location"
+          />
+          <div class="form-text">Déjalo vacío para mantener el actual.</div>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Descripción</label>
+          <textarea
+            class="form-control"
+            id="description"
+            name="description"
+            rows="4"
+            maxlength="80"
+          ></textarea>
+          <div class="form-text">
+            Máximo 80 caracteres. Vacío para mantener la actual.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="image" class="form-label">Nueva imagen (opcional)</label>
+          <div class="input-group">
+            <input
+              type="file"
+              class="form-control"
+              id="image"
+              name="image"
+              accept="image/*"
+            />
+            <label class="input-group-text" for="image">Subir</label>
+          </div>
+          <div class="form-text">Formatos: JPG, PNG o GIF. Máx 2 MB.</div>
+        </div>
+        <div class="mb-3">
+          <label for="hourlyPrice" class="form-label"
+            >Precio por hora (€)</label
+          >
+          <div class="input-group">
+            <span class="input-group-text">€</span>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              class="form-control"
+              id="hourlyPrice"
+              name="hourlyPrice"
+              placeholder="0.00"
+              aria-label="Precio por hora"
+            />
+            <span class="input-group-text">.00</span>
+          </div>
+          <div class="form-text">Vacío para mantener el actual.</div>
+        </div>
+        <div class="mb-3">
+          <label for="status" class="form-label">Estado</label>
+          <select class="form-select" id="status" name="status">
+            <option value="">(Sin cambio)</option>
+            <option value="Disponible">Disponible</option>
+            <option value="En_mantenimiento">En mantenimiento</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <a href="/machines" class="btn btn-secondary ms-2">Cancelar</a>
+      </form>
+      <br />
+    </main>
+    <footer class="text-center py-4 text-muted small">
+      <div class="container">
+        Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida
       </div>
-      <div class="mb-3">
-        <label for="status" class="form-label">Estado</label>
-        <select class="form-select" id="status" name="status">
-          <option value="">(Sin cambio)</option>
-          <option value="Disponible">Disponible</option>
-          <option value="En_mantenimiento">En mantenimiento</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary">Guardar cambios</button>
-      <a href="/machines" class="btn btn-secondary ms-2">Cancelar</a>
-    </form>
-    <br>
-  </main>
-<footer class="text-center py-4 text-muted small">
-      <div class="container">Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida</div>
     </footer>
-  <script src="/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
-</body>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
+  </body>
 </html>

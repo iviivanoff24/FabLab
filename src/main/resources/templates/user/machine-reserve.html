@@ -1,192 +1,352 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title th:text="${'Reservar máquina - ' + machine.name}">Reservar máquina</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${'Reservar máquina - ' + machine.name}">
+      Reservar máquina
+    </title>
     <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="img/logo.png" />
-  <link rel="icon" href="/img/logo.png" type="image/png" sizes="32x32" />
-  <link rel="stylesheet" href="/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="/css/main.css" />
-</head>
-<body>
-<div th:replace="~{fragments/header :: siteHeader('reservar')}"></div>
+    <link rel="icon" href="/img/logo.png" type="image/png" sizes="32x32" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body>
+    <div th:replace="~{fragments/header :: siteHeader('reservar')}"></div>
 
-<main class="container mb-5">
-  <br>
-  <a href="/machines" class="btn btn-sm btn-outline-secondary mb-3">&larr; Volver</a>
-  <h2 class="h4 mb-2" th:text="${'Reservar: ' + machine.name}">Reservar: Máquina</h2>
-  <p class="text-muted mb-1">Ubicación: <span th:text="${machine.location} ?: 'No especificada'"></span></p>
-  <p class="mb-1">Precio: € <span th:text="${#numbers.formatDecimal(machine.hourlyPrice,1,2)} ?: '0.00'"></span> / hora</p>
-  <p class="mb-3">Estado: <span class="badge bg-primary" th:text="${machine.status} ?: 'Desconocido'"></span></p>
+    <main class="container mb-5">
+      <br />
+      <a href="/machines" class="btn btn-sm btn-outline-secondary mb-3"
+        >&larr; Volver</a
+      >
+      <h2 class="h4 mb-2" th:text="${'Reservar: ' + machine.name}">
+        Reservar: Máquina
+      </h2>
+      <p class="text-muted mb-1">
+        Ubicación:
+        <span th:text="${machine.location} ?: 'No especificada'"></span>
+      </p>
+      <p class="mb-1">
+        Precio: €
+        <span
+          th:text="${#numbers.formatDecimal(machine.hourlyPrice,1,2)} ?: '0.00'"
+        ></span>
+        / hora
+      </p>
+      <p class="mb-3">
+        Estado:
+        <span
+          class="badge bg-primary"
+          th:text="${machine.status} ?: 'Desconocido'"
+        ></span>
+      </p>
 
-  <form method="get" class="row g-2 align-items-end mb-3">
-    <div class="col-auto">
-      <label class="form-label mb-0">Fecha</label>
-      <input type="date" name="date" class="form-control form-control-sm" th:value="${selectedDate}" />
-    </div>
-    <div class="col-auto"><button class="btn btn-sm btn-primary">Ver</button></div>
-  </form>
+      <form method="get" class="row g-2 align-items-end mb-3">
+        <div class="col-auto">
+          <label class="form-label mb-0">Fecha</label>
+          <input
+            type="date"
+            name="date"
+            class="form-control form-control-sm"
+            th:value="${selectedDate}"
+          />
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-sm btn-primary">Ver</button>
+        </div>
+      </form>
 
-  <div th:if="${messageSuccess}" class="alert alert-success py-1" th:text="${messageSuccess}"></div>
-  <div th:if="${messageError}" class="alert alert-danger py-1" th:text="${messageError}"></div>
+      <div
+        th:if="${messageSuccess}"
+        class="alert alert-success py-1"
+        th:text="${messageSuccess}"
+      ></div>
+      <div
+        th:if="${messageError}"
+        class="alert alert-danger py-1"
+        th:text="${messageError}"
+      ></div>
 
-  <h3 class="h6" th:text="${'Turnos del día ' + selectedDate}">Turnos</h3>
-  <form id="multiReserveForm" method="get" th:action="@{/payment}" class="list-group mb-4">
-    <input type="hidden" name="type" value="reservation_multi" />
-    <input type="hidden" name="itemId" th:value="${machine.id}" />
-    <input type="hidden" name="itemName" th:value="${machine.name}" />
-    <input type="hidden" name="date" th:value="${selectedDate}" />
-    <input type="hidden" name="returnUrl" th:value="${'/machines/' + machine.id + '/reserve?date=' + selectedDate}" />
-    <!-- inputs dinámicos: shiftIds (existentes) y startHours (para crear en pago) -->
-    <div class="list-group-item d-flex justify-content-between align-items-center" th:each="slot : ${slots}">
-      <div>
-        <span class="fw-semibold" th:text="${slot.startTime + ' - ' + slot.endTime}">09:00 - 10:00</span>
-        <span class="badge bg-secondary" th:if="${slot.reservado}" th:text="${slot.reservadoPorMi ? 'Reservado · Tu reserva' : 'Reservado'}">Reservado</span>
-        <!-- Mostrar nombre(es) del/los usuario(s) que tienen la reserva (solo para admins) -->
-        <span th:if="${isAdmin and slot.reservado}" th:each="b : ${slot.bookings}" class="badge bg-info text-dark ms-2" th:text="${'Reserva: ' + b.user.name}">Reserva</span>
-        <span class="badge bg-success" th:if="${!slot.reservado and slot.canReserve}" >Disponible</span>
-        <span class="badge bg-danger" th:if="${!slot.reservado and !slot.canReserve}">No disponible</span>
-      </div>
-      <div class="d-flex align-items-center">
-        <div class="d-flex align-items-center gap-2">
-          <!-- Selección múltiple -->
-          <div class="form-check" th:if="${slot.canReserve}">
-            <input class="form-check-input" type="checkbox"
-                   th:data-shift-id="${slot.shiftId}"
-                   th:data-hour="${slot.hour}"
-                   th:data-date="${selectedDate}"
-                   />
-            <label class="form-check-label">Seleccionar</label>
+      <h3 class="h6" th:text="${'Turnos del día ' + selectedDate}">Turnos</h3>
+      <form
+        id="multiReserveForm"
+        method="get"
+        th:action="@{/payment}"
+        class="list-group mb-4"
+      >
+        <input type="hidden" name="type" value="reservation_multi" />
+        <input type="hidden" name="itemId" th:value="${machine.id}" />
+        <input type="hidden" name="itemName" th:value="${machine.name}" />
+        <input type="hidden" name="date" th:value="${selectedDate}" />
+        <input
+          type="hidden"
+          name="returnUrl"
+          th:value="${'/machines/' + machine.id + '/reserve?date=' + selectedDate}"
+        />
+        <!-- inputs dinámicos: shiftIds (existentes) y startHours (para crear en pago) -->
+        <div
+          class="list-group-item d-flex justify-content-between align-items-center"
+          th:each="slot : ${slots}"
+        >
+          <div>
+            <span
+              class="fw-semibold"
+              th:text="${slot.startTime + ' - ' + slot.endTime}"
+              >09:00 - 10:00</span
+            >
+            <span
+              class="badge bg-secondary"
+              th:if="${slot.reservado}"
+              th:text="${slot.reservadoPorMi ? 'Reservado · Tu reserva' : 'Reservado'}"
+              >Reservado</span
+            >
+            <!-- Mostrar nombre(es) del/los usuario(s) que tienen la reserva (solo para admins) -->
+            <span
+              th:if="${isAdmin and slot.reservado}"
+              th:each="b : ${slot.bookings}"
+              class="badge bg-info text-dark ms-2"
+              th:text="${'Reserva: ' + b.user.name}"
+              >Reserva</span
+            >
+            <span
+              class="badge bg-success"
+              th:if="${!slot.reservado and slot.canReserve}"
+              >Disponible</span
+            >
+            <span
+              class="badge bg-danger"
+              th:if="${!slot.reservado and !slot.canReserve}"
+              >No disponible</span
+            >
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <!-- Selección múltiple -->
+              <div class="form-check" th:if="${slot.canReserve}">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  th:data-shift-id="${slot.shiftId}"
+                  th:data-hour="${slot.hour}"
+                  th:data-date="${selectedDate}"
+                />
+                <label class="form-check-label">Seleccionar</label>
+              </div>
+            </div>
+            <!-- Mostrar lista de reservas y botón Cancelar por reserva (visible a admin o al usuario propietario) -->
+            <div th:if="${slot.reservado}" class="ms-2">
+              <ul class="list-unstyled mb-0">
+                <li
+                  th:each="b : ${slot.bookings}"
+                  class="d-flex align-items-center"
+                >
+                  <button
+                    th:if="${(isAdmin or (currentUserId != null and currentUserId == b.user.id)) and slot.canCancel}"
+                    type="button"
+                    class="btn btn-sm btn-outline-danger ms-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#cancelBookingModal"
+                    th:data-booking-id="${b.id}"
+                    th:data-shift-id="${slot.shiftId}"
+                    th:data-start-hour="${slot.hour}"
+                    th:data-date="${selectedDate}"
+                  >
+                    Cancelar
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-        <!-- Mostrar lista de reservas y botón Cancelar por reserva (visible a admin o al usuario propietario) -->
-        <div th:if="${slot.reservado}" class="ms-2">
-          <ul class="list-unstyled mb-0">
-            <li th:each="b : ${slot.bookings}" class="d-flex align-items-center">
-              <button th:if="${(isAdmin or (currentUserId != null and currentUserId == b.user.id)) and slot.canCancel}" type="button" class="btn btn-sm btn-outline-danger ms-2"
-                data-bs-toggle="modal" data-bs-target="#cancelBookingModal"
-                th:data-booking-id="${b.id}"
-                th:data-shift-id="${slot.shiftId}"
-                th:data-start-hour="${slot.hour}"
-                th:data-date="${selectedDate}">
-                Cancelar
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <div class="text-muted small">
+            <span>Seleccionados: </span>
+            <strong id="selectedCount">0</strong>
+            <span> · Total estimado: € </span>
+            <strong id="selectedTotal">0.00</strong>
+            <span class="ms-2" th:if="${#lists.isEmpty(slots)}"
+              >No hay turnos seleccionables este día.</span
+            >
+          </div>
+          <button
+            type="submit"
+            id="paySelectedBtn"
+            class="btn btn-primary btn-sm"
+            disabled
+          >
+            Pagar seleccionados
+          </button>
+        </div>
+      </form>
+      <p class="text-muted small">
+        Selecciona un turno disponible para realizar la reserva. Si un turno ya
+        está reservado por ti, aparecerá indicado.
+      </p>
+
+      <!-- Modal cancelación -->
+      <div
+        class="modal fade"
+        id="cancelBookingModal"
+        tabindex="-1"
+        aria-labelledby="cancelBookingModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="cancelBookingModalLabel">
+                Confirmar cancelación de reserva
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Cerrar"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <p>¿Seguro que deseas cancelar esta reserva?</p>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                No, volver
               </button>
-            </li>
-          </ul>
+              <button
+                type="button"
+                id="confirmCancelBookingBtn"
+                class="btn btn-primary"
+              >
+                Sí, cancelar
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="d-flex justify-content-between align-items-center mt-2">
-      <div class="text-muted small">
-        <span>Seleccionados: </span>
-        <strong id="selectedCount">0</strong>
-        <span> · Total estimado: € </span>
-        <strong id="selectedTotal">0.00</strong>
-        <span class="ms-2" th:if="${#lists.isEmpty(slots)}">No hay turnos seleccionables este día.</span>
+      <form
+        id="cancelBookingForm"
+        method="post"
+        th:action="@{/machines/{id}/reserve/cancel(id=${machine.id})}"
+        class="d-none"
+      >
+        <input type="hidden" name="date" id="cancelDate" />
+        <input type="hidden" name="startHour" id="cancelStartHour" />
+        <input type="hidden" name="shiftId" id="cancelShiftId" />
+        <input type="hidden" name="bookingId" id="cancelBookingId" />
+      </form>
+    </main>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Dinámica de selección múltiple: contar y totalizar
+        const pricePerHour =
+          parseFloat(("[[${machine.hourlyPrice}]]" || "0").replace(",", ".")) ||
+          0;
+        const countEl = document.getElementById("selectedCount");
+        const totalEl = document.getElementById("selectedTotal");
+        const payBtn = document.getElementById("paySelectedBtn");
+        const form = document.getElementById("multiReserveForm");
+        function updateSelectionSummary() {
+          const checks = document.querySelectorAll(
+            "#multiReserveForm input[type=checkbox]:checked"
+          );
+          const count = checks.length;
+          const total = count * pricePerHour;
+          if (countEl) countEl.textContent = String(count);
+          if (totalEl) totalEl.textContent = total.toFixed(2);
+          if (payBtn) payBtn.disabled = count === 0;
+        }
+        function syncHiddenInputs() {
+          // limpiar previos (incluye inputs de fecha pareados)
+          form
+            .querySelectorAll(
+              'input[name="shiftIds"], input[name="startHours"], input[name="shiftDates"], input[name="startDates"]'
+            )
+            .forEach((el) => el.remove());
+          // obtener la fecha seleccionada del formulario (campo date ya presente)
+          const selectedDateInput = form.querySelector('input[name="date"]');
+          const selectedDateValue = selectedDateInput
+            ? selectedDateInput.value
+            : "";
+          // por cada checkbox seleccionado:
+          document
+            .querySelectorAll("#multiReserveForm input[type=checkbox]:checked")
+            .forEach((cb) => {
+              const sid = cb.getAttribute("data-shift-id");
+              const hour = cb.getAttribute("data-hour");
+              if (sid && sid !== "null") {
+                const i = document.createElement("input");
+                i.type = "hidden";
+                i.name = "shiftIds";
+                i.value = sid;
+                form.appendChild(i);
+                // enviar la fecha asociada al shift (por si el backend necesita el pairing)
+                const d = document.createElement("input");
+                d.type = "hidden";
+                d.name = "shiftDates";
+                d.value = selectedDateValue;
+                form.appendChild(d);
+              } else if (hour) {
+                const i = document.createElement("input");
+                i.type = "hidden";
+                i.name = "startHours";
+                i.value = hour;
+                form.appendChild(i);
+                // enviar la fecha asociada a la hora creada para que el pago reserve ese día, no el día del recibo
+                const d = document.createElement("input");
+                d.type = "hidden";
+                d.name = "startDates";
+                d.value = selectedDateValue;
+                form.appendChild(d);
+              }
+            });
+        }
+        document
+          .querySelectorAll("#multiReserveForm input[type=checkbox]")
+          .forEach((cb) => {
+            cb.addEventListener("change", function () {
+              syncHiddenInputs();
+              updateSelectionSummary();
+            });
+          });
+        form.addEventListener("submit", function () {
+          syncHiddenInputs();
+        });
+        updateSelectionSummary();
+
+        var modal = document.getElementById("cancelBookingModal");
+        var dateInput = document.getElementById("cancelDate");
+        var hourInput = document.getElementById("cancelStartHour");
+        var shiftInput = document.getElementById("cancelShiftId");
+        var bookingInput = document.getElementById("cancelBookingId");
+        var confirmBtn = document.getElementById("confirmCancelBookingBtn");
+        modal.addEventListener("show.bs.modal", function (ev) {
+          var btn = ev.relatedTarget;
+          if (!btn) return;
+          dateInput.value = btn.getAttribute("data-date");
+          hourInput.value = btn.getAttribute("data-start-hour");
+          shiftInput.value = btn.getAttribute("data-shift-id");
+          bookingInput.value = btn.getAttribute("data-booking-id") || "";
+        });
+        confirmBtn.addEventListener("click", function () {
+          document.getElementById("cancelBookingForm").submit();
+        });
+      });
+    </script>
+    <footer class="text-center py-4 text-muted small">
+      <div class="container">
+        Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida
       </div>
-      <button type="submit" id="paySelectedBtn" class="btn btn-primary btn-sm" disabled>Pagar seleccionados</button>
-    </div>
-  </form>
-  <p class="text-muted small">Selecciona un turno disponible para realizar la reserva. Si un turno ya está reservado por ti, aparecerá indicado.</p>
-
-  <!-- Modal cancelación -->
-  <div class="modal fade" id="cancelBookingModal" tabindex="-1" aria-labelledby="cancelBookingModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="cancelBookingModalLabel">Confirmar cancelación de reserva</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <p>¿Seguro que deseas cancelar esta reserva?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, volver</button>
-          <button type="button" id="confirmCancelBookingBtn" class="btn btn-primary">Sí, cancelar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <form id="cancelBookingForm" method="post" th:action="@{/machines/{id}/reserve/cancel(id=${machine.id})}" class="d-none">
-    <input type="hidden" name="date" id="cancelDate" />
-    <input type="hidden" name="startHour" id="cancelStartHour" />
-    <input type="hidden" name="shiftId" id="cancelShiftId" />
-    <input type="hidden" name="bookingId" id="cancelBookingId" />
-  </form>
-</main>
-
-<script src="js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
-<script>
-document.addEventListener('DOMContentLoaded',function(){
-  // Dinámica de selección múltiple: contar y totalizar
-  const pricePerHour = parseFloat(('[[${machine.hourlyPrice}]]' || '0').replace(',', '.')) || 0;
-  const countEl = document.getElementById('selectedCount');
-  const totalEl = document.getElementById('selectedTotal');
-  const payBtn = document.getElementById('paySelectedBtn');
-  const form = document.getElementById('multiReserveForm');
-  function updateSelectionSummary(){
-    const checks = document.querySelectorAll('#multiReserveForm input[type=checkbox]:checked');
-    const count = checks.length;
-    const total = (count * pricePerHour);
-    if (countEl) countEl.textContent = String(count);
-    if (totalEl) totalEl.textContent = total.toFixed(2);
-    if (payBtn) payBtn.disabled = count === 0;
-  }
-  function syncHiddenInputs(){
-    // limpiar previos (incluye inputs de fecha pareados)
-    form.querySelectorAll('input[name="shiftIds"], input[name="startHours"], input[name="shiftDates"], input[name="startDates"]').forEach(el => el.remove());
-    // obtener la fecha seleccionada del formulario (campo date ya presente)
-    const selectedDateInput = form.querySelector('input[name="date"]');
-    const selectedDateValue = selectedDateInput ? selectedDateInput.value : '';
-    // por cada checkbox seleccionado:
-    document.querySelectorAll('#multiReserveForm input[type=checkbox]:checked').forEach(cb => {
-      const sid = cb.getAttribute('data-shift-id');
-      const hour = cb.getAttribute('data-hour');
-      if (sid && sid !== 'null') {
-        const i = document.createElement('input');
-        i.type = 'hidden'; i.name = 'shiftIds'; i.value = sid; form.appendChild(i);
-        // enviar la fecha asociada al shift (por si el backend necesita el pairing)
-        const d = document.createElement('input');
-        d.type = 'hidden'; d.name = 'shiftDates'; d.value = selectedDateValue; form.appendChild(d);
-      } else if (hour) {
-        const i = document.createElement('input');
-        i.type = 'hidden'; i.name = 'startHours'; i.value = hour; form.appendChild(i);
-        // enviar la fecha asociada a la hora creada para que el pago reserve ese día, no el día del recibo
-        const d = document.createElement('input');
-        d.type = 'hidden'; d.name = 'startDates'; d.value = selectedDateValue; form.appendChild(d);
-      }
-    });
-  }
-  document.querySelectorAll('#multiReserveForm input[type=checkbox]').forEach(cb => {
-    cb.addEventListener('change', function(){
-      syncHiddenInputs();
-      updateSelectionSummary();
-    });
-  });
-  form.addEventListener('submit', function(){ syncHiddenInputs(); });
-  updateSelectionSummary();
-
-  var modal=document.getElementById('cancelBookingModal');
-  var dateInput=document.getElementById('cancelDate');
-  var hourInput=document.getElementById('cancelStartHour');
-  var shiftInput=document.getElementById('cancelShiftId');
-  var bookingInput=document.getElementById('cancelBookingId');
-  var confirmBtn=document.getElementById('confirmCancelBookingBtn');
-  modal.addEventListener('show.bs.modal',function(ev){
-    var btn=ev.relatedTarget; if(!btn) return;
-    dateInput.value=btn.getAttribute('data-date');
-    hourInput.value=btn.getAttribute('data-start-hour');
-    shiftInput.value=btn.getAttribute('data-shift-id');
-    bookingInput.value = btn.getAttribute('data-booking-id') || '';
-  });
-  confirmBtn.addEventListener('click',function(){document.getElementById('cancelBookingForm').submit();});
-});
-</script>
-<footer class="text-center py-4 text-muted small">
-      <div class="container">Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida</div>
     </footer>
-</body>
+  </body>
 </html>
