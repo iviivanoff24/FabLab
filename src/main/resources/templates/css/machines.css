@@ -9,34 +9,166 @@ body {
     background-position: center top;
 }
 
-.welcome-card {
-    background-color: #fff6d1;
-    border-top: 6px solid #f8bc1e;
-    border-radius: 0 0 20px 20px;
-    padding: 3rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+/* === ESTILO DEL CONTENEDOR DEL TÍTULO PRINCIPAL (Recuadro Amarillo) === */
+
+.machine-hero-title {
+    background: #fff6d1 !important; 
+    border: none !important;
+    border-top: 6px solid #f8bc1e !important; 
+    border-radius: 0 0 0 0 !important; 
+    padding: 1.5rem 1rem !important; 
+    
+    margin-bottom: 0 !important; 
+    
+    box-shadow: 0 10px 10px -10px rgba(0,0,0,0.08) !important; 
     position: relative;
-    overflow: hidden;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%; 
 }
 
-.welcome-card::after {
+.machine-hero-title::after {
     content: '';
     position: absolute;
-    top: 0; right: 30px;
-    width: 50px; height: 8px;
-    background-color: #ffeaa7;
+    top: 0;
+    right: 30px;
+    width: 60px;
+    height: 6px;
+    background-color: #ffeaa7; 
     border-radius: 0 0 4px 4px;
 }
 
-.title-maker { color: #2c3e50; letter-spacing: -1px; }
-
-.info-panel {
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(0,0,0,0.05);
-    backdrop-filter: blur(5px);
+.machine-hero-title h2 {
+    color: #2C3E50; 
+    font-size: 43.8504px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-weight: 700; 
+    margin: 0 !important; 
+    text-align: center;
 }
 
+/* === BARRA DE BÚSQUEDA PEGADA (.search-footer-bar) === */
+
+.search-footer-bar {
+    background: #fff6d1; 
+    border: 1px solid #f8bc1e; 
+    border-top: none; 
+    border-radius: 0 0 15px 15px; 
+    
+    padding: 1rem;
+    
+    margin-top: 0; 
+    margin-bottom: 3rem; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15); 
+}
+
+/* Estilo del INPUT dentro de la barra */
+.search-footer-bar .form-control {
+    border-radius: 8px 0 0 8px; 
+    border-color: #f8bc1e; 
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.search-footer-bar .form-control:focus {
+    border-color: #e0a800; 
+    box-shadow: 0 0 0 0.25rem rgba(248, 188, 30, 0.25);
+}
+
+/* Estilo del BOTÓN de Buscar */
+.search-footer-bar .btn-outline-secondary {
+    background-color: #f8bc1e; 
+    border-color: #f8bc1e;
+    color: #2c3e50; 
+    font-weight: 600;
+    
+    border-radius: 0 8px 8px 0; 
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.search-footer-bar .btn-outline-secondary:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+    color: #2c3e50;
+}
+
+/* === ESTILO PARA BOTONES DE ACCIÓN (RESERVAR) === */
+.btn-fablab-action {
+    /* Mismos estilos que el botón de Buscar */
+    background-color: #f8bc1e !important; 
+    border-color: #f8bc1e !important;
+    color: #2c3e50 !important; 
+    font-weight: 600 !important;
+    
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.btn-fablab-action:hover {
+    background-color: #e0a800 !important;
+    border-color: #e0a800 !important;
+    color: #2c3e50 !important;
+}
+
+
+/* === ESTILOS DE TARJETA DE MÁQUINA (.welcome-card) === */
+
+.welcome-card {
+    /* ESTADO BASE: Contenedor principal BLANCO */
+    background-color: #ffffff; 
+    
+    /* APLICAMOS SOMBRA AMARILLA SUAVE para distinguirlo del fondo */
+    box-shadow: 0 4px 12px rgba(248, 188, 30, 0.2); 
+    
+    border: 1px solid rgba(0, 0, 0, 0.05); 
+    border-radius: 12px; 
+    padding: 2.5rem; 
+    position: relative;
+    overflow: hidden;
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+    
+    border-top: none;
+}
+
+/* Eliminar el pseudo-elemento que hacía la banda de luz superior */
+.welcome-card::after {
+    content: none; 
+}
+
+/* EFECTO HOVER: Pasa a AMARILLO CLARO */
+.welcome-card:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 25px rgba(248, 188, 30, 0.4); 
+    border-color: #f8bc1e; 
+    background-color: #fff6d1; /* Fondo amarillo claro */
+}
+
+
+.title-maker { 
+    color: #2c3e50; 
+    letter-spacing: -1px; 
+    text-align: left; 
+}
+
+/* === ESTILO DEL PANEL DE INFORMACIÓN (.info-panel) === */
+
+.info-panel {
+    /* ESTADO BASE: Panel de descripción AMARILLO CLARO */
+    background: #fff6d1; 
+    border: 1px solid #f8bc1e; 
+    backdrop-filter: none; 
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* EFECTO HOVER: Panel de descripción pasa a BLANCO */
+.welcome-card:hover .info-panel {
+    background: #ffffff; 
+    border: 1px solid rgba(0, 0, 0, 0.1); 
+}
+
+
 /* === LEYENDA Y COLORES DE DISPONIBILIDAD === */
+
 /* Verde - Libre */
 .avail-high { background-color: #d1e7dd !important; color: #0f5132 !important; }
 /* Amarillo - Media */
