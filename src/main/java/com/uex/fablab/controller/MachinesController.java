@@ -42,11 +42,12 @@ public class MachinesController {
      * @return nombre de la vista
      */
     @GetMapping("/machines")
-    public String machines(HttpSession session, Model model) {
+    public String machines(HttpSession session, Model model, @RequestParam(value = "q", required = false) String q) {
         boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
-        var list = machineService.listAll();
+        var list = machineService.searchByName(q);
         model.addAttribute("machines", list);
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("q", q == null ? "" : q);
         Map<Long,String> imageUrls = new HashMap<>();
         for (Machine m : list) {
             imageUrls.put(m.getId(), resolveImageUrl(m.getId()));

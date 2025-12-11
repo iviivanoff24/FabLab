@@ -30,6 +30,12 @@ public class MachineService {
         return repo.findAll();
     }
 
+    /** Lista máquinas cuyo nombre contiene el texto dado (insensible a mayúsculas). */
+    public List<Machine> searchByName(String text) {
+        if (text == null || text.isBlank()) return repo.findAll();
+        return repo.findByNameContainingIgnoreCase(text.trim());
+    }
+
     /** Busca una máquina por id. */
     public Optional<Machine> findById(Long id) {
         return repo.findById(id);
