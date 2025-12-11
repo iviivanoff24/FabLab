@@ -6,7 +6,8 @@ html {
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    /* Usamos la fuente definida en main.css */
+    font-family: var(--font-main, 'Segoe UI', system-ui, -apple-system, sans-serif); 
     color: #333;
     line-height: 1.6;
     margin: 0;
@@ -15,7 +16,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     
-    /* Fondo con cuadrícula técnica suave */
+    /* Fondo con cuadrícula (Depende de main.css, pero se mantiene la definición local) */
     background-color: #f8f9fa;
     background-image: 
         linear-gradient(#e5e7eb 1px, transparent 1px),
@@ -60,9 +61,10 @@ header {
 }
 
 /* =========================================
-   3. HERO (Cabecera Principal)
+   3. HERO (Cabecera Principal - Estética FabLab Unificada)
    ========================================= */
 .hero {
+    /* Fondo y borde amarillo fuerte */
     background: #fff6d1 !important; 
     border: none !important;
     border-top: 6px solid #f8bc1e !important; 
@@ -71,6 +73,11 @@ header {
     margin-bottom: 3rem !important;
     box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08) !important;
     position: relative;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left; 
 }
 
 .hero::after {
@@ -91,10 +98,15 @@ header {
     letter-spacing: -1px;
 }
 
-.hero .lead {
-    color: #5d6d7e;
+.hero p.text-muted {
+    color: #5d6d7e !important; 
     font-weight: 400;
+    font-size: 1.1rem;
 }
+.hero .logo-lg {
+    min-width: 96px; 
+}
+
 
 /* =========================================
    4. SIDEBAR (Tarjetas laterales) - UNIFICADAS
@@ -102,13 +114,13 @@ header {
 aside .card {
     border: none;
     background: #fff6d1; 
-    border: 1px solid #ffeeba;
-    border-radius: 16px;
+    border: 1px solid #f8bc1e50; 
+    border-radius: 12px; 
     margin-bottom: 1.5rem;
     position: relative;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
 }
 
 /* Línea lateral decorativa */
@@ -127,9 +139,9 @@ aside .card::before {
 
 /* Hover común para todas */
 aside .card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px); 
     background: #ffde8b; 
-    box-shadow: 0 15px 30px rgba(248, 188, 30, 0.15);
+    box-shadow: 0 15px 30px rgba(248, 188, 30, 0.25); 
 }
 
 aside .card:hover::before {
@@ -141,54 +153,155 @@ aside .card .card-body {
 }
 
 aside .card h6 {
-    font-weight: 800;
+    font-weight: 700; 
     text-transform: uppercase;
     font-size: 0.8rem;
-    letter-spacing: 1.5px;
-    color: #9c6500; 
+    letter-spacing: 1px; 
+    color: #a0522d; 
     margin-bottom: 0.75rem;
 }
 
 aside .card p, aside .card .small {
-    color: #444;
+    color: #2c3e50; 
     margin-bottom: 0;
 }
 
 /* =========================================
-   5. CÓDIGO DENTRO DE LA SIDEBAR (La clave del cambio)
+   5. CÓDIGO DENTRO DE LA SIDEBAR
    ========================================= */
 aside .card pre {
-    background: rgba(255, 255, 255, 0.6); 
-    border: 1px solid #e0c080; 
-    color: #5d4037; 
-    box-shadow: none; 
+    background: #ffffff; 
+    border: 1px solid #f8bc1e; 
+    color: #2c3e50; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 0;
+    border-radius: 8px; 
+    overflow-x: auto; 
 }
 
 aside .card pre::before {
     display: none;
 }
 
-aside .card pre code {
+aside .card pre code,
+.kbd {
     background: transparent;
     color: inherit;
     border: none;
     font-size: 0.85em;
+    font-family: Consolas, monospace; 
+}
+.kbd {
+    background: #e9ecef; 
+    border: 1px solid #dee2e6; 
+    padding: .2rem .4rem;
+    border-radius:.25rem;
+    color: #495057;
+    font-size: 0.85em;
 }
 
 /* =========================================
-   6. CONTENIDO PRINCIPAL (Texto normal)
+   6. CONTENIDO PRINCIPAL (Separación Visual)
    ========================================= */
-main section.my-4, .blog-post {
+main section:not(.hero) {
     background: white; 
-    padding: 2.5rem;
-    border-radius: 16px;
+    padding: 2.5rem; 
+    border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     margin-bottom: 2rem;
     border: 1px solid rgba(0,0,0,0.02);
 }
+
+/* --- TÍTULOS DE SECCIÓN (Resumen, Estructura, etc.) --- */
+main h2 {
+    color: #2c3e50;
+    font-weight: 800; 
+    border-bottom: 3px solid #f8bc1e; 
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 2.2rem; 
+    letter-spacing: -0.5px;
+}
+main h3 {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1.6rem;
+    /* Separador sutil solo para los subtítulos (Características, A futuro) */
+    border-left: 5px solid #f8bc1e80; 
+    padding-left: 10px;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- NUEVA CLASE: Contenedor de información para separar bloques --- */
+.info-box {
+    background-color: #fcfcfc; /* Blanco muy suave, sutilmente diferente al fondo de la sección */
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.02); /* Sombra interna muy suave */
+}
+
+/* Estilo especial para el info-box de la Estructura (fondo azul) */
+.info-box-dark {
+    background-color: #e9f5ff; /* Azul claro suave (similar al primary de main.css) */
+    border-left: 5px solid #3498db; 
+    border-top: none;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem; /* Ajuste para el listado */
+}
+.info-box-dark ul {
+    margin-bottom: 1rem; /* Margen inferior para separarlo del borde del box */
+}
+
+
+/* --- ESTILO DE ELEMENTOS DE LISTA (A futuro, Estructura del proyecto) --- */
+main ul {
+    padding-left: 25px; 
+    list-style: none; 
+    margin-bottom: 2rem;
+}
+main ul li {
+    padding-left: 0;
+    margin-bottom: 0.5rem;
+    color: #444;
+}
+/* Viñeta personalizada de color (FabLab) */
+main ul li::before {
+    content: '→'; 
+    color: #f8bc1e; 
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+
+/* --- ESTILO DE CARACTERÍSTICAS PRINCIPALES (.feature-item) --- */
+.feature {
+    /* Clases de Bootstrap col-sm-6 ya dan el layout */
+    padding: 1.25rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #3498db; 
+    border-radius: 0 8px 8px 0;
+    transition: background-color 0.2s;
+}
+.feature:hover {
+    background-color: #f0f8ff; 
+}
+.feature h5 {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1.15rem;
+    margin-bottom: 0.25rem;
+}
+.feature p.text-muted {
+    font-size: 0.95rem;
+    color: #666 !important;
+}
+
 
 /* --- LIMPIEZA DE ESTILOS DEL CARRUSEL 3D (CRÍTICO) --- */
 .carousel-container-3d, 
@@ -196,7 +309,7 @@ main section.my-4, .blog-post {
 .carousel-container-3d main#carousel,
 .carousel-container-3d div.item, 
 .clickable-item {
-    all: unset !important; /* Limpieza agresiva de estilos */
+    all: unset !important; 
     display: initial !important; 
     transform-style: unset !important;
     perspective: unset !important;
@@ -209,6 +322,7 @@ main section.my-4, .blog-post {
 
 /* ======================================================
    7. NUEVOS ESTILOS DEL CARRUSEL INSTAGRAM (CSS PURO)
+   (Mantenidos sin cambios para no romper la animación)
    ====================================================== */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
@@ -255,10 +369,7 @@ main section.my-4, .blog-post {
 	margin: 0;
 }
 
-/* --- Animación (8 ítems, 27s) --- 
- * Paso de animación: 100% / 8 = 12.5%
- * Retraso por ítem: 27s / 8 = 3.375s
-*/
+/* --- Animación (8 ítems, 27s) --- */
 @keyframes carousel-animate {
 	0% {
 		visibility: hidden;
@@ -266,24 +377,24 @@ main section.my-4, .blog-post {
 		transform: translateX(200%) scale(0.7);
 	}
 	3%, 
-	12.5% { /* 12.5% */
+	12.5% { 
 		visibility: visible;
 		opacity: 0.8;
 		transform: translateX(100%) scale(0.9);
 	}
-	15.5%, /* 12.5% + 3% */
-	25% { /* 12.5% * 2 */
+	15.5%, 
+	25% { 
 		visibility: visible;
 		opacity: 1;
 		transform: translateX(0) scale(1);
 	}
-	28%, /* 25% + 3% */
-	37.5% { /* 12.5% * 3 */
+	28%, 
+	37.5% { 
 		visibility: visible;
 		opacity: 0.8;
 		transform: translateX(-100%) scale(0.9);
 	}
-	40.5% { /* 37.5% + 3% */
+	40.5% { 
 		visibility: visible;
 		opacity: 0;
 		transform: translateX(-200%) scale(0.9);
@@ -340,21 +451,20 @@ main section.my-4, .blog-post {
 }
 
 /* Cálculo de Delays (27s / 8 items = 3.375s) */
-/* Cálculo original: $carousel-delay-fraction * ($i - 2) */
-.container-instagram .carousel .item:nth-child(1) { animation-delay: calc(3.375s * -1); } /* 1-2 = -1 */
-.container-instagram .carousel .item:nth-child(2) { animation-delay: calc(3.375s * 0); }  /* 2-2 = 0 */
-.container-instagram .carousel .item:nth-child(3) { animation-delay: calc(3.375s * 1); }  /* 3-2 = 1 */
-.container-instagram .carousel .item:nth-child(4) { animation-delay: calc(3.375s * 2); }  /* 4-2 = 2 */
-.container-instagram .carousel .item:nth-child(5) { animation-delay: calc(3.375s * 3); }  /* 5-2 = 3 */
-.container-instagram .carousel .item:nth-child(6) { animation-delay: calc(3.375s * 4); }  /* 6-2 = 4 */
-.container-instagram .carousel .item:nth-child(7) { animation-delay: calc(3.375s * 5); }  /* 7-2 = 5 */
-.container-instagram .carousel .item:nth-child(8) { animation-delay: calc(3.375s * 6); }  /* 8-2 = 6 */
+.container-instagram .carousel .item:nth-child(1) { animation-delay: calc(3.375s * -1); } 
+.container-instagram .carousel .item:nth-child(2) { animation-delay: calc(3.375s * 0); }  
+.container-instagram .carousel .item:nth-child(3) { animation-delay: calc(3.375s * 1); }  
+.container-instagram .carousel .item:nth-child(4) { animation-delay: calc(3.375s * 2); }  
+.container-instagram .carousel .item:nth-child(5) { animation-delay: calc(3.375s * 3); }  
+.container-instagram .carousel .item:nth-child(6) { animation-delay: calc(3.375s * 4); }  
+.container-instagram .carousel .item:nth-child(7) { animation-delay: calc(3.375s * 5); }  
+.container-instagram .carousel .item:nth-child(8) { animation-delay: calc(3.375s * 6); }  
 
 
 .carousel img {
     max-width: 100%;
     object-fit: cover;
-    height: 100% !important; /* CRÍTICO: Asegura que la imagen tenga altura */
+    height: 100% !important; 
     border-radius: 8px; 
 }
 
@@ -414,7 +524,6 @@ main section.my-4, .blog-post {
 .instagram__media .img {
     max-width: 100%;
     height: 61.2vh; 
-    /* Si la imagen de perfil de Instagram es local, asegúrate de que la ruta sea correcta (img/insta.jpg) */
 }
 
 .instagram__buttons {
