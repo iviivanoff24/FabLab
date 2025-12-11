@@ -1,140 +1,163 @@
-/* From Uiverse.io by rmdhnkhsn */ 
+/* =========================================
+   COURSES.CSS - ESTILOS DEL CATÁLOGO DE CURSOS (MODERNO)
+   ========================================= */
+
+/* === ESTILO DE TARJETA GENERAL === */
+
 .card {
   position: relative;
+  /* El max-width y min-width definen el tamaño de la tarjeta. */
+  max-width: 320px; 
+  min-width: 280px;
+  background: #ffffff; 
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px; 
+  padding: 0; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  /* Transición para el efecto hover */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: flex-start;
-  /* center the card horizontally by default */
-  margin: 0 auto;
-  padding: 28px;
-  max-width: 340px;
-  min-width: 300px;
-  border-radius: 30px;
-  background: #f8bc1e;
-  box-shadow: 0px 0px 14px 0px rgba(192, 192, 192, 0.2);
-  /* explicitly include background-color in the transition */
-  transition: background-color 450ms ease, color 450ms ease, box-shadow 450ms ease, transform 450ms ease;
-  overflow: hidden;
+  flex-direction: column;
+  overflow: hidden; /* Importante para el radio de borde de la imagen */
 }
 
-.card::after {
-  content: "";
-  position: absolute;
-  bottom: -30%;
-  right: -30%;
-  width: 120px;
-  height: 120px;
-  background: #ffde8b;
-  filter: blur(70px);
-  border-radius: 50%;
-  transition: width 1s, height 1s;
-}
-.card::before {
-  content: "";
-  position: absolute;
-  bottom: -160%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 0;
-  height: 0;
-  background: #fff; /* transition overlay color: white */
-  opacity: 0; /* start hidden */
-  filter: blur(70px);
-  border-radius: 50%;
-  transition: width 1s, height 1s;
-}
-.card:hover::before {
-  bottom: -230%;
-  /* make the white transition overlay visible */
-  opacity: 0.6;
-  width: 1000px;
-  height: 1000px;
-  filter: blur(1px);
-}
-
-/* make the whole card background use the lighter color when hovered */
+/* Efecto Hover: Se eleva ligeramente y la sombra se intensifica (Inspiración Skillshare) */
 .card:hover {
-  background: #ffde8b;
+  transform: translateY(-5px); 
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* ensure overlay sits between background and content, and content stays visible */
-.card {
-  z-index: 0;
-}
-.card > * {
-  position: relative;
-  z-index: 2;
-}
-.containers {
-  position: relative;
-}
-.icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: auto;
-  height: 56px;
-  border-radius: 6px;
-  background: #ffde8b;
-}
-.card:hover .icon {
-  background: #f8bc1e;
-  transition: 1s all;
-}
-.card:hover .icon svg,
-.card:hover .linkMore svg {
-  filter: brightness(0) invert(1);
-  transition: 1s all;
-}
-.title {
-  font-size: 26px;
-  font-style: normal;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: 1s all;
-  margin: 1rem 0;
-  color: #072713;
 
-}
-.subtitle {
-  color: #fff;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 22px;
-  transition: 1s all;
-}
-.linkMore {
-  display: flex;
-  justify-content: start;
-  align-items: center;
-  gap: 0.8rem;
-  color: #072713;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 22px;
-  text-decoration: none;
-  transition: 1s all;
-  margin-top: 1rem;
-}
+/* === 1. Sección Superior (Imagen y Título) - .card-hero === */
 
-.card:hover .subtitle {
-  color: #072713;
-  transition: 1s all;
-}
-
-.card:hover .title,
-.card:hover .linkMore {
-  color: #f8bc1e;
-  transition: 1s all;
-}
-footer {
-    border-top: 1px solid #eaeaea;
-    margin-top: 4rem;
-    padding-top: 2rem;
-    background-color: #fff;
+/* Contenedor de la imagen y título */
+.card-hero {
+    height: 180px; 
     position: relative;
-    z-index: 2;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+}
+
+/* La imagen dentro del contenedor */
+.card-hero img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+/* Superposición oscura para mejorar la legibilidad del título sobre la imagen */
+.card-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    /* Degradado de oscuro a transparente de abajo hacia arriba */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);
+    z-index: 1;
+}
+
+/* Título del curso */
+.card-hero h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #ffffff; 
+    margin: 0;
+    padding: 1rem; /* Padding para separar del borde */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    z-index: 2; /* Sobre la superposición */
+}
+
+
+/* === 2. Sección Inferior (Información y Botones) - .card-info === */
+
+.card-info {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenido de texto/descripción */
+.card-info p:first-of-type {
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    /* Limitar la descripción a 3 líneas */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* === ESTILOS DE BADGES Y ESTADO === */
+
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.4em 0.6em;
+    border-radius: 4px;
+    white-space: nowrap; /* Evita que el texto de un badge se rompa */
+}
+
+/* Badge de Precio */
+.text-bg-primary { 
+    background-color: #3498db !important; 
+    color: #fff !important; 
+}
+
+/* Badge de Duración/Fecha */
+.duration-badge {
+    background-color: #eee;
+    color: #333;
+}
+
+/* Ajuste de colores de Bootstrap para reflejar los estilos de disponibilidad (coherencia con machines.css) */
+/* Clase 'text-bg-success' (Disponible) */
+.text-bg-success { background-color: #d1e7dd !important; color: #0f5132 !important; } 
+/* Clase 'text-bg-danger' (Plazas completas) */
+.text-bg-danger { background-color: #f8d7da !important; color: #842029 !important; } 
+
+
+/* === ESTILOS DE BOTONES Y ADMIN === */
+
+/* Contenedor de botones (d-flex) */
+.card-info .d-flex {
+    margin-top: auto; /* Empuja el contenedor de botones hacia abajo */
+}
+
+/* Botón principal de acción 'Saber más' (.btn-action) */
+.btn-action {
+    background-color: #f8bc1e; /* Color de acento (Amarillo FabLab) */
+    border-color: #f8bc1e;
+    color: #2c3e50;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    font-size: 0.875rem;
+}
+
+.btn-action:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+    color: #2c3e50;
+}
+
+/* Estilo para la Tarjeta de Añadir Curso (Admin) */
+.card-add-course {
+    border: 2px dashed #f8bc1e;
+    transition: transform 0.3s ease;
+    background-color: #fff6d1; /* Fondo suave del machines.css */
+    color: #2c3e50;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card-add-course:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
