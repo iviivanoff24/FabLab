@@ -1,125 +1,76 @@
-.machines-page .container{
-    width: 1000px;
+/* index.css - Estilos Portada */
+
+body {
+    background-color: #f8f9fa;
+    background-image: 
+        linear-gradient(#e5e7eb 1px, transparent 1px),
+        linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+    background-size: 40px 40px; 
+    background-position: center top;
+}
+
+.welcome-card {
+    background-color: #fff6d1;
+    border-top: 6px solid #f8bc1e;
+    border-radius: 0 0 20px 20px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center; /* centra las tarjetas en cada fila */
-    align-items: center; /* centra verticalmente dentro de la fila */
-    row-gap: 32px; /* espacio vertical entre filas */
-    column-gap: 20px; /* espacio horizontal entre tarjetas */
+    overflow: hidden;
 }
 
-/* Centrar texto de la primera tarjeta de aviso si existe */
-.machines-page .container .card.text-bg-warning .card-header,
-.machines-page .container .card.text-bg-warning .card-body {
-    text-align: center;
+.welcome-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 30px;
+    width: 50px; height: 8px;
+    background-color: #ffeaa7;
+    border-radius: 0 0 4px 4px;
 }
 
-/* Opcional: centrar verticalmente contenido interno de la tarjeta warning */
-.machines-page .container .card.text-bg-warning {
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* centra header y body verticalmente */
+.title-maker { color: #2c3e50; letter-spacing: -1px; }
+
+.info-panel {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0,0,0,0.05);
+    backdrop-filter: blur(5px);
 }
 
-.machines-page .container .card{
-    position: relative;
-    cursor: pointer;
-    border: 0;
+/* === LEYENDA Y COLORES DE DISPONIBILIDAD === */
+/* Verde - Libre */
+.avail-high { background-color: #d1e7dd !important; color: #0f5132 !important; }
+/* Amarillo - Media */
+.avail-med  { background-color: #fff3cd !important; color: #664d03 !important; }
+/* Rojo - Ocupado/Completo */
+.avail-low  { background-color: #f8d7da !important; color: #842029 !important; }
+/* Gris - Cerrado */
+.avail-closed { background-color: #e9ecef !important; color: #adb5bd !important; pointer-events: none; }
+
+/* Caja de color para la leyenda */
+.legend-box {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.1);
+    vertical-align: text-bottom;
 }
 
-.machines-page .container .card .face{
-    width: 300px;
-    height: 200px;
-    transition: 0.5s;
-}
+/* Estilo tabla */
+.week-table th { background: #f8f9fa; font-size: 0.85rem; padding: 0.5rem; border-bottom: 2px solid #dee2e6; }
+.week-table td { height: 2.5rem; vertical-align: middle; border: 1px solid #dee2e6; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
+.week-table td:hover { transform: scale(1.05); z-index: 2; box-shadow: 0 0 5px rgba(0,0,0,0.1); border-color: #333; }
 
-.machines-page .container .card .face.face1{
-    position: relative;
-    background: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-    transform: translateY(100px);
-}
+/* Calendario */
+.fabcal { background: #ffffff; border-radius: 16px; transition: transform 0.3s; }
+.fabcal:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+.btn-icon { color: #f8bc1e; font-size: 1.2rem; font-weight: bold; }
+.btn-icon:hover { background: #fff6d1; color: #e0a800; border-radius: 50%; }
+.calendar-day { cursor: pointer; transition: opacity 0.2s; }
+.calendar-day:hover { opacity: 0.8; transform: scale(1.1); }
 
-.machines-page .container .card:hover .face.face1{
-    background: #ffc107;
-    transform: translateY(0);
-}
-
-.machines-page .container .card .face.face1 .content{
-    opacity: 0.2;
-    transition: 0.5s;
-    /* ensure content fills the face and centers items */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.machines-page .container .card:hover .face.face1 .content{
-    opacity: 1;
-}
-
-.machines-page .container .card .face.face1 .content img{
-    display: block; /* ensure block so auto margins center it */
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 100px;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-}
-
-.machines-page .container .card .face.face1 .content h3{
-    margin: 10px 0 0;
-    padding: 0;
-    color: #fff;
-    text-align: center;
-    font-size: 1.5em;
-}
-
-.machines-page .container .card .face.face2{
-    position: relative;
-    background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-    transform: translateY(-100px);
-}
-
-.machines-page .container .card:hover .face.face2{
-    transform: translateY(0);
-}
-
-.machines-page .container .card .face.face2 .content p{
-    margin: 0;
-    padding: 0;
-}
-
-.machines-page .container .card .face.face2 .content a{
-    margin: 15px 0 0;
-    display:  inline-block;
-    text-decoration: none;
-    font-weight: 900;
-    color: #333;
-    padding: 5px;
-    border: 1px solid #333;
-}
-
-.machines-page .container .card .face.face2 .content a:hover{
-    background: #333;
-    color: #fff;
-}
+.img-float { filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); transition: transform 0.3s; }
+.img-float:hover { transform: scale(1.03) rotate(-2deg); }
 footer {
     border-top: 1px solid #eaeaea;
     margin-top: 4rem;
