@@ -5,19 +5,22 @@
 /* === ESTILO DEL CONTENEDOR DEL TÍTULO PRINCIPAL (Recuadro Amarillo) === */
 
 .course-hero-title {
-    /* Replica el estilo de caja del .hero */
     background: #fff6d1 !important; 
     border: none !important;
     border-top: 6px solid #f8bc1e !important; 
-    border-radius: 0 0 15px 15px !important;
-    padding: 1.5rem 1rem !important; /* Más pequeño que el hero principal */
-    margin-bottom: 3rem !important;
-    box-shadow: 0 10px 20px -10px rgba(0,0,0,0.08) !important;
+    
+    /* Borde inferior del título a 0 para que se pegue al buscador */
+    border-radius: 0 0 0 0 !important; 
+    padding: 1.5rem 1rem !important; 
+    
+    /* Margen inferior a 0 para pegarlo al buscador */
+    margin-bottom: 0 !important; 
+    
+    box-shadow: 0 10px 10px -10px rgba(0,0,0,0.08) !important;
     position: relative;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    /* Asegura que el título ocupe todo el ancho del contenedor del catálogo */
     max-width: 100%; 
 }
 
@@ -28,20 +31,67 @@
     right: 30px;
     width: 60px;
     height: 6px;
-    background-color: #ffeaa7; /* Tono de amarillo claro */
+    background-color: #ffeaa7; 
     border-radius: 0 0 4px 4px;
 }
 
 /* Estilo del H2 dentro del contenedor amarillo */
 .course-hero-title h2 {
-    /* Estética solicitada anteriormente */
     color: #2C3E50; 
     font-size: 43.8504px;
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     font-weight: 700; 
-    margin: 0 !important; /* Elimina el margen del h2 */
+    margin: 0 !important; 
     text-align: center;
 }
+
+/* === BARRA DE BÚSQUEDA PEGADA (.course-search-bar) === */
+
+.course-search-bar {
+    /* Fondo AMARILLO CLARO */
+    background: #fff6d1; 
+    /* Borde principal amarillo fuerte */
+    border: 1px solid #f8bc1e; 
+    border-top: none; /* Quitamos el borde superior para que se pegue al título */
+    /* Bordes inferiores redondeados para terminar la sección */
+    border-radius: 0 0 15px 15px; 
+    
+    padding: 1rem;
+    
+    margin-top: 0; 
+    margin-bottom: 3rem; /* Margen inferior para separarlo del resto del contenido */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15); 
+}
+
+/* Estilo del INPUT dentro de la barra */
+.course-search-bar .form-control {
+    border-radius: 8px 0 0 8px; 
+    border-color: #f8bc1e; /* Borde amarillo fuerte */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.course-search-bar .form-control:focus {
+    border-color: #e0a800; /* Amarillo más oscuro al hacer focus */
+    box-shadow: 0 0 0 0.25rem rgba(248, 188, 30, 0.25);
+}
+
+/* Estilo del BOTÓN de Buscar (SÓLIDO AMARILLO) */
+.course-search-bar .btn-action-search {
+    background-color: #f8bc1e; 
+    border-color: #f8bc1e;
+    color: #2c3e50; /* Texto oscuro para el contraste */
+    font-weight: 600;
+    
+    border-radius: 0 8px 8px 0; 
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.course-search-bar .btn-action-search:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+    color: #2c3e50;
+}
+
 
 /* === ESTILO DE TARJETA GENERAL === */
 
