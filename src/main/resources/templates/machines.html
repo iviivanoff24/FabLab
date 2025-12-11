@@ -40,8 +40,8 @@
       </form>
 
       <!-- Card para cada máquina -->
-      <div class="welcome-card mb-5" th:if="${!#lists.isEmpty(machines)}" th:each="m : ${machines}" th:with="statusName=${m.status != null ? m.status.name() : ''}, statusClass=${statusName == 'En_mantenimiento' ? ' text-bg-warning' : (statusName == 'Disponible' ? ' text-bg-success' : ' text-bg-secondary')}, statusText=${statusName == 'En_mantenimiento' ? 'En mantenimiento' : (statusName == 'Disponible' ? 'Disponible' : (statusName == '' ? 'Sin estado' : statusName))}">
-        <div class="row g-5 align-items-center">
+      <div class="welcome-card mb-5" th:if="${!#lists.isEmpty(machines)}" th:each="m,iterStat : ${machines}" th:with="statusName=${m.status != null ? m.status.name() : ''}, statusClass=${statusName == 'En_mantenimiento' ? ' text-bg-warning' : (statusName == 'Disponible' ? ' text-bg-success' : ' text-bg-secondary')}, statusText=${statusName == 'En_mantenimiento' ? 'En mantenimiento' : (statusName == 'Disponible' ? 'Disponible' : (statusName == '' ? 'Sin estado' : statusName))}">
+        <div class="row g-5 align-items-center" th:classappend="${iterStat.even} ? ' flex-lg-row-reverse' : ''">
           <div class="col-lg-8">
             <h1 class="display-5 fw-bold mb-3 title-maker" th:text="${m.name}"></h1>
             <p><span class="badge" th:classappend="${statusClass}" th:text="${statusText}"></span>
