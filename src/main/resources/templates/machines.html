@@ -8,73 +8,55 @@
     <link rel="apple-touch-icon" href="img/logo.png" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/machines.css" />
+    <link rel="stylesheet" href="css/index.css" />
   </head>
   <body>
     <div th:replace="~{fragments/header :: siteHeader('machines')}"></div>
 
     <br />
 
-    <main class="machines-page">
-      <div class="container">
-        <!-- Card crear máquina solo para admin -->
-        <div th:if="${isAdmin}" class="mb-4">
-          <div class="card text-bg-warning mb-3 mx-auto" style="max-width: 18rem; max-height: 10rem;">
-            <a href="/admin/add-machine" class="text-decoration-none text-dark">
-              <div class="card-body d-flex flex-column align-items-center justify-content-center py-3">
-                <img src="img/add.png" alt="Añadir máquina" width="48" height="48" class="mb-2" />
-                <h5 class="card-title text-dark m-0">Nueva Máquina</h5>
-              </div>
-            </a>
-          </div>
-        </div>
+    <main class="container">
+      <div th:if="${#lists.isEmpty(machines)}" class="alert alert-info mt-3">No hay máquinas registradas aún.</div>
 
-        <div th:if="${#lists.isEmpty(machines)}" class="alert alert-info mt-3">No hay máquinas registradas aún.</div>
-
-        <div th:if="${!#lists.isEmpty(machines)}" class="d-flex flex-wrap gap-4">
-          <div class="card" th:each="m : ${machines}"
-               th:with="statusName=${m.status != null ? m.status.name() : ''}, statusClass=${statusName == 'En_mantenimiento' ? ' text-bg-warning' : (statusName == 'Disponible' ? ' text-bg-success' : ' text-bg-secondary')}, statusText=${statusName == 'En_mantenimiento' ? 'En mantenimiento' : (statusName == 'Disponible' ? 'Disponible' : (statusName == '' ? 'Sin estado' : statusName))}">
-            <div class="face face1">
-              <div class="content">
-                <img th:src="${machineImageUrls[m.id]}" alt="Imagen máquina" />
-                <h3 th:text="${m.name}"></h3>
-              </div>
+      <!-- Card crear máquina solo para admin -->
+      <div th:if="${isAdmin}" class="mb-4">
+        <div class="card text-bg-warning mb-3 mx-auto" style="max-width: 18rem; max-height: 10rem;">
+          <a href="/admin/add-machine" class="text-decoration-none text-dark">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center py-3">
+              <img src="img/add.png" alt="Añadir máquina" width="48" height="48" class="mb-2" />
+              <h5 class="card-title text-dark m-0">Nueva Máquina</h5>
             </div>
-            <div class="face face2">
-              <div class="content">
-                <p th:text="${m.description != null && m.description != '' ? m.description : 'Sin descripción.'}"></p>
-                <p class="mb-1"><span class="badge text-bg-primary">€<span th:text="${m.hourlyPrice != null ? #numbers.formatDecimal(m.hourlyPrice,1,2) : '0.00'}"></span>/h</span></p>
-                <p class="mb-1">
-                  <span class="badge" th:classappend="${statusClass}" th:text="${statusText}"></span>
-                </p>
-                <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>
-                    <a th:if="${isAdmin or statusName != 'En_mantenimiento'}" th:href="@{/machines/{id}/reserve(id=${m.id})}" class='btn btn-sm btn-warning'>Reservar</a>
-                    <a th:if="${isAdmin}" th:href="@{/admin/modify-machine(id=${m.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
-                    <form th:if="${isAdmin}" th:id="${'form-delete-machine-' + m.id}" th:action="@{/admin/machines/{id}/delete(id=${m.id})}" method='post' class='d-inline'></form>
-                    <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' 
-                      th:data-machine-id="${m.id}" th:data-machine-name="${m.name}"><i class='bi bi-trash'></i> Borrar</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card para cada máquina -->
+      <div class="welcome-card mb-5" th:if="${!#lists.isEmpty(machines)}" th:each="m : ${machines}" th:with="statusName=${m.status != null ? m.status.name() : ''}, statusClass=${statusName == 'En_mantenimiento' ? ' text-bg-warning' : (statusName == 'Disponible' ? ' text-bg-success' : ' text-bg-secondary')}, statusText=${statusName == 'En_mantenimiento' ? 'En mantenimiento' : (statusName == 'Disponible' ? 'Disponible' : (statusName == '' ? 'Sin estado' : statusName))}">
+        <div class="row g-5 align-items-center">
+          <div class="col-lg-8">
+            <h1 class="display-5 fw-bold mb-3 title-maker" th:text="${m.name}"></h1>
+            <p><span class="badge" th:classappend="${statusClass}" th:text="${statusText}"></span>
+            <span class="badge text-bg-primary">€<span th:text="${m.hourlyPrice != null ? #numbers.formatDecimal(m.hourlyPrice,1,2) : '0.00'}"></span>/h</span></p>
+            
+            <div class="info-panel p-4 rounded-4 mb-5">
+                <div class="row g-4">
+                    <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-geo-alt-fill text-warning me-2"></i>Descripcion</h5>
+                    <div class="col-md-6">
+                      <p class="lead text-muted mb-5" th:text="${m.description != null && m.description != '' ? m.description : 'Sin descripción.'}"></p>
+                    </div>
                 </div>
-              </div>
+            </div>
+            <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>
+              <a th:if="${isAdmin or statusName != 'En_mantenimiento'}" th:href="@{/machines/{id}/reserve(id=${m.id})}" class='btn btn-sm btn-warning'>Reservar</a>
+              <a th:if="${isAdmin}" th:href="@{/admin/modify-machine(id=${m.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
+              <form th:if="${isAdmin}" th:id="${'form-delete-machine-' + m.id}" th:action="@{/admin/machines/{id}/delete(id=${m.id})}" method='post' class='d-inline'></form>
+              <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' 
+              th:data-machine-id="${m.id}" th:data-machine-name="${m.name}"><i class='bi bi-trash'></i> Borrar</button>
             </div>
           </div>
-        </div>
 
-        <!-- Modal borrado solo admin -->
-        <div th:if="${isAdmin}" class='modal fade' id='deleteMachineModal' tabindex='-1' aria-labelledby='deleteMachineModalLabel' aria-hidden='true'>
-          <div class='modal-dialog'>
-            <div class='modal-content'>
-              <div class='modal-header'>
-                <h1 class='modal-title fs-5' id='deleteMachineModalLabel'>Confirmar borrado de máquina</h1>
-                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>
-              </div>
-              <div class='modal-body'>
-                <p>¿Seguro que deseas borrar la máquina <strong id='deleteMachineName'></strong>? Esta acción no se puede deshacer.</p>
-              </div>
-              <div class='modal-footer'>
-                <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
-                <button type='button' id='confirmDeleteMachineBtn' class='btn btn-danger'>Borrar definitivamente</button>
-              </div>
-            </div>
+          <div class="col-lg-4 d-flex align-items-center">
+            <img th:src="${machineImageUrls[m.id]}" alt="Imagen máquina" class="d-block mx-auto img-fluid mb-4 img-float" style="max-width: 80%;" />
           </div>
         </div>
       </div>
