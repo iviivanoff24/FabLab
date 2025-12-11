@@ -34,40 +34,56 @@
         
         <div th:if="${#lists.isEmpty(courses)}" class="alert alert-info mt-3">No hay cursos registrados aún.</div>
 
-        <div th:if="${!#lists.isEmpty(courses)}" class="d-flex flex-wrap justify-content-center gap-4">
-          
+        <div th:if="${!#lists.isEmpty(courses)}" class="d-flex flex-wrap gap-4">
           <div class="card" th:each="c : ${courses}"
             th:with="spotsFull=${c.capacity != null and c.inscriptions.size() >= c.capacity},
                   statusName=${courseStatus[c.id]},
                   statusClass=${statusName == 'Inscrito' ? ' text-bg-info' : (statusName == 'No_disponible' ? ' text-bg-secondary' : (statusName == 'Plazas_completas' ? ' text-bg-danger' : ' text-bg-success'))},
                   statusText=${statusName == 'Inscrito' ? 'Inscrito' : (statusName == 'No_disponible' ? 'No disponible' : (statusName == 'Plazas_completas' ? 'Plazas completas' : 'Disponible'))}">
-            
-            <div class="card-hero">
-              <img th:src="${courseImageUrls[c.id]}" alt="Imagen curso" />
-              <h3><span th:text="${c.name}"></span></h3>
+            <div class="face face1">
+              <div class="content">
+                <img th:src="${courseImageUrls[c.id]}" alt="Imagen curso" />
+                <h3 th:text="${c.name}"></h3>
+              </div>
             </div>
-            
-            <div class="card-info">
+            <div class="face face2">
               <div class="content">
                 <p th:text="${c.description != null && c.description != '' ? c.description : 'Sin descripción.'}"></p>
-                
-                <p class="mb-2"><span class="badge text-bg-primary">€<span th:text="${c.precio != null ? #numbers.formatDecimal(c.precio,1,2) : '0.00'}"></span></span></p>
-                
-                <div class="d-flex flex-wrap gap-1 mb-3">
-                    <span class="badge duration-badge" th:attr="data-start=${c.startDate},data-end=${c.endDate}">
-                        <i class="bi bi-calendar-check me-1"></i>
-                        Inicio: <span class="start-text" th:text="${c.startDate}"></span> / <span class="duration-text">-</span>
-                    </span>
-                    <span class="badge" th:classappend="${statusClass}" th:text="${statusText}"></span>
-                    <span class="badge" th:classappend="${spotsFull} ? ' text-bg-danger' : ' text-bg-success'">
-                        <i class="bi bi-people-fill me-1"></i>
-                        Plazas: <span th:text="${c.inscriptions.size()}"></span>/<span th:text="${c.capacity}"></span>
-                    </span>
+                <p class="mb-1"><span class="badge text-bg-primary">€<span th:text="${c.precio != null ? #numbers.formatDecimal(c.precio,1,2) : '0.00'}"></span></span></p>
+                <p class="mb-1">
+                  <span class="badge text-bg-primary me-1 duration-badge" th:attr="data-start=${c.startDate},data-end=${c.endDate}">Inicio: <span class="start-text" th:text="${c.startDate}"></span> — <span class="duration-text">-</span></span>
+                  <span class="badge" th:classappend="${statusClass} + ' me-1'" th:text="${statusText}"></span>
+                  <span class="badge" th:classappend="${spotsFull} ? ' text-bg-danger' : ' text-bg-success'">Plazas: <span th:text="${c.inscriptions.size()}"></span>/<span th:text="${c.capacity}"></span></span>
+                </p>
+                <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>
+                  <a th:href="@{/courses/{id}(id=${c.id})}" class='btn btn-sm btn-light'>Saber más</a>
+                    <a th:if="${isAdmin}" th:href="@{/admin/modify-course(id=${c.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
+                    <form th:if="${isAdmin}" th:id="${'form-delete-course-' + c.id}" th:action="@{/admin/courses/{id}/delete(id=${c.id})}" method='post' class='d-inline'></form>
+                    <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteCourseModal' 
+                      th:data-course-id="${c.id}" th:data-course-name="${c.name}"><i class='bi bi-trash'></i> Borrar</button>
                 </div>
-                
-                <div class='d-flex flex-wrap align-items-center gap-2 mt-auto pt-3 border-top'>
-                  <a th:href="@{/courses/{id}(id=${c.id})}" class='btn btn-sm btn-action'>Saber más</a>
-                  <a th:if="${isAdmin}" th:href="@{/admin/modify-course(id=${c.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div th:if="${!#lists.isEmpty(courses)}" class="d-flex flex-wrap gap-4">
+          <div class="card" th:each="c : ${courses}">
+            <div class="face face1">
+              <div class="content">
+                <img th:src="${courseImageUrls[c.id]}" alt="Imagen curso" />
+                <h3 th:text="${c.name}"></h3>
+              </div>
+            </div>
+            <div class="face face2">
+              <div class="content">
+                <p th:text="${c.description != null && c.description != '' ? c.description : 'Sin descripción.'}"></p>
+                <p class="mb-1"><span class="badge text-bg-primary">€<span th:text="${c.precio != null ? #numbers.formatDecimal(c.precio,1,2) : '0.00'}"></span></span></p>
+                <p class="mb-1">Fechas: <span th:text="${c.startDate}"></span> — <span th:text="${c.endDate}"></span></p>
+                <p class="mb-1">Plazas: <span th:text="${c.capacity}"></span></p>
+                <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>
+                    <a th:href="@{/courses/{id}(id=${c.id})}" class='btn btn-sm btn-warning'>Ver</a>
+                    <a th:if="${isAdmin}" th:href="@{/admin/modify-course(id=${c.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
                     <form th:if="${isAdmin}" th:id="${'form-delete-course-' + c.id}" th:action="@{/admin/courses/{id}/delete(id=${c.id})}" method='post' class='d-inline'></form>
                     <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteCourseModal' 
                       th:data-course-id="${c.id}" th:data-course-name="${c.name}"><i class='bi bi-trash'></i> Borrar</button>
