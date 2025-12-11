@@ -20,6 +20,17 @@
     <main class="courses-page">
       <div class="container">
         
+        <div class="course-hero-title">
+          <h2>Catálogo de Cursos</h2>
+        </div>
+
+        <!-- Filtro de búsqueda de cursos -->
+        <div class="row mb-3 justify-content-center">
+          <div class="col-12 col-md-6">
+            <input id="courseSearch" class="form-control" type="search" placeholder="Buscar cursos por nombre o descripción..." aria-label="Buscar cursos">
+          </div>
+        </div>
+
         <div th:if="${isAdmin}" class="mb-5">
           <div class="card card-add-course mx-auto" style="max-width: 320px;">
             <a href="/admin/courses/new" class="text-decoration-none text-dark">
@@ -30,14 +41,13 @@
             </a>
           </div>
         </div>
-        <div class="course-hero-title">
-          <h2>Catálogo de Cursos</h2>
-        </div>
+
         <div th:if="${#lists.isEmpty(courses)}" class="alert alert-info mt-3">No hay cursos registrados aún.</div>
 
         <div th:if="${!#lists.isEmpty(courses)}" class="d-flex flex-wrap justify-content-center gap-4">
           
-          <div class="card" th:each="c : ${courses}"
+          <div class="card course-card" th:each="c : ${courses}"
+            th:attr="data-name=${c.name},data-desc=${c.description}"
             th:with="spotsFull=${c.capacity != null and c.inscriptions.size() >= c.capacity},
                   statusName=${courseStatus[c.id]},
                   statusClass=${statusName == 'Inscrito' ? ' text-bg-info' : (statusName == 'No_disponible' ? ' text-bg-secondary' : (statusName == 'Plazas_completas' ? ' text-bg-danger' : ' text-bg-success'))},
@@ -126,6 +136,28 @@
           el.querySelector('.duration-text').textContent = diff + ' días';
         }catch(err){ el.querySelector('.duration-text').textContent = '-'; }
       });
+    });
+
+    // Filtro de búsqueda cliente para cursos
+    document.addEventListener('DOMContentLoaded', function(){
+      var input = document.getElementById('courseSearch');
+      if(!input) return;
+      var noResults = document.getElementById('noResults');
+      var cards = function(){ return Array.from(document.querySelectorAll('.course-card')); };
+      var normalize = function(s){ return (s||'').toString().toLowerCase().trim(); };
+      var applyFilter = function(){
+        var q = normalize(input.value);
+        var visible = 0;
+        cards().forEach(function(card){
+          var name = normalize(card.getAttribute('data-name'));
+          var desc = normalize(card.getAttribute('data-desc'));
+          var match = q === '' || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+          card.style.display = match ? '' : 'none';
+          if(match) visible++;
+        });
+        if(noResults) noResults.style.display = (visible === 0 ? '' : 'none');
+      };
+      input.addEventListener('input', applyFilter);
     });
     /*]]>*/
     </script>
