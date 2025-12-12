@@ -140,3 +140,17 @@ footer {
     position: relative;
     z-index: 2;
 }
+
+/* Alineaciones específicas: forzar texto a la izquierda para recibos, cursos y reservas */
+/* Aplica a los elementos de listas en perfil y a las tarjetas del catálogo */
+.list-group-item > div,
+.card-info,
+.card-hero h3 {
+  text-align: left !important;
+}
+
+@media (max-width: 720px) {
+  .list-group-item > div {
+    text-align: left !important;
+  }
+}

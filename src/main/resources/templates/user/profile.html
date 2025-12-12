@@ -7,6 +7,7 @@
     <link rel="icon" href="/img/logo.png" type="image/png" sizes="32x32" />
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
     <link rel="stylesheet" th:href="@{/css/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/profile.css}" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
@@ -14,42 +15,38 @@
   </head>
   <body>
     <div th:replace="~{fragments/header :: siteHeader('profile')}"></div>
+    
+    <main class="container no-li-before">
+      <section class="hero text-start justify-content-start align-items-start my-4 rounded-3 shadow-sm">
+        <div class="d-flex align-items-start justify-content-start gap-3">
+          <div class="text-start">
+            <h1 class="h2 mb-1">Mi perfil</h1>
+            <p class="text-muted mb-0">Gestión de tu cuenta y actividad en FabLab Mérida.</p>
+          </div>
+        </div>
+      </section>
 
-    <div class="container mt-4">
-      <h2>Mi perfil</h2>
-      <div class="row">
-        <div class="col-md-4">
-          <div class="card mb-4">
+      <section class="row align-items-start my-4">
+        <aside class="col-md-4">
+          <div class="card mb-1 text-start">
             <div class="card-body">
               <h5 class="card-title" th:text="${user.name}">Nombre Usuario</h5>
-              <p class="card-text">
-                <strong>Email:</strong>
-                <span th:text="${user.email}">user@example.com</span>
-              </p>
-              <p class="card-text" th:if="${user.telefono}">
-                <strong>Teléfono:</strong>
-                <span th:text="${user.telefono}"></span>
-              </p>
-              <p class="card-text">
-                <strong>Registrado:</strong>
-                <span th:text="${user.fechaRegistro}"></span>
-              </p>
+              <p class="card-text"><strong>Email:</strong> <span th:text="${user.email}">user@example.com</span></p>
+              <p class="card-text" th:if="${user.telefono}"><strong>Teléfono:</strong> <span th:text="${user.telefono}"></span></p>
+              <p class="card-text"><strong>Registrado:</strong> <span th:text="${user.fechaRegistro}"></span></p>
 
-              <div class="mt-3">
-                <a href="/profile/edit" class="btn btn-primary btn-sm"
-                  >Editar perfil</a
-                >
+              <div class="mt-3 d-flex gap-2">
+                <a href="/profile/edit" class="btn btn-primary btn-sm">Editar perfil</a>
+                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">Borrar usuario</button>
               </div>
             </div>
           </div>
-        </div>
+        </aside>
 
         <div class="col-md-8">
-          <div class="mb-3">
-            <div class="card">
-              <div
-                class="card-header d-flex justify-content-between align-items-center"
-              >
+          <section class="p-0">
+            <div class="card mb-1 text-start">
+              <div class="card-header d-flex justify-content-between align-items-start">
                 <span>Recibos <span class="badge bg-primary ms-2" th:text="${#lists.size(recibos)}">0</span></span>
                 <a th:href="@{/recibos}" class="small">Ver todos</a>
               </div>
@@ -71,21 +68,14 @@
                     <div th:if="${recibo.hasCourse}" class="mt-1"><span class="badge bg-info text-dark">Curso incluido</span></div>
                   </div>
                 </li>
-                <li
-                  class="list-group-item text-muted"
-                  th:if="${#lists.isEmpty(recibos)}"
-                >
-                  No hay recibos
-                </li>
+                <li class="list-group-item text-muted" th:if="${#lists.isEmpty(recibos)}">No hay recibos</li>
               </ul>
             </div>
-          </div>
+          </section>
 
-          <div class="mb-3">
-            <div class="card">
-              <div
-                class="card-header d-flex justify-content-between align-items-center"
-              >
+          <section class="p-0">
+            <div class="card mb-1 text-start">
+              <div class="card-header d-flex justify-content-between align-items-center">
                 <span>Cursos apuntados <span class="badge bg-primary ms-2" th:text="${#lists.size(cursos)}">0</span></span>
                 <a th:href="@{/mis-cursos}" class="small">Ver todos</a>
               </div>
@@ -100,21 +90,14 @@
                   </div>
                   <div class="text-end small text-muted" th:text="${curso.startDate}">Fecha inicio</div>
                 </li>
-                <li
-                  class="list-group-item text-muted"
-                  th:if="${#lists.isEmpty(cursos)}"
-                >
-                  No estás apuntado a ningún curso
-                </li>
+                <li class="list-group-item text-muted" th:if="${#lists.isEmpty(cursos)}">No estás apuntado a ningún curso</li>
               </ul>
             </div>
-          </div>
+          </section>
 
-          <div class="mb-3">
-            <div class="card">
-              <div
-                class="card-header d-flex justify-content-between align-items-center"
-              >
+          <section class="p-0">
+            <div class="card mb-1 text-start">
+              <div class="card-header d-flex justify-content-between align-items-center">
                 <span>Reservas <span class="badge bg-primary ms-2" th:text="${#lists.size(reservas)}">0</span></span>
                 <a th:href="@{/mis-reservas}" class="small">Ver todas</a>
               </div>
@@ -132,18 +115,13 @@
                     <div th:text="${reserva.hora}">Hora</div>
                   </div>
                 </li>
-                <li
-                  class="list-group-item text-muted"
-                  th:if="${#lists.isEmpty(reservas)}"
-                >
-                  No tienes reservas
-                </li>
+                <li class="list-group-item text-muted" th:if="${#lists.isEmpty(reservas)}">No tienes reservas</li>
               </ul>
             </div>
-          </div>
+          </section>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/js/main.js}"></script>

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.uex.fablab.data.model.ReceiptStatus;
@@ -165,5 +166,83 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!userService.delete(id)) return ResponseEntity.notFound().build();
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Formulario para editar perfil (solo teléfono y contraseña).
+     */
+    @GetMapping({"/profile/edit","/profile/edit.html"})
+    public String editProfileForm(HttpSession session, Model model) {
+        Object idObj = session.getAttribute("USER_ID");
+        if (idObj == null) return "redirect:/login";
+        Long id;
+        try {
+            if (idObj instanceof Number number) id = number.longValue(); else id = Long.valueOf(idObj.toString());
+        } catch (NumberFormatException e) {
+            session.invalidate();
+            return "redirect:/login";
+        }
+        Optional<User> u = userService.findById(id);
+        if (u.isEmpty()) { session.invalidate(); return "redirect:/login"; }
+        model.addAttribute("user", u.get());
+        return "user/edit-profile";
+    }
+
+    /**
+     * Procesa cambios del perfil: solo `telefono` y `password` (opcional).
+     */
+    @PostMapping("/profile/edit")
+    public String submitEditProfile(HttpSession session,
+                                    @RequestParam(value = "telefono", required = false) String telefono,
+                                    @RequestParam(value = "password", required = false) String password,
+                                    @RequestParam(value = "passwordConfirm", required = false) String passwordConfirm) {
+        Object idObj = session.getAttribute("USER_ID");
+        if (idObj == null) return "redirect:/login";
+        Long id;
+        try {
+            if (idObj instanceof Number number) id = number.longValue(); else id = Long.valueOf(idObj.toString());
+        } catch (NumberFormatException e) {
+            session.invalidate();
+            return "redirect:/login";
+        }
+
+        if (password != null && !password.isBlank()) {
+            if (passwordConfirm == null || !password.equals(passwordConfirm)) {
+                return "redirect:/profile/edit?error=pass_mismatch";
+            }
+        }
+
+        User input = new User();
+        if (password != null && !password.isBlank()) input.setPassword(password);
+        if (telefono != null) input.setTelefono(telefono);
+
+        userService.update(id, input);
+
+        return "redirect:/profile?updated=1";
+    }
+
+    /**
+     * Borra la cuenta del usuario autenticado e invalida la sesión.
+     */
+    @PostMapping("/profile/delete")
+    public String deleteProfile(HttpSession session) {
+        Object idObj = session.getAttribute("USER_ID");
+        if (idObj == null) return "redirect:/login";
+        Long id;
+        try {
+            if (idObj instanceof Number number) id = number.longValue(); else id = Long.valueOf(idObj.toString());
+        } catch (NumberFormatException e) {
+            session.invalidate();
+            return "redirect:/login";
+        }
+
+        boolean deleted = userService.delete(id);
+        // invalidar sesión en cualquier caso
+        session.invalidate();
+        if (deleted) {
+            return "redirect:/?account_deleted=1";
+        } else {
+            return "redirect:/profile?error=delete_failed";
+        }
     }
 }

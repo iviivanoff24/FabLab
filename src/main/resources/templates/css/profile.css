@@ -1,0 +1,589 @@
+/* Copia de readme.css (parcial/total según sea necesario) */
+/* =========================================
+   1. ESTRUCTURA BASE (Anti-saltos y Fondo Maker)
+   ========================================= */
+html {
+    scrollbar-gutter: stable;
+}
+
+body {
+    /* Usamos la fuente definida en main.css */
+    font-family: var(--font-main, 'Segoe UI', system-ui, -apple-system, sans-serif); 
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    
+    /* Fondo con cuadrícula (Depende de main.css, pero se mantiene la definición local) */
+    background-color: #f8f9fa;
+    background-image: 
+        linear-gradient(#e5e7eb 1px, transparent 1px),
+        linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+    background-size: 40px 40px; 
+    background-position: center top;
+}
+
+main {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+/* =========================================
+   2. BARRA DE NAVEGACIÓN (INTACTA)
+   ========================================= */
+header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #eaeaea;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.nav-underline .nav-link {
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    color: #212529;
+    transition: color 0.15s ease-in-out;
+    background-color: transparent !important;
+    border-radius: 0;
+}
+
+.nav-underline .nav-link:hover {
+    color: #0d6efd;
+    background-color: transparent;
+}
+
+.nav-underline .nav-link.active {
+    color: #0d6efd !important;
+    border-bottom: 2px solid #0d6efd;
+    background-color: transparent;
+}
+
+/* =========================================
+   3. HERO (Cabecera Principal - Estética FabLab Unificada)
+   ========================================= */
+.hero {
+    /* Fondo y borde amarillo fuerte */
+    background: #fff6d1 !important; 
+    border: none !important;
+    border-top: 6px solid #f8bc1e !important; 
+    border-radius: 0 0 15px 15px !important;
+    padding: 3.5rem 2rem !important;
+    margin-bottom: 3rem !important;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08) !important;
+    position: relative;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left; 
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 30px;
+    width: 60px;
+    height: 6px;
+    background-color: #ffeaa7; 
+    border-radius: 0 0 4px 4px;
+}
+
+.hero h1 {
+    color: #2c3e50;
+    font-weight: 800;
+    font-size: 2.5rem;
+    letter-spacing: -1px;
+}
+
+.hero p.text-muted {
+    color: #5d6d7e !important; 
+    font-weight: 400;
+    font-size: 1.1rem;
+}
+.hero .logo-lg {
+    min-width: 96px; 
+}
+
+
+/* =========================================
+   4. SIDEBAR (Tarjetas laterales) - UNIFICADAS
+   ========================================= */
+aside .card {
+    border: none;
+    background: #fff6d1; 
+    border: 1px solid #f8bc1e50; 
+    border-radius: 12px; 
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+}
+
+/* Línea lateral decorativa */
+aside .card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: #f8bc1e; 
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+    transform-origin: bottom;
+}
+
+/* Hover común para todas */
+aside .card:hover {
+    transform: translateY(-3px); 
+    background: #ffde8b; 
+    box-shadow: 0 15px 30px rgba(248, 188, 30, 0.25); 
+}
+
+aside .card:hover::before {
+    transform: scaleY(1);
+}
+
+aside .card .card-body {
+    padding: 1.5rem;
+}
+
+aside .card h6 {
+    font-weight: 700; 
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px; 
+    color: #a0522d; 
+    margin-bottom: 0.75rem;
+}
+
+aside .card p, aside .card .small {
+    color: #2c3e50; 
+    margin-bottom: 0;
+}
+
+/* =========================================
+   5. CÓDIGO DENTRO DE LA SIDEBAR
+   ========================================= */
+aside .card pre {
+    background: #ffffff; 
+    border: 1px solid #f8bc1e; 
+    color: #2c3e50; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 0;
+    border-radius: 8px; 
+    overflow-x: auto; 
+}
+
+aside .card pre::before {
+    display: none;
+}
+
+aside .card pre code,
+.kbd {
+    background: transparent;
+    color: inherit;
+    border: none;
+    font-size: 0.85em;
+    font-family: Consolas, monospace; 
+}
+.kbd {
+    background: #e9ecef; 
+    border: 1px solid #dee2e6; 
+    padding: .2rem .4rem;
+    border-radius:.25rem;
+    color: #495057;
+    font-size: 0.85em;
+}
+
+/* =========================================
+   6. CONTENIDO PRINCIPAL (Separación Visual)
+   ========================================= */
+main section:not(.hero) {
+    background: white; 
+    padding: 2.5rem; 
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+/* --- TÍTULOS DE SECCIÓN (Resumen, Estructura, etc.) --- */
+main h2 {
+    color: #2c3e50;
+    font-weight: 800; 
+    border-bottom: 3px solid #f8bc1e; 
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 2.2rem; 
+    letter-spacing: -0.5px;
+}
+main h3 {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1.6rem;
+    /* Separador sutil solo para los subtítulos (Características, A futuro) */
+    border-left: 5px solid #f8bc1e80; 
+    padding-left: 10px;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- NUEVA CLASE: Contenedor de información para separar bloques --- */
+.info-box {
+    background-color: #fcfcfc; /* Blanco muy suave, sutilmente diferente al fondo de la sección */
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.02); /* Sombra interna muy suave */
+}
+
+/* Estilo especial para el info-box de la Estructura (fondo azul) */
+.info-box-dark {
+    background-color: #e9f5ff; /* Azul claro suave (similar al primary de main.css) */
+    border-left: 5px solid #3498db; 
+    border-top: none;
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem; /* Ajuste para el listado */
+}
+.info-box-dark ul {
+    margin-bottom: 1rem; /* Margen inferior para separarlo del borde del box */
+}
+
+
+/* --- ESTILO DE ELEMENTOS DE LISTA (A futuro, Estructura del proyecto) --- */
+main ul {
+    padding-left: 25px; 
+    list-style: none; 
+    margin-bottom: 2rem;
+}
+main ul li {
+    padding-left: 0;
+    margin-bottom: 0.5rem;
+    color: #444;
+}
+/* Viñeta personalizada de color (FabLab) */
+main ul li::before {
+    content: '→'; 
+    color: #f8bc1e; 
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+
+/* --- ESTILO DE CARACTERÍSTICAS PRINCIPALES (.feature-item) --- */
+.feature {
+    /* Clases de Bootstrap col-sm-6 ya dan el layout */
+    padding: 1.25rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #3498db; 
+    border-radius: 0 8px 8px 0;
+    transition: background-color 0.2s;
+}
+.feature:hover {
+    background-color: #f0f8ff; 
+}
+.feature h5 {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1.15rem;
+    margin-bottom: 0.25rem;
+}
+.feature p.text-muted {
+    font-size: 0.95rem;
+    color: #666 !important;
+}
+
+
+/* --- LIMPIEZA DE ESTILOS DEL CARRUSEL 3D (CRÍTICO) --- */
+.carousel-container-3d, 
+.carousel-container-3d input,
+.carousel-container-3d main#carousel,
+.carousel-container-3d div.item, 
+.clickable-item {
+    all: unset !important; 
+    display: initial !important; 
+    transform-style: unset !important;
+    perspective: unset !important;
+    grid-row: unset !important;
+    grid-column: unset !important;
+}
+
+/* -------------------------------------------------- */
+
+
+/* ======================================================
+   7. NUEVOS ESTILOS DEL CARRUSEL INSTAGRAM (CSS PURO)
+   (Mantenidos sin cambios para no romper la animación)
+   ====================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+
+/* Variables CSS */
+:root {
+	--light: 0;
+	--max-width-post: 420px;
+    
+    /* COLORES FIJOS para visibilidad */
+	--primary-fablab: #9c6500; 
+	--color-border: #9c6500;
+    --color-bg-instagram: white;
+    --color-text-instagram: #333;
+
+    /* Variables dinámicas (si el JS funciona) */
+	--primary: #9c6500; 
+	--bg: #f8f9fa; 
+	--text-primary: #333; 
+
+    /* Variables de fuente (clamped) */
+	--font-size-sm: clamp(0.7rem, 0.91vw + 0.47rem, 1.2rem);
+    --font-size-base: clamp(0.88rem, 1.14vw + 0.59rem, 1.5rem);
+	--font-size-md: clamp(1.09rem, 1.42vw + 0.74rem, 1.88rem);
+	--font-size-lg: clamp(1.37rem, 1.78vw + 0.92rem, 2.34rem);
+	--font-size-xl: clamp(1.71rem, 2.22vw + 1.15rem, 2.93rem);
+	--font-size-xxl: clamp(2.14rem, 2.77vw + 1.44rem, 3.66rem);
+	--font-size-xxxl: clamp(2.67rem, 3.47vw + 1.8rem, 4.58rem);
+}
+
+/* Reset Box-sizing del carrusel */
+.container-instagram *,
+.container-instagram *::after,
+.container-instagram *::before {
+	box-sizing: border-box;
+}
+
+/* Estilos de texto */
+.container-instagram h1,
+.container-instagram h2,
+.container-instagram h3,
+.container-instagram h4,
+.container-instagram h5,
+.container-instagram h6 {
+	margin: 0;
+}
+
+/* --- Animación (8 ítems, 27s) --- */
+@keyframes carousel-animate {
+	0% {
+		visibility: hidden;
+		opacity: 0;
+		transform: translateX(200%) scale(0.7);
+	}
+	3%, 
+	12.5% { 
+		visibility: visible;
+		opacity: 0.8;
+		transform: translateX(100%) scale(0.9);
+	}
+	15.5%, 
+	25% { 
+		visibility: visible;
+		opacity: 1;
+		transform: translateX(0) scale(1);
+	}
+	28%, 
+	37.5% { 
+		visibility: visible;
+		opacity: 0.8;
+		transform: translateX(-100%) scale(0.9);
+	}
+	40.5% { 
+		visibility: visible;
+		opacity: 0;
+		transform: translateX(-200%) scale(0.9);
+	}
+	100% {
+		visibility: hidden;
+		opacity: 0;
+		transform: translateX(-200%) scale(0.7);
+	}
+}
+
+
+/* --- Contenedor Principal (CRÍTICO: Superposición y Centrado) --- */
+.container-instagram {
+	--container-padding-horizontal: 32px;
+	position: relative;
+    margin: 3rem auto; 
+    max-width: 100%;
+	display: grid !important; 
+	place-items: center !important;
+	height: 600px; 
+}
+
+/* --- Carrusel (Parte en movimiento) --- */
+.carousel {
+	pointer-events: none;
+	position: absolute;
+	top: 0; 
+	left: 0;
+	padding-block-start: 67px;
+	padding-block-end: max(24px, calc(29px + var(--font-size-md)));
+	perspective: 100px;
+	width: 100%;
+    height: 100%; 
+}
+
+/* CRÍTICO: El wrapper necesita ser relativo para que los hijos absolutos funcionen */
+.carousel__wrapper {
+    position: relative !important;
+    display: flex;
+    justify-content: center;
+    height: 480px; 
+}
+
+/* CRÍTICO: Los items deben ser absolutos para superponerse en el centro */
+.container-instagram .carousel .item {
+    position: absolute !important; 
+    max-width: 418px;
+    height: 100%;
+    margin-inline: var(--container-padding-horizontal);
+    opacity: 0 !important; 
+    will-change: transform, opacity;
+    animation: carousel-animate 27s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+/* Cálculo de Delays (27s / 8 items = 3.375s) */
+.container-instagram .carousel .item:nth-child(1) { animation-delay: calc(3.375s * -1); } 
+.container-instagram .carousel .item:nth-child(2) { animation-delay: calc(3.375s * 0); }  
+.container-instagram .carousel .item:nth-child(3) { animation-delay: calc(3.375s * 1); }  
+.container-instagram .carousel .item:nth-child(4) { animation-delay: calc(3.375s * 2); }  
+.container-instagram .carousel .item:nth-child(5) { animation-delay: calc(3.375s * 3); }  
+.container-instagram .carousel .item:nth-child(6) { animation-delay: calc(3.375s * 4); }  
+.container-instagram .carousel .item:nth-child(7) { animation-delay: calc(3.375s * 5); }  
+.container-instagram .carousel .item:nth-child(8) { animation-delay: calc(3.375s * 6); }  
+
+
+.carousel img {
+    max-width: 100%;
+    object-fit: cover;
+    height: 100% !important; 
+    border-radius: 8px; 
+}
+
+
+/* Estilos Responsive */
+@media (max-width: 568px) {
+    .carousel {
+		padding-block-end: 52px;
+	}
+    .carousel .item {
+        margin-inline: calc(var(--container-padding-horizontal) + 1px);
+    }
+}
+
+
+/* --- Tarjeta estilo Instagram (Estática) --- */
+.instagram {
+	--pading-horizontal: 16px;
+	--border: 1px solid var(--color-border); 
+	max-width: var(--max-width-post);
+	width: 100%;
+	border: var(--border);
+	border-radius: 20px;
+    z-index: 10; 
+    background-color: var(--color-bg-instagram); 
+    color: var(--color-text-instagram);
+}
+
+.instagram__header {
+    padding-block: 12px;
+    border-bottom: var(--border);
+}
+
+.instagram__header figure {
+    padding-block: 0;
+    padding-inline: var(--pading-horizontal);
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+.instagram__header figure img {
+    border-radius: 50%;
+    object-fit: cover;
+    border: var(--border);
+    margin-inline-end: 8px;
+}
+
+.instagram__header figure figcaption h4 {
+    color: var(--color-text-instagram);
+}
+
+.instagram__media {
+    display: flex;
+    border-bottom: var(--border);
+}
+
+.instagram__media .img {
+    max-width: 100%;
+    height: 61.2vh; 
+}
+
+.instagram__buttons {
+    padding-block: 12px;
+    padding-inline: var(--pading-horizontal);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.instagram__buttons .left {
+    display: flex;
+    align-items: center;
+}
+
+.instagram__buttons .left svg:nth-of-type(2) {
+    margin-inline: 12px;
+}
+
+.instagram__icon {
+    cursor: pointer;
+    width: 1em;
+    height: 1em;
+    font-size: var(--font-size-md);
+    min-width: 24px;
+    min-height: 24px;
+}
+
+.instagram__icon:hover {
+    opacity: 0.7;
+}
+
+.instagram__icon path {
+    stroke: var(--color-border); 
+    stroke-linejoin: round;
+}
+
+.instagram__icon--comment path {
+    stroke-width: 2;
+}
+
+.instagram__icon--message {
+    margin-block-start: 3px;
+}
+
+.instagram__icon--message path {
+    stroke-width: 2;
+}
+
+.instagram__icon--saved path {
+    stroke-width: 2;
+}
+
+/* ==========================
+   Anexos y utilidades para profile
+   ========================== */
+
+/* Eliminar viñetas específicas de esta página */
+.no-li-before ul li::before {
+    content: none !important;
+    display: none !important;
+}
