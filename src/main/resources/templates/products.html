@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fablab - Productos</title>
+    <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="img/logo.png" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  </head>
+  <body>
+    <div th:replace="~{fragments/header :: siteHeader('products')}"></div>
+
+    <br />
+
+    <main class="container">
+      
+      <div class="text-center mb-5">
+        <h2>Catálogo de Productos</h2>
+      </div>
+
+      <div th:if="${isAdmin}" class="mb-5 mt-5">
+        <div class="card card-add-machine mx-auto" style="max-width: 320px;">
+          <a href="/admin/add-product" class="text-decoration-none text-dark">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+              <i class="bi bi-plus-circle-fill display-4 text-warning mb-2"></i>
+              <h5 class="card-title text-dark m-0">Añadir Producto</h5>
+            </div>
+          </a>
+        </div>
+      </div>
+      
+      <div th:if="${#lists.isEmpty(products)}" class="alert alert-info mt-3">No hay productos registrados aún.</div>
+
+      <div class="row row-cols-1 row-cols-md-3 g-4" th:if="${!#lists.isEmpty(products)}">
+        <div class="col" th:each="p : ${products}">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title" th:text="${p.name}">Nombre Producto</h5>
+              <h6 class="card-subtitle mb-2 text-muted" th:text="${p.type}">Tipo</h6>
+              <p class="card-text" th:text="${p.description}">Descripción del producto.</p>
+            </div>
+            <div class="card-footer">
+                <!-- Add to Cart Form -->
+                <form action="/cart/add" method="post" class="mb-2" th:if="${session.USER_ID != null}">
+                    <div class="input-group input-group-sm">
+                        <select class="form-select product-variant-select" name="subProductId" required onchange="updateMaxStock(this)">
+                             <option th:each="sp : ${p.subProducts}" 
+                                     th:value="${sp.id}" 
+                                     th:text="${sp.subName + ' (' + #numbers.formatDecimal(sp.price,1,2) + '€)'}"
+                                     th:data-stock="${sp.stock}"
+                                     th:disabled="${sp.stock <= 0}">
+                             </option>
+                        </select>
+                        <input type="number" name="quantity" class="form-control quantity-input" value="1" min="1" style="max-width: 60px;" required>
+                        <button class="btn btn-primary" type="submit" title="Añadir al carrito"><i class="bi bi-cart-plus"></i></button>
+                    </div>
+                </form>
+                <div th:if="${session.USER_ID == null}" class="text-center mb-2">
+                    <a href="/login" class="btn btn-sm btn-outline-primary">Inicia sesión para comprar</a>
+                </div>
+
+                <div th:if="${isAdmin}">
+                    <a th:href="@{/admin/modify-product(id=${p.id})}" class="btn btn-sm btn-outline-primary w-100">Editar</a>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content text-center">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+                <i class="bi bi-check-circle-fill text-success display-4"></i>
+            </div>
+            <h5 class="modal-title mb-3" id="cartModalLabel">¡Añadido al carrito!</h5>
+            <div class="d-grid gap-2">
+              <a href="/cart" class="btn btn-primary">Ver Carrito</a>
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Seguir Comprando</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        function updateMaxStock(selectElement) {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const stock = selectedOption.getAttribute('data-stock');
+            const quantityInput = selectElement.nextElementSibling; // El input number está justo después del select
+            
+            if (stock) {
+                quantityInput.max = stock;
+                // Si el valor actual es mayor que el nuevo máximo, ajustarlo
+                if (parseInt(quantityInput.value) > parseInt(stock)) {
+                    quantityInput.value = stock;
+                }
+            } else {
+                quantityInput.removeAttribute('max');
+            }
+        }
+
+        // Inicializar todos los inputs al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            const selects = document.querySelectorAll('.product-variant-select');
+            selects.forEach(select => {
+                updateMaxStock(select);
+            });
+
+            // Interceptar formularios de añadir al carrito
+            const forms = document.querySelectorAll('form[action="/cart/add"]');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    
+                    fetch('/cart/api/add', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === 'ok') {
+                            const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+                            cartModal.show();
+                        } else if (data === 'error:login') {
+                            window.location.href = '/login';
+                        } else {
+                            alert('Error al añadir al carrito: ' + data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Ha ocurrido un error al procesar la solicitud.');
+                    });
+                });
+            });
+        });
+    </script>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

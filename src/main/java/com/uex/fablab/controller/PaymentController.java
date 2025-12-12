@@ -4,6 +4,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,17 +14,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.uex.fablab.data.model.Booking;
+import com.uex.fablab.data.model.Cart;
+import com.uex.fablab.data.model.CartItem;
 import com.uex.fablab.data.model.Inscription;
 import com.uex.fablab.data.model.PaymentMethod;
 import com.uex.fablab.data.model.Receipt;
+import com.uex.fablab.data.model.ReceiptProduct;
+import com.uex.fablab.data.model.ReceiptProductKey;
 import com.uex.fablab.data.model.ReceiptStatus;
 import com.uex.fablab.data.model.Shift;
 import com.uex.fablab.data.model.ShiftStatus;
+import com.uex.fablab.data.model.SubProduct;
 import com.uex.fablab.data.model.User;
 import com.uex.fablab.data.services.BookingService;
+import com.uex.fablab.data.services.CartService;
 import com.uex.fablab.data.services.CourseService;
 import com.uex.fablab.data.services.InscriptionService;
 import com.uex.fablab.data.services.MachineService;
+import com.uex.fablab.data.services.ProductService;
 import com.uex.fablab.data.services.ReceiptService;
 import com.uex.fablab.data.services.ShiftService;
 import com.uex.fablab.data.services.UserService;
@@ -55,9 +64,12 @@ public class PaymentController {
     private final CourseService courseService;
     private final InscriptionService inscriptionService;
     private final ReceiptService receiptService;
+    private final CartService cartService;
+    private final ProductService productService;
 
     public PaymentController(UserService userService, BookingService bookingService, ShiftService shiftService,
-            MachineService machineService, CourseService courseService, InscriptionService inscriptionService, ReceiptService receiptService) {
+            MachineService machineService, CourseService courseService, InscriptionService inscriptionService, ReceiptService receiptService,
+            CartService cartService, ProductService productService) {
         this.userService = userService;
         this.bookingService = bookingService;
         this.shiftService = shiftService;
@@ -65,6 +77,8 @@ public class PaymentController {
         this.courseService = courseService;
         this.inscriptionService = inscriptionService;
         this.receiptService = receiptService;
+        this.cartService = cartService;
+        this.productService = productService;
     }
 
     /**
@@ -274,6 +288,22 @@ public class PaymentController {
                     computedAmount = unit * count;
                 }
             }
+            if ("cart".equalsIgnoreCase(type)) {
+                Cart cart = cartService.getCartByUser(user);
+                if (cart != null && !cart.getItems().isEmpty()) {
+                    // Validate stock
+                    for (CartItem item : cart.getItems()) {
+                        if (item.getQuantity() > item.getSubProduct().getStock()) {
+                            return "redirect:/cart?error=stock";
+                        }
+                    }
+                    computedAmount = cart.getItems().stream()
+                        .mapToDouble(item -> item.getSubProduct().getPrice() * item.getQuantity())
+                        .sum();
+                } else {
+                    return "redirect:/cart";
+                }
+            }
             if (computedAmount == null) {
                 // fallback: try parsing incoming amount safely with dot
                 try {
@@ -331,6 +361,9 @@ public class PaymentController {
                     String fechaTxt2 = (dateStr != null && !dateStr.isBlank()) ? dateStr : java.time.LocalDate.now().toString();
                     r.setConcepto(buildReservationConcept(mopt2.orElse(null), cnt2, fechaTxt2));
                 }
+                if ("cart".equalsIgnoreCase(type)) {
+                    r.setConcepto("Compra de productos");
+                }
                 // Asociar turnos si es múltiple
                 if ("reservation_multi".equalsIgnoreCase(type)) {
                     if (shiftIds != null) {
@@ -369,6 +402,9 @@ public class PaymentController {
                     cnt2 += (startHours != null) ? startHours.size() : 0;
                     String fechaTxt2 = (dateStr != null && !dateStr.isBlank()) ? dateStr : java.time.LocalDate.now().toString();
                     r.setConcepto(buildReservationConcept(mopt2.orElse(null), cnt2, fechaTxt2));
+                }
+                if ("cart".equalsIgnoreCase(type)) {
+                    r.setConcepto("Compra de productos");
                 }
                 // Asociar turnos si es múltiple
                 if ("reservation_multi".equalsIgnoreCase(type)) {
@@ -528,6 +564,37 @@ public class PaymentController {
                     // Receipt pending: do not create inscription yet, admin will confirm later
                     return "redirect:/courses/" + course.getId() + "?pending=1";
                 }
+            } else if ("cart".equalsIgnoreCase(type)) {
+                Cart cart = cartService.getCartByUser(user);
+                if (cart != null && !cart.getItems().isEmpty()) {
+                    Receipt receipt = receiptService.findById(receiptId).orElse(null);
+                    if (receipt != null) {
+                        Set<ReceiptProduct> receiptProducts = new HashSet<>();
+                        for (CartItem item : cart.getItems()) {
+                            SubProduct subProduct = item.getSubProduct();
+                            // Update stock
+                            subProduct.setStock(subProduct.getStock() - item.getQuantity());
+                            productService.saveSubProduct(subProduct);
+                            
+                            // Create ReceiptProduct
+                            ReceiptProduct rp = new ReceiptProduct();
+                            ReceiptProductKey key = new ReceiptProductKey();
+                            key.setReceiptId(receipt.getId());
+                            key.setSubProductId(subProduct.getId());
+                            rp.setId(key);
+                            rp.setReceipt(receipt);
+                            rp.setSubProduct(subProduct);
+                            rp.setQuantity(item.getQuantity());
+                            rp.setUnitPrice(subProduct.getPrice());
+                            receiptProducts.add(rp);
+                        }
+                        receipt.setReceiptProducts(receiptProducts);
+                        receipt.setConcepto("Compra de productos");
+                        receiptService.save(receipt);
+                        cartService.clearCart(user);
+                    }
+                }
+                return "redirect:/recibos";
             } else if (("reservation".equalsIgnoreCase(type) || "reservation_multi".equalsIgnoreCase(type)) && itemId != null) {
                 var mopt = machineService.findById(itemId);
                 if (mopt.isEmpty()) {
@@ -705,5 +772,31 @@ public class PaymentController {
         } catch (Exception ex) {
             return "redirect:/?paymentError=" + URLEncoder.encode("Error creando recurso tras pago", StandardCharsets.UTF_8);
         }
+    }
+
+    @GetMapping("/checkout")
+    public String checkoutPage(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("USER_ID");
+        if (userId == null) return "redirect:/login";
+
+        User user = userService.findById(userId).orElse(null);
+        if (user == null) return "redirect:/login";
+
+        Cart cart = cartService.getCartByUser(user);
+        if (cart.getItems().isEmpty()) {
+            return "redirect:/cart";
+        }
+
+        // Calculate total
+        double total = cart.getItems().stream()
+                .mapToDouble(item -> item.getSubProduct().getPrice() * item.getQuantity())
+                .sum();
+
+        model.addAttribute("cart", cart);
+        model.addAttribute("amount", String.format(java.util.Locale.US, "%.2f", total));
+        model.addAttribute("type", "cart");
+        model.addAttribute("returnUrl", "/cart");
+        
+        return "user/payment";
     }
 }

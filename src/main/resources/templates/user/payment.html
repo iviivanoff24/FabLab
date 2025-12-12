@@ -44,7 +44,21 @@
         <div class="mb-3">
                      <label class="form-label">Descripción</label>
                      <input class="form-control-plaintext" readonly
-                         th:value="${type == null ? 'Pago' : (type + (itemName != null ? ' - ' + itemName : ''))}" />
+                         th:value="${type == 'cart' ? 'Compra de productos' : (type == null ? 'Pago' : (type + (itemName != null ? ' - ' + itemName : '')))}" />
+        </div>
+
+        <div class="mb-3" th:if="${type == 'cart' and cart != null}">
+            <label class="form-label">Resumen del Pedido</label>
+            <div class="list-group">
+                <div class="list-group-item d-flex justify-content-between align-items-center" th:each="item : ${cart.items}">
+                    <div>
+                        <span th:text="${item.subProduct.product.name}">Producto</span>
+                        <span class="text-muted small" th:text="'(' + ${item.subProduct.subName} + ')'">Variante</span>
+                        <span class="badge bg-secondary" th:text="'x' + ${item.quantity}">x1</span>
+                    </div>
+                    <span th:text="${item.subProduct.price * item.quantity} + ' €'">0.00 €</span>
+                </div>
+            </div>
         </div>
 
         <div class="mb-3">

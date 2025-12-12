@@ -79,6 +79,10 @@ public class Receipt {
     @JoinColumn(name = "id_c", nullable = true)
     private Course course;
 
+    // Asociación uno-a-muchos con Recibo_Producto
+    @jakarta.persistence.OneToMany(mappedBy = "receipt", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    private Set<ReceiptProduct> receiptProducts = new HashSet<>();
+
     public Long getId() {
         return id;
     }
@@ -163,5 +167,13 @@ public class Receipt {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public Set<ReceiptProduct> getReceiptProducts() {
+        return receiptProducts;
+    }
+
+    public void setReceiptProducts(Set<ReceiptProduct> receiptProducts) {
+        this.receiptProducts = receiptProducts;
     }
 }

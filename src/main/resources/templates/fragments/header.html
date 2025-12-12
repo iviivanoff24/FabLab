@@ -9,9 +9,27 @@
 
       <!-- LOGIN / REGISTER / PROFILE -->
       <div class="d-flex align-items-center gap-3" id="authLinks">
-        <a href="/login" class="text-dark text-decoration-none small">Iniciar sesión</a>
-        <a href="/register" class="text-dark text-decoration-none small">Registrarse</a>
-        <i class="bi bi-search" style="font-size: 1.1rem"></i>
+        <!-- Not Logged In -->
+        <th:block th:if="${session.USER_ID == null}">
+            <a href="/cart" class="text-dark"><i class="bi bi-cart" style="font-size: 1.1rem"></i></a>
+            <a href="/login" class="text-dark text-decoration-none small">Iniciar sesión</a>
+            <a href="/register" class="text-dark text-decoration-none small">Registrarse</a>
+        </th:block>
+
+        <!-- Logged In -->
+        <th:block th:if="${session.USER_ID != null}">
+            <a href="/cart" class="text-dark me-3"><i class="bi bi-cart" style="font-size: 1.1rem"></i></a>
+                        
+            <a href="/profile" class="btn btn-secondary btn-sm" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ver mi perfil">
+                <i class="bi bi-person"></i>
+            </a>
+            
+            <form method="post" action="/logout" style="display:inline">
+                <button type="submit" class="btn btn-outline-secondary btn-sm ms-2">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                </button>
+            </form>
+        </th:block>
       </div>
     </div>
 
@@ -20,6 +38,7 @@
       <div class="container">
         <ul class="nav nav-underline">
           <li class="nav-item"><a th:classappend="${active}=='home'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/">Inicio</a></li>
+          <li class="nav-item"><a th:classappend="${active}=='products'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/products">Productos</a></li>
           <li class="nav-item"><a th:classappend="${active}=='machines'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/machines">Máquinas</a></li>
           <li class="nav-item"><a th:classappend="${active}=='courses'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/courses">Cursos</a></li>
           <li class="nav-item" th:if="${session.USER_ADMIN}"><a th:classappend="${active}=='admin'?' active text-primary fw-semibold'" class="nav-link text-dark" href="/admin/admin">Admin</a></li>
@@ -30,57 +49,4 @@
   </header>
 </th:block>
 
-<script>
-  // Actualiza los enlaces de auth según sesión (cliente)
-  (function(){
-    async function renderAuth() {
-      try {
-        const r = await fetch('/api/session/me', { credentials: 'same-origin' });
-        if (!r.ok) return;
-        const data = await r.json();
-        const auth = document.getElementById('authLinks');
-        if (!auth) return;
-        if (data.logged) {
-          // Mostrar nombre, botón perfil y botón logout
-          auth.innerHTML = '';
-          const span = document.createElement('span');
-          span.className = 'small text-dark';
-          span.textContent = data.name || data.email || 'Usuario';
-          auth.appendChild(span);
-
-          const sep = document.createElement('span'); sep.className='mx-2'; auth.appendChild(sep);
-
-          // Botón perfil con tooltip
-          const profileBtn = document.createElement('a');
-          profileBtn.href = '/profile';
-          profileBtn.className = 'btn btn-secondary btn-sm';
-          profileBtn.setAttribute('role','button');
-          profileBtn.setAttribute('data-bs-toggle','tooltip');
-          profileBtn.setAttribute('data-bs-placement','bottom');
-          profileBtn.setAttribute('title','Ver mi perfil');
-          profileBtn.innerHTML = '<i class="bi bi-person"></i>';
-          auth.appendChild(profileBtn);
-
-          const sep2 = document.createElement('span'); sep2.className='mx-2'; auth.appendChild(sep2);
-
-          const logoutForm = document.createElement('form');
-          logoutForm.method = 'post';
-          logoutForm.action = '/logout';
-          logoutForm.style.display = 'inline';
-          const btn = document.createElement('button');
-          btn.type = 'submit';
-          btn.className = 'btn btn-link small p-0 text-decoration-none';
-          btn.textContent = 'Cerrar sesión';
-          logoutForm.appendChild(btn);
-          auth.appendChild(logoutForm);
-        } else {
-          // Mostrar login/register
-          auth.innerHTML = '<a href="/login" class="text-dark text-decoration-none small">Iniciar sesión</a> <a href="/register" class="text-dark text-decoration-none small ms-2">Registrarse</a> <i class="bi bi-search" style="font-size: 1.1rem"></i>';
-        }
-      } catch (e) {
-        // Si falla, dejar los enlaces por defecto
-      }
-    }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderAuth); else renderAuth();
-  })();
-</script>
+<!-- Script de autenticación eliminado ya que ahora se maneja con Thymeleaf en el servidor -->

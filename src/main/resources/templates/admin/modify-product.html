@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Modificar Producto - Fablab</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: siteHeader('admin')}"></div>
+
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Modificar Producto</h2>
+        <form action="/admin/products/delete" method="post" onsubmit="return confirm('¿Estás seguro de eliminar este producto?');">
+            <input type="hidden" name="id" th:value="${product.id}">
+            <button type="submit" class="btn btn-danger">Eliminar Producto</button>
+        </form>
+    </div>
+
+    <!-- Edit Product Form -->
+    <form action="/admin/products/update" method="post" class="mt-4 card p-4">
+        <h4>Datos Generales</h4>
+        <input type="hidden" name="id" th:value="${product.id}">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nombre del Producto</label>
+            <input type="text" class="form-control" id="name" name="name" th:value="${product.name}" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Descripción</label>
+            <textarea class="form-control" id="description" name="description" rows="3" th:text="${product.description}"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="type" class="form-label">Tipo de Producto</label>
+            <select class="form-select" id="type" name="type" required>
+                <option th:each="t : ${types}" th:value="${t}" th:text="${t}" th:selected="${t == product.type}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="/products" class="btn btn-secondary">Volver</a>
+    </form>
+
+    <hr class="my-5">
+
+    <!-- Subproducts Section -->
+    <h3>Variantes / Subproductos</h3>
+    <p class="text-muted">Gestiona aquí las diferentes versiones, tallas o colores del producto.</p>
+
+    <!-- Add Subproduct Form -->
+    <div class="card mb-4">
+        <div class="card-header">Añadir Nueva Variante</div>
+        <div class="card-body">
+            <form action="/admin/subproducts/add" method="post" class="row g-3" enctype="multipart/form-data">
+                <input type="hidden" name="productId" th:value="${product.id}">
+                <div class="col-md-4">
+                    <label for="subName" class="form-label">Nombre Variante</label>
+                    <input type="text" class="form-control" id="subName" name="subName" placeholder="Ej: Rojo, XL, Estándar" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="price" class="form-label">Precio (€)</label>
+                    <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="stock" class="form-label">Stock</label>
+                    <input type="number" class="form-control" id="stock" name="stock" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Imágenes</label>
+                    <div class="d-flex gap-1">
+                        <input type="file" class="form-control form-control-sm" name="image1" accept="image/*">
+                        <input type="file" class="form-control form-control-sm" name="image2" accept="image/*">
+                        <input type="file" class="form-control form-control-sm" name="image3" accept="image/*">
+                    </div>
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-success">Añadir Variante</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Subproducts List -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Nombre Variante</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Imágenes</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="sp : ${subproducts}">
+                    <td>
+                        <form th:id="'form-' + ${sp.id}" action="/admin/subproducts/update" method="post" enctype="multipart/form-data" style="display:none;"></form>
+                        <input th:attr="form='form-' + ${sp.id}" type="hidden" name="id" th:value="${sp.id}">
+                        <input th:attr="form='form-' + ${sp.id}" type="hidden" name="productId" th:value="${product.id}">
+                        <input th:attr="form='form-' + ${sp.id}" type="text" class="form-control form-control-sm" name="subName" th:value="${sp.subName}" required>
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <input th:attr="form='form-' + ${sp.id}" type="number" step="0.01" class="form-control" name="price" th:value="${sp.price}" required>
+                            <span class="input-group-text">€</span>
+                        </div>
+                    </td>
+                    <td>
+                        <input th:attr="form='form-' + ${sp.id}" type="number" class="form-control form-control-sm" name="stock" th:value="${sp.stock}" style="width: 80px;" required>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column gap-1">
+                            <div class="d-flex gap-1 align-items-center">
+                                <img th:if="${sp.image1}" th:src="${sp.image1}" height="30" class="border rounded">
+                                <input th:attr="form='form-' + ${sp.id}" type="file" class="form-control form-control-sm" name="image1" accept="image/*" style="width: 200px;">
+                            </div>
+                            <div class="d-flex gap-1 align-items-center">
+                                <img th:if="${sp.image2}" th:src="${sp.image2}" height="30" class="border rounded">
+                                <input th:attr="form='form-' + ${sp.id}" type="file" class="form-control form-control-sm" name="image2" accept="image/*" style="width: 200px;">
+                            </div>
+                            <div class="d-flex gap-1 align-items-center">
+                                <img th:if="${sp.image3}" th:src="${sp.image3}" height="30" class="border rounded">
+                                <input th:attr="form='form-' + ${sp.id}" type="file" class="form-control form-control-sm" name="image3" accept="image/*" style="width: 200px;">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button th:attr="form='form-' + ${sp.id}" type="submit" class="btn btn-sm btn-primary" title="Guardar cambios"><i class="bi bi-save"></i></button>
+                            
+                            <form action="/admin/subproducts/delete" method="post" onsubmit="return confirm('¿Eliminar esta variante?');">
+                                <input type="hidden" name="id" th:value="${sp.id}">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(subproducts)}">
+                    <td colspan="5" class="text-center text-muted">No hay variantes registradas.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

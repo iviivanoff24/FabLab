@@ -40,6 +40,7 @@ public class AdminController {
     private final InscriptionService inscriptionService;
     private final ReceiptService receiptService;
     private final UserService userService;
+    private final com.uex.fablab.data.services.ProductService productService;
 
     public AdminController(AdminService adminService,
                            MachineService machineService,
@@ -48,7 +49,8 @@ public class AdminController {
                            CourseService courseService,
                            InscriptionService inscriptionService,
                            ReceiptService receiptService,
-                           UserService userService) {
+                           UserService userService,
+                           com.uex.fablab.data.services.ProductService productService) {
         this.adminService = adminService;
         this.machineService = machineService;
         this.bookingService = bookingService;
@@ -57,6 +59,7 @@ public class AdminController {
         this.inscriptionService = inscriptionService;
         this.receiptService = receiptService;
         this.userService = userService;
+        this.productService = productService;
     }
 
     @org.springframework.web.bind.annotation.GetMapping("/admin/modify-user")
@@ -157,6 +160,7 @@ public class AdminController {
         model.addAttribute("users", users);
 
         model.addAttribute("machines", machineService.listAll());
+        model.addAttribute("products", productService.findAll());
 
         // Bookings: default by fechaReserva desc
         var bookings = bookingService.listAll();

@@ -20,6 +20,7 @@
         <ul class="nav nav-tabs" id="adminTabs" role="tablist">
             <li class="nav-item" role="presentation"><button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">Usuarios</button></li>
             <li class="nav-item" role="presentation"><button class="nav-link" id="machines-tab" data-bs-toggle="tab" data-bs-target="#machines" type="button" role="tab">Máquinas</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab">Productos</button></li>
             <li class="nav-item" role="presentation"><button class="nav-link" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab">Reservas</button></li>
             <li class="nav-item" role="presentation"><button class="nav-link" id="shifts-tab" data-bs-toggle="tab" data-bs-target="#shifts" type="button" role="tab">Turnos</button></li>
             <li class="nav-item" role="presentation"><button class="nav-link" id="courses-tab" data-bs-toggle="tab" data-bs-target="#courses" type="button" role="tab">Cursos</button></li>
@@ -82,6 +83,40 @@
                                     <div class="btn-group btn-group-sm">
                                         <a th:href="@{'/admin/modify-machine?id=' + ${m.id}}" class="btn btn-outline-secondary">Editar</a>
                                         <button type="button" class="btn btn-outline-danger btn-delete" th:attr="data-action=@{'/admin/machines/{id}/delete'(id=${m.id})}, data-entity='máquina', data-id=${m.id}">Borrar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="products" role="tabpanel">
+                <h5>Productos</h5>
+                <div class="mb-3">
+                    <a href="/admin/add-product" class="btn btn-sm btn-primary">Añadir Producto</a>
+                </div>
+                <div th:if="${#lists.isEmpty(products)}" class="alert alert-info">No hay productos.</div>
+                <div class="mb-2 d-flex">
+                    <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar productos..." data-target="products" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 table-search-clear" data-target="products">Limpiar</button>
+                </div>
+                <div th:if="${!#lists.isEmpty(products)}" class="table-responsive">
+                    <table class="table table-sm admin-table" data-entity="products">
+                        <thead><tr><th>ID</th><th>Nombre</th><th>Tipo</th><th>Descripción</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                                <tr th:each="p : ${products}">
+                                <td th:text="${p.id}"></td>
+                                <td th:text="${p.name}"></td>
+                                <td th:text="${p.type}"></td>
+                                <td th:text="${p.description}"></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{'/admin/modify-product?id=' + ${p.id}}" class="btn btn-outline-secondary">Editar</a>
+                                        <form action="/admin/products/delete" method="post" style="display:inline" onsubmit="return confirm('¿Borrar producto?');">
+                                            <input type="hidden" name="id" th:value="${p.id}">
+                                            <button type="submit" class="btn btn-outline-danger">Borrar</button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
