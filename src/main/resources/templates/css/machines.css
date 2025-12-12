@@ -211,3 +211,17 @@ footer {
     position: relative;
     z-index: 2;
 }
+
+/* ===== Estilos para la tarjeta "Añadir" (reutiliza styles de courses.css) ===== */
+.card-add-course, .card-add-machine {
+    border: 2px dashed #f8bc1e;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff6d1;
+    color: #2c3e50;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card-add-course:hover, .card-add-machine:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(248, 188, 30, 0.4);
+}
