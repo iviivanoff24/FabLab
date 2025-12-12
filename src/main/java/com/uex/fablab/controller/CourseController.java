@@ -26,7 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.uex.fablab.data.model.Course;
 import com.uex.fablab.data.model.Inscription;
+import com.uex.fablab.data.model.ReceiptStatus;
 import com.uex.fablab.data.model.User;
+import com.uex.fablab.data.repository.ReceiptRepository;
 import com.uex.fablab.data.services.CourseService;
 import com.uex.fablab.data.services.InscriptionService;
 import com.uex.fablab.data.services.UserService;
@@ -56,11 +58,13 @@ public class CourseController {
     private final CourseService courseService;
     private final InscriptionService inscriptionService;
     private final UserService userService;
+    private final ReceiptRepository receiptRepository;
 
-    public CourseController(CourseService courseService, InscriptionService inscriptionService, UserService userService) {
+    public CourseController(CourseService courseService, InscriptionService inscriptionService, UserService userService, ReceiptRepository receiptRepository) {
         this.courseService = courseService;
         this.inscriptionService = inscriptionService;
         this.userService = userService;
+        this.receiptRepository = receiptRepository;
     }
 
     @GetMapping("/api/courses")
@@ -307,6 +311,19 @@ public class CourseController {
                 && i.getUser() != null && i.getUser().getId() != null && i.getUser().getId().equals(uid));
         if (already) {
             return "redirect:/courses/" + id + "?error=" + java.net.URLEncoder.encode("Ya estás inscrito", java.nio.charset.StandardCharsets.UTF_8);
+        }
+        // Si existe un recibo pendiente para este curso, bloquear nueva inscripción.
+        // Considera recibos con course asociado o cuando el concepto contiene el nombre del curso (por seguridad).
+        String courseName = course.getName() != null ? course.getName() : "";
+        boolean pendingCash = user.getReceipts().stream().anyMatch(r ->
+            r.getEstadoRecibo() == ReceiptStatus.Pendiente
+            && (
+                (r.getCourse() != null && r.getCourse().getId() != null && r.getCourse().getId().equals(id))
+                || (r.getConcepto() != null && !r.getConcepto().isBlank() && r.getConcepto().contains(courseName))
+            )
+        );
+        if (pendingCash) {
+            return "redirect:/courses/" + id + "?error=" + java.net.URLEncoder.encode("Tienes un pago pendiente para este curso. Espera a que se anule o confirme.", java.nio.charset.StandardCharsets.UTF_8);
         }
         try {
             Inscription ins = new Inscription();

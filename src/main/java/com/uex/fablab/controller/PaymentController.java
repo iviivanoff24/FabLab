@@ -259,6 +259,23 @@ public class PaymentController {
             // amount = String.format(java.util.Locale.US, "%.2f", computedAmount != null ? computedAmount : 0.0);
 
             String pm = paymentMethod != null ? paymentMethod : "Tarjeta";
+            // Bloquear creación de un nuevo recibo para el mismo curso si ya existe
+            // un recibo pendiente (efectivo/online). Evita múltiples recibos pendientes
+            // por la misma inscripción.
+            if ("course".equalsIgnoreCase(type) && itemId != null) {
+                final String[] courseName = {""};
+                var coptChk = courseService.findById(itemId);
+                if (coptChk.isPresent() && coptChk.get().getName() != null) courseName[0] = coptChk.get().getName();
+                boolean hasPending = user.getReceipts().stream().anyMatch(r ->
+                    r.getEstadoRecibo() == ReceiptStatus.Pendiente && (
+                        (r.getCourse() != null && r.getCourse().getId() != null && r.getCourse().getId().equals(itemId))
+                        || (r.getConcepto() != null && !r.getConcepto().isBlank() && !courseName[0].isBlank() && r.getConcepto().contains(courseName[0]))
+                    )
+                );
+                if (hasPending) {
+                    return "redirect:/courses/" + itemId + "?error=" + URLEncoder.encode("Tienes un pago pendiente para este curso. Espera a que se confirme o se anule.", StandardCharsets.UTF_8);
+                }
+            }
             if ("Efectivo".equalsIgnoreCase(pm)) {
                 // cash: assume paid, create receipt and perform action
                 Receipt r = new Receipt();

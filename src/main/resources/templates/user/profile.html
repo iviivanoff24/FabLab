@@ -50,21 +50,26 @@
               <div
                 class="card-header d-flex justify-content-between align-items-center"
               >
-                <span>Recibos</span>
+                <span>Recibos <span class="badge bg-primary ms-2" th:text="${#lists.size(recibos)}">0</span></span>
                 <a th:href="@{/recibos}" class="small">Ver todos</a>
               </div>
+              <div class="px-3 py-1">
+                <small class="text-muted">Total gastado: <span th:text="${totalRecibos}">0.00</span> €</small>
+              </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item" th:each="recibo : ${recibos}">
+                <li class="list-group-item d-flex justify-content-between align-items-start" th:each="recibo : ${recibos}">
                   <div>
-                    <strong th:text="${recibo.concepto} ?: 'Recibo'"
-                      >Recibo</strong
-                    >
+                    <strong th:text="${recibo.concepto} ?: 'Recibo'">Recibo</strong>
+                    <div class="mt-1">
+                      <span class="badge bg-success me-1" th:text="${recibo.totalPrice}">0.00</span>
+                      <span class="badge bg-light text-dark me-1" th:text="${recibo.metodoPago}">--</span>
+                      <span class="badge" th:classappend="${recibo.estado} == 'Anulado' ? ' bg-danger' : (${recibo.estado} == 'Pagado' ? ' bg-success' : ' bg-warning')" th:text="${recibo.estado}">Pendiente</span>
+                    </div>
                   </div>
-                  <small
-                    class="text-muted"
-                    th:text="${recibo.fechaEmision} + ' - ' + ${recibo.totalPrice}"
-                    >01/01/2025 - 0.00</small
-                  >
+                  <div class="text-end small text-muted">
+                    <div th:text="${recibo.fechaEmision}">01/01/2025</div>
+                    <div th:if="${recibo.hasCourse}" class="mt-1"><span class="badge bg-info text-dark">Curso incluido</span></div>
+                  </div>
                 </li>
                 <li
                   class="list-group-item text-muted"
@@ -81,15 +86,19 @@
               <div
                 class="card-header d-flex justify-content-between align-items-center"
               >
-                <span>Cursos apuntados</span>
+                <span>Cursos apuntados <span class="badge bg-primary ms-2" th:text="${#lists.size(cursos)}">0</span></span>
                 <a th:href="@{/mis-cursos}" class="small">Ver todos</a>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item" th:each="curso : ${cursos}">
-                  <div th:text="${curso.name}">Nombre del curso</div>
-                  <small class="text-muted" th:text="${curso.startDate}"
-                    >Fecha inicio</small
-                  >
+                <li class="list-group-item d-flex justify-content-between align-items-start" th:each="curso : ${cursos}">
+                  <div>
+                    <div th:text="${curso.name}">Nombre del curso</div>
+                    <div class="mt-1">
+                      <span class="badge bg-success me-1" th:text="${curso.precio}">0.0</span>
+                      <span class="badge bg-secondary" th:text="${curso.estado}">Activo</span>
+                    </div>
+                  </div>
+                  <div class="text-end small text-muted" th:text="${curso.startDate}">Fecha inicio</div>
                 </li>
                 <li
                   class="list-group-item text-muted"
@@ -106,15 +115,22 @@
               <div
                 class="card-header d-flex justify-content-between align-items-center"
               >
-                <span>Reservas</span>
+                <span>Reservas <span class="badge bg-primary ms-2" th:text="${#lists.size(reservas)}">0</span></span>
                 <a th:href="@{/mis-reservas}" class="small">Ver todas</a>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item" th:each="reserva : ${reservas}">
-                  <div th:text="${reserva.maquina}">Máquina</div>
-                  <small class="text-muted" th:text="${reserva.fecha}"
-                    >Fecha reserva</small
-                  >
+                <li class="list-group-item d-flex justify-content-between align-items-start" th:each="reserva : ${reservas}">
+                  <div>
+                    <div th:text="${reserva.maquina}">Máquina</div>
+                    <div class="mt-1">
+                      <span class="badge bg-secondary me-1" th:text="${reserva.shiftStatus}">Disponible</span>
+                      <span class="badge bg-warning text-dark" th:text="${reserva.estadoReserva}">Pendiente</span>
+                    </div>
+                  </div>
+                  <div class="text-end small text-muted">
+                    <div th:text="${reserva.fecha}">Fecha reserva</div>
+                    <div th:text="${reserva.hora}">Hora</div>
+                  </div>
                 </li>
                 <li
                   class="list-group-item text-muted"

@@ -1,6 +1,7 @@
 package com.uex.fablab.controller;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.uex.fablab.data.model.ReceiptStatus;
 import com.uex.fablab.data.model.User;
 import com.uex.fablab.data.services.UserService;
 
@@ -42,12 +44,12 @@ public class UserController {
             return "redirect:/login";
         }
         Long id;
-        try {
-            if (idObj instanceof Number number) id = number.longValue(); else id = Long.valueOf(idObj.toString());
-        } catch (NumberFormatException e) {
-            session.invalidate();
-            return "redirect:/login";
-        }
+            try {
+                if (idObj instanceof Number number) id = number.longValue(); else id = Long.valueOf(idObj.toString());
+            } catch (NumberFormatException e) {
+                session.invalidate();
+                return "redirect:/login";
+            }
 
         Optional<User> u = userService.findById(id);
         if (u.isEmpty()) {
@@ -56,16 +58,54 @@ public class UserController {
         }
         User user = u.get();
         model.addAttribute("user", user);
-        // Recibos directos desde la entidad User
-        model.addAttribute("recibos", user.getReceipts());
-        // Cursos: derivamos la lista de Course desde las inscripciones
-        model.addAttribute("cursos", user.getInscriptions().stream().map(i -> i.getCourse()).collect(Collectors.toList()));
-        // Reservas: transformamos cada Booking a un mapa sencillo con máquina y fecha para la vista
-        List<Map<String, ?>> reservas = user.getBookings().stream().map(b -> Map.of(
-            "maquina", b.getShift() != null && b.getShift().getMachine() != null ? b.getShift().getMachine().getName() : "-",
-            "fecha", b.getShift() != null ? b.getShift().getDate() : null
-        )).collect(Collectors.toList());
-        model.addAttribute("reservas", reservas);
+            // Recibos -> lista de mapas con campos útiles para badges
+            List<Map<String, ?>> recibos = user.getReceipts().stream().map(r -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("id", r.getId());
+                m.put("concepto", r.getConcepto());
+                m.put("fechaEmision", r.getFechaEmision());
+                m.put("totalPrice", r.getTotalPrice());
+                m.put("metodoPago", r.getMetodoPago() != null ? r.getMetodoPago().name() : null);
+                m.put("estado", r.getEstadoRecibo() != null ? r.getEstadoRecibo().name() : null);
+                m.put("hasCourse", r.getCourse() != null);
+                m.put("hasMachine", r.getMachine() != null);
+                return m;
+            }).collect(Collectors.toList());
+            model.addAttribute("recibos", recibos);
+            // Total gastado en recibos (suma segura de nulls)
+                double totalRecibos = user.getReceipts().stream()
+                    .filter(r -> r.getTotalPrice() != null)
+                    .filter(r -> r.getEstadoRecibo() != ReceiptStatus.Anulado)
+                    .mapToDouble(r -> r.getTotalPrice())
+                    .sum();
+            model.addAttribute("totalRecibos", totalRecibos);
+            // Cursos: derivamos lista de mapas desde las inscripciones
+            List<Map<String, ?>> cursos = user.getInscriptions().stream().map(i -> {
+                var c = i.getCourse();
+                Map<String, Object> m = new HashMap<>();
+                if (c != null) {
+                    m.put("id", c.getId());
+                    m.put("name", c.getName());
+                    m.put("startDate", c.getStartDate());
+                    m.put("capacity", c.getCapacity());
+                    m.put("precio", c.getPrecio());
+                    m.put("estado", c.getEstado() != null ? c.getEstado().name() : null);
+                }
+                return m;
+            }).collect(Collectors.toList());
+            model.addAttribute("cursos", cursos);
+            // Reservas: transformamos cada Booking a un mapa con máquina, fecha, estado e id
+            List<Map<String, ?>> reservas = user.getBookings().stream().map(b -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("id", b.getId());
+                m.put("maquina", b.getShift() != null && b.getShift().getMachine() != null ? b.getShift().getMachine().getName() : "-");
+                m.put("fecha", b.getShift() != null ? b.getShift().getDate() : null);
+                m.put("hora", b.getShift() != null ? b.getShift().getStartTime() : null);
+                m.put("estadoReserva", b.getEstado() != null ? b.getEstado().name() : null);
+                m.put("shiftStatus", b.getShift() != null ? b.getShift().getStatus() : null);
+                return m;
+            }).collect(Collectors.toList());
+            model.addAttribute("reservas", reservas);
         return "user/profile";
     }
 
