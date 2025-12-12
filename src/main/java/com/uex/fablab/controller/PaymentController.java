@@ -100,6 +100,7 @@ public class PaymentController {
             @RequestParam(value = "shiftId", required = false) Long shiftId,
             @RequestParam(value = "shiftIds", required = false) java.util.List<Long> shiftIds,
             @RequestParam(value = "startHours", required = false) java.util.List<Integer> startHours,
+            @RequestParam(value = "startDates", required = false) java.util.List<String> startDates,
             HttpSession session,
             Model model) {
         Object sid = session.getAttribute("USER_ID");
@@ -137,6 +138,7 @@ public class PaymentController {
         model.addAttribute("shiftId", shiftId);
         model.addAttribute("shiftIds", shiftIds);
         model.addAttribute("startHours", startHours);
+        model.addAttribute("startDates", startDates);
         // Cargar información de turnos seleccionados para mostrar en la página de pago
         java.util.List<com.uex.fablab.data.model.Shift> selectedShifts = java.util.Collections.emptyList();
         if (shiftIds != null && !shiftIds.isEmpty()) {
@@ -156,6 +158,31 @@ public class PaymentController {
         model.addAttribute("selectedShifts", selectedShifts);
         model.addAttribute("selectedHours", startHours);
         model.addAttribute("currentUserId", (Long) sid);
+
+        // Prepare unified view items
+        java.util.List<java.util.Map<String, Object>> paymentItems = new java.util.ArrayList<>();
+        if (selectedShifts != null) {
+            for (com.uex.fablab.data.model.Shift s : selectedShifts) {
+                java.util.Map<String, Object> item = new java.util.HashMap<>();
+                item.put("date", s.getDate().toString()); // ISO format
+                item.put("time", s.getStartTime() + " - " + s.getEndTime());
+                item.put("type", "Existente");
+                paymentItems.add(item);
+            }
+        }
+        if (startHours != null) {
+            for (int i = 0; i < startHours.size(); i++) {
+                Integer h = startHours.get(i);
+                String d = (startDates != null && i < startDates.size()) ? startDates.get(i) : date;
+                java.util.Map<String, Object> item = new java.util.HashMap<>();
+                item.put("date", d);
+                item.put("time", String.format("%02d:00 - %02d:00", h, h + 1));
+                item.put("type", "Nuevo");
+                paymentItems.add(item);
+            }
+        }
+        model.addAttribute("paymentItems", paymentItems);
+
         return "user/payment";
     }
 
@@ -212,6 +239,7 @@ public class PaymentController {
             @RequestParam(value = "shiftId", required = false) Long shiftId,
             @RequestParam(value = "shiftIds", required = false) java.util.List<Long> shiftIds,
             @RequestParam(value = "startHours", required = false) java.util.List<Integer> startHours,
+            @RequestParam(value = "startDates", required = false) java.util.List<String> startDates,
             @RequestParam(value = "startHour", required = false) String startHourStr,
             @RequestParam(value = "date", required = false) String dateStr,
             HttpSession session) {
@@ -315,7 +343,7 @@ public class PaymentController {
                     shiftService.findById(shiftId).ifPresent(r::addShift);
                 }
                 r = receiptService.save(r);
-                return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, r.getId(), startHours);
+                return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, r.getId(), startHours, startDates);
             }
             if ("Online".equalsIgnoreCase(pm)) {
                 // online: create pending receipt and redirect to simulated completion
@@ -397,7 +425,7 @@ public class PaymentController {
                 shiftService.findById(shiftId).ifPresent(r::addShift);
             }
             r = receiptService.save(r);
-            return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, r.getId(), startHours);
+            return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, r.getId(), startHours, startDates);
         } catch (Exception ex) {
             String err = URLEncoder.encode("Error procesando pago", StandardCharsets.UTF_8);
             if (returnUrl != null && !returnUrl.isBlank()) {
@@ -448,7 +476,7 @@ public class PaymentController {
                         .map(Integer::valueOf)
                         .toList();
             }
-            return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, receiptId, startHours);
+            return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, receiptId, startHours, null);
         }
         String err = URLEncoder.encode("Recibo online no encontrado", StandardCharsets.UTF_8);
         if (returnUrl != null && !returnUrl.isBlank()) {
@@ -461,7 +489,7 @@ public class PaymentController {
         return "redirect:/?paymentError=" + err;
     }
 
-    private String performPostPaymentAction(String type, Long itemId, Long shiftId, String startHourStr, String dateStr, User user, java.util.List<Long> shiftIds, Long receiptId, java.util.List<Integer> startHours) {
+    private String performPostPaymentAction(String type, Long itemId, Long shiftId, String startHourStr, String dateStr, User user, java.util.List<Long> shiftIds, Long receiptId, java.util.List<Integer> startHours, java.util.List<String> startDates) {
         /**
          * Ejecuta la acción posterior al pago: crear inscripción o reservas.
          *
@@ -547,13 +575,6 @@ public class PaymentController {
                     }
                     // crear y reservar por horas seleccionadas
                     if (startHours != null && !startHours.isEmpty()) {
-                        date = LocalDate.now();
-                        if (dateStr != null && !dateStr.isBlank()) {
-                            try {
-                                date = LocalDate.parse(dateStr);
-                            } catch (Exception ignored) {
-                            }
-                        }
                         // obtener recibo para asociar los nuevos shifts
                         Receipt recForAssoc = null;
                         if (receiptId != null) {
@@ -562,13 +583,21 @@ public class PaymentController {
                                 recForAssoc = rOpt.get();
                             }
                         }
-                        for (Integer hourSel : startHours) {
-                            if (hourSel == null) {
-                                continue;
+                        for (int i = 0; i < startHours.size(); i++) {
+                            Integer hourSel = startHours.get(i);
+                            if (hourSel == null) continue;
+                            
+                            LocalDate targetDate = LocalDate.now();
+                            // Use specific date if available, otherwise fallback to global dateStr
+                            if (startDates != null && i < startDates.size() && startDates.get(i) != null && !startDates.get(i).isBlank()) {
+                                try { targetDate = LocalDate.parse(startDates.get(i)); } catch (Exception ignored) {}
+                            } else if (dateStr != null && !dateStr.isBlank()) {
+                                try { targetDate = LocalDate.parse(dateStr); } catch (Exception ignored) {}
                             }
+
                             java.time.LocalTime start = java.time.LocalTime.of(hourSel, 0);
                             Shift found = null;
-                            for (Shift s : shiftService.findByMachineAndDate(machine, date)) {
+                            for (Shift s : shiftService.findByMachineAndDate(machine, targetDate)) {
                                 if (s.getStartTime().equals(start)) {
                                     found = s;
                                     break;
@@ -577,7 +606,7 @@ public class PaymentController {
                             if (found == null) {
                                 Shift ns = new Shift();
                                 ns.setMachine(machine);
-                                ns.setDate(date);
+                                ns.setDate(targetDate);
                                 ns.setStartTime(start);
                                 ns.setEndTime(start.plusHours(1));
                                 ns.setStatus(ShiftStatus.Disponible);

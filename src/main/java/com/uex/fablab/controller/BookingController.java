@@ -127,6 +127,32 @@ public class BookingController {
     }
 
     /**
+     * API: Devuelve los slots disponibles para una máquina y fecha en formato JSON.
+     * Útil para carga dinámica (AJAX) en la vista de calendario.
+     */
+    @GetMapping("/api/machines/{id}/slots")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public List<SlotView> getSlots(@PathVariable("id") Long machineId,
+                                   @RequestParam("date") String dateStr,
+                                   HttpSession session) {
+        Object userId = session.getAttribute("USER_ID");
+        var machineOpt = machineService.findById(machineId);
+        if (machineOpt.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        Machine machine = machineOpt.get();
+        LocalDate date = LocalDate.now();
+        if (dateStr != null && !dateStr.isBlank()) {
+            try {
+                date = LocalDate.parse(dateStr);
+            } catch (Exception ignored) {
+            }
+        }
+        List<Shift> existingShifts = shiftService.findByMachineAndDate(machine, date);
+        return buildSlots(existingShifts, machine, date, userId);
+    }
+
+    /**
      * Crea una reserva desde la página de la máquina.
      * Valida hora y fecha y crea turno si no existía.
      *
