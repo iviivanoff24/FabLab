@@ -4,8 +4,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -569,7 +567,9 @@ public class PaymentController {
                 if (cart != null && !cart.getItems().isEmpty()) {
                     Receipt receipt = receiptService.findById(receiptId).orElse(null);
                     if (receipt != null) {
-                        Set<ReceiptProduct> receiptProducts = new HashSet<>();
+                        // Limpiar la colección existente en lugar de reemplazarla para evitar error de orphanRemoval
+                        receipt.getReceiptProducts().clear();
+                        
                         for (CartItem item : cart.getItems()) {
                             SubProduct subProduct = item.getSubProduct();
                             // Update stock
@@ -586,9 +586,10 @@ public class PaymentController {
                             rp.setSubProduct(subProduct);
                             rp.setQuantity(item.getQuantity());
                             rp.setUnitPrice(subProduct.getPrice());
-                            receiptProducts.add(rp);
+                            
+                            // Añadir a la colección existente
+                            receipt.getReceiptProducts().add(rp);
                         }
-                        receipt.setReceiptProducts(receiptProducts);
                         receipt.setConcepto("Compra de productos");
                         receiptService.save(receipt);
                         cartService.clearCart(user);

@@ -15,8 +15,6 @@ import com.uex.fablab.data.repository.CartRepository;
 import com.uex.fablab.data.repository.SubProductRepository;
 import com.uex.fablab.data.repository.UserRepository;
 
-import jakarta.persistence.EntityManager;
-
 @Service
 public class CartService {
 
@@ -24,14 +22,12 @@ public class CartService {
     private final SubProductRepository subProductRepository;
     private final UserRepository userRepository;
     private final CartItemRepository cartItemRepository;
-    private final EntityManager entityManager;
 
-    public CartService(CartRepository cartRepository, SubProductRepository subProductRepository, UserRepository userRepository, CartItemRepository cartItemRepository, EntityManager entityManager) {
+    public CartService(CartRepository cartRepository, SubProductRepository subProductRepository, UserRepository userRepository, CartItemRepository cartItemRepository) {
         this.cartRepository = cartRepository;
         this.subProductRepository = subProductRepository;
         this.userRepository = userRepository;
         this.cartItemRepository = cartItemRepository;
-        this.entityManager = entityManager;
     }
 
     @Transactional
@@ -100,22 +96,13 @@ public class CartService {
     public void clearCart(User user) {
         Cart cart = getCartByUser(user);
         
-        // 1. Limpiar la colección usando el iterador para asegurar que orphanRemoval funcione
-        if (cart.getItems() != null) {
-            cart.getItems().clear();
-        }
+        // 1. Limpiar la lista en memoria (esto activa orphanRemoval=true)
+        cart.getItems().clear();
         
-        // 2. Guardar el carrito para que Hibernate procese los borrados
+        // 2. Guardar el cambio
         cartRepository.save(cart);
         
-        // 3. Forzar sincronización con la base de datos
-        entityManager.flush();
-        
-        // 4. Ejecutar borrado de seguridad por si orphanRemoval falló (usando SQL nativo si es necesario, pero JPQL debería bastar)
-        // Nota: Si orphanRemoval funcionó, esto no borrará nada. Si falló, esto lo forzará.
+        // 3. Forzar el borrado físico en BD ahora mismo
         cartItemRepository.deleteByCartId(cart.getId());
-        
-        // 5. Limpiar contexto
-        entityManager.clear();
     }
 }
