@@ -33,7 +33,8 @@ public class UserInterceptor implements HandlerInterceptor {
             "/reservar/**",
             "/machines/*/reserve/**",
             "/machines/*/reserve",
-            "/user/**"
+            "/user/**",
+            "/profile"
     );
 
     @Override

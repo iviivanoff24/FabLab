@@ -2,7 +2,9 @@ package com.uex.fablab.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -41,8 +43,8 @@ public class UserController {
         }
         Long id;
         try {
-            if (idObj instanceof Number) id = ((Number) idObj).longValue(); else id = Long.parseLong(idObj.toString());
-        } catch (Exception e) {
+            if (idObj instanceof Number number) id = number.longValue(); else id = Long.valueOf(idObj.toString());
+        } catch (NumberFormatException e) {
             session.invalidate();
             return "redirect:/login";
         }
@@ -52,7 +54,18 @@ public class UserController {
             session.invalidate();
             return "redirect:/login";
         }
-        model.addAttribute("user", u.get());
+        User user = u.get();
+        model.addAttribute("user", user);
+        // Recibos directos desde la entidad User
+        model.addAttribute("recibos", user.getReceipts());
+        // Cursos: derivamos la lista de Course desde las inscripciones
+        model.addAttribute("cursos", user.getInscriptions().stream().map(i -> i.getCourse()).collect(Collectors.toList()));
+        // Reservas: transformamos cada Booking a un mapa sencillo con máquina y fecha para la vista
+        List<Map<String, ?>> reservas = user.getBookings().stream().map(b -> Map.of(
+            "maquina", b.getShift() != null && b.getShift().getMachine() != null ? b.getShift().getMachine().getName() : "-",
+            "fecha", b.getShift() != null ? b.getShift().getDate() : null
+        )).collect(Collectors.toList());
+        model.addAttribute("reservas", reservas);
         return "user/profile";
     }
 
