@@ -8,7 +8,6 @@
     <link rel="apple-touch-icon" href="img/logo.png" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/machines.css" />
     <link rel="stylesheet" href="css/courses.css" /> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   </head>
@@ -43,7 +42,7 @@
 
         <div th:if="${#lists.isEmpty(courses)}" class="alert alert-info mt-3">No hay cursos registrados aún.</div>
 
-        <div th:if="${!#lists.isEmpty(courses)}" class="d-flex flex-wrap justify-content-center gap-4">
+        <div th:if="${!#lists.isEmpty(courses)}" class="d-flex flex-wrap justify-content-around gap-4">
           
           <div class="card course-card" th:each="c : ${courses}"
             th:attr="data-name=${c.name},data-desc=${c.description}"
