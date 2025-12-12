@@ -99,8 +99,23 @@ public class CartService {
     @Transactional
     public void clearCart(User user) {
         Cart cart = getCartByUser(user);
-        cartItemRepository.deleteByCartId(cart.getId());
+        
+        // 1. Limpiar la colección usando el iterador para asegurar que orphanRemoval funcione
+        if (cart.getItems() != null) {
+            cart.getItems().clear();
+        }
+        
+        // 2. Guardar el carrito para que Hibernate procese los borrados
+        cartRepository.save(cart);
+        
+        // 3. Forzar sincronización con la base de datos
         entityManager.flush();
+        
+        // 4. Ejecutar borrado de seguridad por si orphanRemoval falló (usando SQL nativo si es necesario, pero JPQL debería bastar)
+        // Nota: Si orphanRemoval funcionó, esto no borrará nada. Si falló, esto lo forzará.
+        cartItemRepository.deleteByCartId(cart.getId());
+        
+        // 5. Limpiar contexto
         entityManager.clear();
     }
 }
