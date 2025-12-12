@@ -44,7 +44,7 @@
             </div>
             <div class="card-footer">
                 <!-- Add to Cart Form -->
-                <form action="/cart/add" method="post" class="mb-2" th:if="${session.USER_ID != null}">
+                <form action="/cart/add" method="post" class="mb-2 add-to-cart-form" th:if="${session.USER_ID != null}">
                     <div class="input-group input-group-sm">
                         <select class="form-select product-variant-select" name="subProductId" required onchange="updateMaxStock(this)">
                              <option th:each="sp : ${p.subProducts}" 
@@ -72,33 +72,32 @@
 
     </main>
 
-    <!-- Modal de Confirmación -->
-    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content text-center">
-          <div class="modal-body p-4">
-            <div class="mb-3">
-                <i class="bi bi-check-circle-fill text-success display-4"></i>
-            </div>
-            <h5 class="modal-title mb-3" id="cartModalLabel">¡Añadido al carrito!</h5>
-            <div class="d-grid gap-2">
-              <a href="/cart" class="btn btn-primary">Ver Carrito</a>
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Seguir Comprando</button>
-            </div>
-          </div>
+    <!-- Toast de Confirmación -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <strong class="me-auto">Fablab</strong>
+          <small>Justo ahora</small>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Producto añadido al carrito correctamente.
         </div>
       </div>
     </div>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
 
     <script>
         function updateMaxStock(selectElement) {
             const selectedOption = selectElement.options[selectElement.selectedIndex];
             const stock = selectedOption.getAttribute('data-stock');
-            const quantityInput = selectElement.nextElementSibling; // El input number está justo después del select
+            const quantityInput = selectElement.nextElementSibling; 
             
             if (stock) {
                 quantityInput.max = stock;
-                // Si el valor actual es mayor que el nuevo máximo, ajustarlo
                 if (parseInt(quantityInput.value) > parseInt(stock)) {
                     quantityInput.value = stock;
                 }
@@ -107,46 +106,45 @@
             }
         }
 
-        // Inicializar todos los inputs al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
             const selects = document.querySelectorAll('.product-variant-select');
             selects.forEach(select => {
                 updateMaxStock(select);
             });
+        });
 
-            // Interceptar formularios de añadir al carrito
-            const forms = document.querySelectorAll('form[action="/cart/add"]');
-            forms.forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const formData = new FormData(this);
-                    
-                    fetch('/cart/api/add', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.text())
-                    .then(data => {
-                        if (data === 'ok') {
-                            const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
-                            cartModal.show();
-                        } else if (data === 'error:login') {
-                            window.location.href = '/login';
-                        } else {
-                            alert('Error al añadir al carrito: ' + data);
+        // Event delegation para manejar el envío del formulario
+        document.addEventListener('submit', function(e) {
+            if (e.target && e.target.classList.contains('add-to-cart-form')) {
+                e.preventDefault(); // Prevenir el envío normal del formulario
+                
+                const form = e.target;
+                const formData = new FormData(form);
+                
+                fetch('/cart/api/add', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'ok') {
+                        const toastEl = document.getElementById('cartToast');
+                        if (toastEl) {
+                            const toast = new bootstrap.Toast(toastEl);
+                            toast.show();
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Ha ocurrido un error al procesar la solicitud.');
-                    });
+                    } else if (data === 'error:login') {
+                        window.location.href = '/login';
+                    } else {
+                        alert('Error al añadir al carrito: ' + data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ha ocurrido un error al procesar la solicitud.');
                 });
-            });
+            }
         });
     </script>
-
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/main.js"></script>
 </body>
 </html>
