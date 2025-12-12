@@ -33,7 +33,7 @@ public class Product {
     @Column(name = "tipo_producto", nullable = false)
     private ProductType type;
 
-    @OneToMany(mappedBy = "product", fetch = jakarta.persistence.FetchType.EAGER)
+    @OneToMany(mappedBy = "product", fetch = jakarta.persistence.FetchType.EAGER, cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private List<SubProduct> subProducts = new ArrayList<>();
 
     public Long getId() {
@@ -74,5 +74,17 @@ public class Product {
 
     public void setSubProducts(List<SubProduct> subProducts) {
         this.subProducts = subProducts;
+    }
+
+    public List<String> getAllImages() {
+        List<String> images = new ArrayList<>();
+        if (subProducts != null) {
+            for (SubProduct sp : subProducts) {
+                if (sp.getImage1() != null && !sp.getImage1().isEmpty()) images.add(sp.getImage1());
+                if (sp.getImage2() != null && !sp.getImage2().isEmpty()) images.add(sp.getImage2());
+                if (sp.getImage3() != null && !sp.getImage3().isEmpty()) images.add(sp.getImage3());
+            }
+        }
+        return images;
     }
 }

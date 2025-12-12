@@ -131,13 +131,19 @@ public class ProductController {
             // We need to remove the leading "/" and prepend the project path
             String relativePath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
             
+            String userDir = System.getProperty("user.dir");
+            Path projectRoot = Paths.get(userDir);
+            if (Files.exists(projectRoot.resolve("ProyectoMDAI"))) {
+                projectRoot = projectRoot.resolve("ProyectoMDAI");
+            }
+            
             // Delete from src/main/resources/static/
-            String srcPath = System.getProperty("user.dir") + "/src/main/resources/static/" + relativePath;
-            Files.deleteIfExists(Paths.get(srcPath));
+            Path srcPath = projectRoot.resolve("src/main/resources/static/" + relativePath);
+            Files.deleteIfExists(srcPath);
             
             // Delete from target/classes/static/
-            String targetPath = System.getProperty("user.dir") + "/target/classes/static/" + relativePath;
-            Files.deleteIfExists(Paths.get(targetPath));
+            Path targetPath = projectRoot.resolve("target/classes/static/" + relativePath);
+            Files.deleteIfExists(targetPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -147,17 +153,23 @@ public class ProductController {
         if (file == null || file.isEmpty()) return null;
         try {
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            byte[] bytes = file.getBytes();
+            
+            String userDir = System.getProperty("user.dir");
+            Path projectRoot = Paths.get(userDir);
+            if (Files.exists(projectRoot.resolve("ProyectoMDAI"))) {
+                projectRoot = projectRoot.resolve("ProyectoMDAI");
+            }
+            
             // Save to src/main/resources/static/img/upload/
-            String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/img/upload/";
-            Path path = Paths.get(uploadDir);
-            if (!Files.exists(path)) Files.createDirectories(path);
-            Files.copy(file.getInputStream(), path.resolve(fileName), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            Path uploadPath = projectRoot.resolve("src/main/resources/static/img/upload/");
+            if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+            Files.write(uploadPath.resolve(fileName), bytes);
             
             // Also copy to target/classes/static/img/upload/ so it's available immediately without restart
-            String targetDir = System.getProperty("user.dir") + "/target/classes/static/img/upload/";
-            Path targetPath = Paths.get(targetDir);
+            Path targetPath = projectRoot.resolve("target/classes/static/img/upload/");
             if (!Files.exists(targetPath)) Files.createDirectories(targetPath);
-            Files.copy(file.getInputStream(), targetPath.resolve(fileName), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            Files.write(targetPath.resolve(fileName), bytes);
             
             return "/img/upload/" + fileName;
         } catch (IOException e) {

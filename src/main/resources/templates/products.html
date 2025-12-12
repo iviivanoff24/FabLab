@@ -38,6 +38,24 @@
       <div class="row row-cols-1 row-cols-md-3 g-4" th:if="${!#lists.isEmpty(products)}">
         <div class="col" th:each="p : ${products}">
           <div class="card h-100">
+            <div th:if="${!#lists.isEmpty(p.allImages)}" th:id="'carousel-' + ${p.id}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div th:each="img, iterStat : ${p.allImages}" 
+                         class="carousel-item" 
+                         th:classappend="${iterStat.first} ? 'active'">
+                        <img th:src="@{'/img/upload/' + ${img}}" class="d-block w-100 card-img-top" alt="Product Image" style="height: 200px; object-fit: cover;">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" th:data-bs-target="'#carousel-' + ${p.id}" data-bs-slide="prev" th:if="${p.allImages.size() > 1}">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" th:data-bs-target="'#carousel-' + ${p.id}" data-bs-slide="next" th:if="${p.allImages.size() > 1}">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            <img th:if="${#lists.isEmpty(p.allImages)}" src="/img/logo.png" class="card-img-top p-3" alt="No Image" style="height: 200px; object-fit: contain; opacity: 0.5;">
             <div class="card-body">
               <h5 class="card-title" th:text="${p.name}">Nombre Producto</h5>
               <h6 class="card-subtitle mb-2 text-muted" th:text="${p.type}">Tipo</h6>
