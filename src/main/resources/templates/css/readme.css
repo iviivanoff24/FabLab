@@ -205,7 +205,8 @@ aside .card pre code,
 /* =========================================
    6. CONTENIDO PRINCIPAL (Separación Visual)
    ========================================= */
-main section:not(.hero) {
+/* Ajuste para la primera sección de contenido */
+main section:not(.hero):nth-child(3) {
     background: white; 
     padding: 2.5rem; 
     border-radius: 12px;
@@ -303,276 +304,65 @@ main ul li::before {
 }
 
 
-/* --- LIMPIEZA DE ESTILOS DEL CARRUSEL 3D (CRÍTICO) --- */
-.carousel-container-3d, 
-.carousel-container-3d input,
-.carousel-container-3d main#carousel,
-.carousel-container-3d div.item, 
-.clickable-item {
-    all: unset !important; 
-    display: initial !important; 
-    transform-style: unset !important;
-    perspective: unset !important;
-    grid-row: unset !important;
-    grid-column: unset !important;
-}
-
-/* -------------------------------------------------- */
-
-
 /* ======================================================
-   7. NUEVOS ESTILOS DEL CARRUSEL INSTAGRAM (CSS PURO)
-   (Mantenidos sin cambios para no romper la animación)
+   7. NUEVOS ESTILOS DEL CARRUSEL MULTI-ITEM (Bootstrap Override)
    ====================================================== */
-@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
-/* Variables CSS */
-:root {
-	--light: 0;
-	--max-width-post: 420px;
-    
-    /* COLORES FIJOS para visibilidad */
-	--primary-fablab: #9c6500; 
-	--color-border: #9c6500;
-    --color-bg-instagram: white;
-    --color-text-instagram: #333;
-
-    /* Variables dinámicas (si el JS funciona) */
-	--primary: #9c6500; 
-	--bg: #f8f9fa; 
-	--text-primary: #333; 
-
-    /* Variables de fuente (clamped) */
-	--font-size-sm: clamp(0.7rem, 0.91vw + 0.47rem, 1.2rem);
-    --font-size-base: clamp(0.88rem, 1.14vw + 0.59rem, 1.5rem);
-	--font-size-md: clamp(1.09rem, 1.42vw + 0.74rem, 1.88rem);
-	--font-size-lg: clamp(1.37rem, 1.78vw + 0.92rem, 2.34rem);
-	--font-size-xl: clamp(1.71rem, 2.22vw + 1.15rem, 2.93rem);
-	--font-size-xxl: clamp(2.14rem, 2.77vw + 1.44rem, 3.66rem);
-	--font-size-xxxl: clamp(2.67rem, 3.47vw + 1.8rem, 4.58rem);
+/* Utilidad personalizada para dividir por 3 */
+.w-33 {
+    width: 33.333333%;
 }
 
-/* Reset Box-sizing del carrusel */
-.container-instagram *,
-.container-instagram *::after,
-.container-instagram *::before {
-	box-sizing: border-box;
+/* Contenedor principal del carrusel: permitir que ocupe todo el ancho */
+.fablab-carousel-container {
+    max-width: 100%; /* Permitir que ocupe todo el ancho del contenedor <main> */
+    margin: 3rem auto;
+    padding: 0;
 }
 
-/* Estilos de texto */
-.container-instagram h1,
-.container-instagram h2,
-.container-instagram h3,
-.container-instagram h4,
-.container-instagram h5,
-.container-instagram h6 {
-	margin: 0;
+/* Eliminar el estilo de sección para el carrusel y mantener el contenedor simple */
+/* Esto se aplica a la segunda sección dentro de <main> que ahora es el carrusel */
+main section:nth-child(2) { 
+    background: transparent !important; 
+    box-shadow: none !important; 
+    border: none !important; 
+    padding: 0 !important;
+    margin-bottom: 2rem;
 }
 
-/* --- Animación (8 ítems, 27s) --- */
-@keyframes carousel-animate {
-	0% {
-		visibility: hidden;
-		opacity: 0;
-		transform: translateX(200%) scale(0.7);
-	}
-	3%, 
-	12.5% { 
-		visibility: visible;
-		opacity: 0.8;
-		transform: translateX(100%) scale(0.9);
-	}
-	15.5%, 
-	25% { 
-		visibility: visible;
-		opacity: 1;
-		transform: translateX(0) scale(1);
-	}
-	28%, 
-	37.5% { 
-		visibility: visible;
-		opacity: 0.8;
-		transform: translateX(-100%) scale(0.9);
-	}
-	40.5% { 
-		visibility: visible;
-		opacity: 0;
-		transform: translateX(-200%) scale(0.9);
-	}
-	100% {
-		visibility: hidden;
-		opacity: 0;
-		transform: translateX(-200%) scale(0.7);
-	}
+/* Estilo para las imágenes dentro del carrusel */
+.fablab-carousel-container .carousel-multi-item img {
+    height: 300px; /* Altura más manejable para tres imágenes */
+    object-fit: cover; /* Asegura que la imagen cubra el área */
+    border-radius: 8px; /* Pequeño radio para suavizar los bordes */
+    /* Asegurar que el relleno (padding) de Bootstrap no se coma el espacio */
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
 }
 
-
-/* --- Contenedor Principal (CRÍTICO: Superposición y Centrado) --- */
-.container-instagram {
-	--container-padding-horizontal: 32px;
-	position: relative;
-    margin: 3rem auto; 
-    max-width: 100%;
-	display: grid !important; 
-	place-items: center !important;
-	height: 600px; 
+/* Estilo de los indicadores (puntos) inferiores */
+.fablab-carousel-container .carousel-indicators [data-bs-target] {
+    background-color: #f8bc1e; /* Color primario FabLab (Amarillo) */
+    opacity: 0.5;
+}
+.fablab-carousel-container .carousel-indicators .active {
+    opacity: 1;
 }
 
-/* --- Carrusel (Parte en movimiento) --- */
-.carousel {
-	pointer-events: none;
-	position: absolute;
-	top: 0; 
-	left: 0;
-	padding-block-start: 67px;
-	padding-block-end: max(24px, calc(29px + var(--font-size-md)));
-	perspective: 100px;
-	width: 100%;
-    height: 100%; 
+/* Estilo de los controles (flechas) */
+.fablab-carousel-container .carousel-control-prev-icon,
+.fablab-carousel-container .carousel-control-next-icon {
+    /* Filtro para cambiar el color de las flechas (SVG blanco por defecto) a un color amarillo */
+    filter: invert(79%) sepia(85%) saturate(542%) hue-rotate(345deg) brightness(101%) contrast(97%); 
 }
 
-/* CRÍTICO: El wrapper necesita ser relativo para que los hijos absolutos funcionen */
-.carousel__wrapper {
-    position: relative !important;
-    display: flex;
-    justify-content: center;
-    height: 480px; 
-}
-
-/* CRÍTICO: Los items deben ser absolutos para superponerse en el centro */
-.container-instagram .carousel .item {
-    position: absolute !important; 
-    max-width: 418px;
-    height: 100%;
-    margin-inline: var(--container-padding-horizontal);
-    opacity: 0 !important; 
-    will-change: transform, opacity;
-    animation: carousel-animate 27s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-}
-
-/* Cálculo de Delays (27s / 8 items = 3.375s) */
-.container-instagram .carousel .item:nth-child(1) { animation-delay: calc(3.375s * -1); } 
-.container-instagram .carousel .item:nth-child(2) { animation-delay: calc(3.375s * 0); }  
-.container-instagram .carousel .item:nth-child(3) { animation-delay: calc(3.375s * 1); }  
-.container-instagram .carousel .item:nth-child(4) { animation-delay: calc(3.375s * 2); }  
-.container-instagram .carousel .item:nth-child(5) { animation-delay: calc(3.375s * 3); }  
-.container-instagram .carousel .item:nth-child(6) { animation-delay: calc(3.375s * 4); }  
-.container-instagram .carousel .item:nth-child(7) { animation-delay: calc(3.375s * 5); }  
-.container-instagram .carousel .item:nth-child(8) { animation-delay: calc(3.375s * 6); }  
-
-
-.carousel img {
-    max-width: 100%;
-    object-fit: cover;
-    height: 100% !important; 
-    border-radius: 8px; 
-}
-
-
-/* Estilos Responsive */
-@media (max-width: 568px) {
-    .carousel {
-		padding-block-end: 52px;
-	}
-    .carousel .item {
-        margin-inline: calc(var(--container-padding-horizontal) + 1px);
+/* Ajuste para móviles: mostrar solo una imagen */
+@media (max-width: 768px) {
+    .fablab-carousel-container .carousel-multi-item img:not(:first-child) {
+        display: none !important; /* Ocultar la segunda y tercera imagen en pantallas pequeñas */
     }
-}
-
-
-/* --- Tarjeta estilo Instagram (Estática) --- */
-.instagram {
-	--pading-horizontal: 16px;
-	--border: 1px solid var(--color-border); 
-	max-width: var(--max-width-post);
-	width: 100%;
-	border: var(--border);
-	border-radius: 20px;
-    z-index: 10; 
-    background-color: var(--color-bg-instagram); 
-    color: var(--color-text-instagram);
-}
-
-.instagram__header {
-    padding-block: 12px;
-    border-bottom: var(--border);
-}
-
-.instagram__header figure {
-    padding-block: 0;
-    padding-inline: var(--pading-horizontal);
-    margin: 0;
-    display: flex;
-    align-items: center;
-}
-.instagram__header figure img {
-    border-radius: 50%;
-    object-fit: cover;
-    border: var(--border);
-    margin-inline-end: 8px;
-}
-
-.instagram__header figure figcaption h4 {
-    color: var(--color-text-instagram);
-}
-
-.instagram__media {
-    display: flex;
-    border-bottom: var(--border);
-}
-
-.instagram__media .img {
-    max-width: 100%;
-    height: 61.2vh; 
-}
-
-.instagram__buttons {
-    padding-block: 12px;
-    padding-inline: var(--pading-horizontal);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.instagram__buttons .left {
-    display: flex;
-    align-items: center;
-}
-
-.instagram__buttons .left svg:nth-of-type(2) {
-    margin-inline: 12px;
-}
-
-.instagram__icon {
-    cursor: pointer;
-    width: 1em;
-    height: 1em;
-    font-size: var(--font-size-md);
-    min-width: 24px;
-    min-height: 24px;
-}
-
-.instagram__icon:hover {
-    opacity: 0.7;
-}
-
-.instagram__icon path {
-    stroke: var(--color-border); 
-    stroke-linejoin: round;
-}
-
-.instagram__icon--comment path {
-    stroke-width: 2;
-}
-
-.instagram__icon--message {
-    margin-block-start: 3px;
-}
-
-.instagram__icon--message path {
-    stroke-width: 2;
-}
-
-.instagram__icon--saved path {
-    stroke-width: 2;
+    .fablab-carousel-container .carousel-multi-item img:first-child {
+        width: 100% !important;
+        height: 400px; /* Volver a una altura decente para móvil */
+    }
 }
