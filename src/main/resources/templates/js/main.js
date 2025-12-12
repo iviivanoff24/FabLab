@@ -17,9 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
 					return;
 				}
 				authContainer.innerHTML = '';
-				const hello = document.createElement('span');
-				hello.className = 'small text-secondary';
-				hello.textContent = `Hola, ${data.name || data.email}`;
 				const logoutForm = document.createElement('form');
 				logoutForm.method = 'post';
 				logoutForm.action = '/logout';
@@ -28,6 +25,16 @@ document.addEventListener('DOMContentLoaded', () => {
 				logoutBtn.type = 'submit';
 				logoutBtn.className = 'btn btn-outline-secondary btn-sm';
 				logoutBtn.textContent = 'Cerrar sesión';
+
+				// Botón perfil (mostrar antes del logout). Poner el nombre en el title y activar tooltip
+				const profileLink = document.createElement('a');
+				profileLink.href = '/profile';
+				profileLink.className = 'btn btn-secondary btn-sm me-2';
+				profileLink.setAttribute('role','button');
+				profileLink.setAttribute('data-bs-toggle','tooltip');
+				profileLink.setAttribute('data-bs-placement','bottom');
+				profileLink.setAttribute('title', data.name || data.email || 'Mi perfil');
+				profileLink.innerHTML = '<i class="bi bi-person"></i>';
 
 				// Modal de confirmación (se crea una sola vez si no existe)
 				function ensureLogoutModal() {
@@ -77,8 +84,15 @@ document.addEventListener('DOMContentLoaded', () => {
 					}
 				});
 				logoutForm.appendChild(logoutBtn);
-				authContainer.appendChild(hello);
+				authContainer.appendChild(profileLink);
 				authContainer.appendChild(logoutForm);
+
+				// Inicializar tooltip dinámico si Bootstrap está disponible
+				try {
+					if (window.bootstrap && bootstrap.Tooltip) {
+						bootstrap.Tooltip.getOrCreateInstance(profileLink);
+					}
+				} catch (e) { /* ignore */ }
 			})
 			.catch(err => {
 				console.warn('[session] error obteniendo sesión', err);

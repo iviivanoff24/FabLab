@@ -41,7 +41,7 @@
         const auth = document.getElementById('authLinks');
         if (!auth) return;
         if (data.logged) {
-          // Mostrar nombre y botón logout
+          // Mostrar nombre, botón perfil y botón logout
           auth.innerHTML = '';
           const span = document.createElement('span');
           span.className = 'small text-dark';
@@ -49,6 +49,19 @@
           auth.appendChild(span);
 
           const sep = document.createElement('span'); sep.className='mx-2'; auth.appendChild(sep);
+
+          // Botón perfil con tooltip
+          const profileBtn = document.createElement('a');
+          profileBtn.href = '/profile';
+          profileBtn.className = 'btn btn-secondary btn-sm';
+          profileBtn.setAttribute('role','button');
+          profileBtn.setAttribute('data-bs-toggle','tooltip');
+          profileBtn.setAttribute('data-bs-placement','bottom');
+          profileBtn.setAttribute('title','Ver mi perfil');
+          profileBtn.innerHTML = '<i class="bi bi-person"></i>';
+          auth.appendChild(profileBtn);
+
+          const sep2 = document.createElement('span'); sep2.className='mx-2'; auth.appendChild(sep2);
 
           const logoutForm = document.createElement('form');
           logoutForm.method = 'post';
