@@ -1,72 +1,128 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Añadir Producto - Fablab</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-</head>
-<body>
-<div th:replace="~{fragments/header :: siteHeader('admin')}"></div>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body>
+    <div th:replace="~{fragments/header :: siteHeader('admin')}"></div>
 
-<div class="container mt-5 mb-5">
-    <h2>Añadir Nuevo Producto</h2>
-    
-    <form action="/admin/products" method="post" class="mt-4 card p-4" enctype="multipart/form-data">
+    <div class="container mt-5 mb-5">
+      <h2>Añadir Nuevo Producto</h2>
+
+      <form
+        action="/admin/products"
+        method="post"
+        class="mt-4 card p-4"
+        enctype="multipart/form-data"
+      >
         <h4>Datos Generales</h4>
         <div class="mb-3">
-            <label for="name" class="form-label">Nombre del Producto</label>
-            <input type="text" class="form-control" id="name" name="name" required>
+          <label for="name" class="form-label">Nombre del Producto</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            required
+          />
         </div>
         <div class="mb-3">
-            <label for="description" class="form-label">Descripción</label>
-            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+          <label for="description" class="form-label">Descripción</label>
+          <textarea
+            class="form-control"
+            id="description"
+            name="description"
+            rows="3"
+          ></textarea>
         </div>
         <div class="mb-3">
-            <label for="type" class="form-label">Tipo de Producto</label>
-            <select class="form-select" id="type" name="type" required>
-                <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
-            </select>
+          <label for="type" class="form-label">Tipo de Producto</label>
+          <select class="form-select" id="type" name="type" required>
+            <option
+              th:each="t : ${types}"
+              th:value="${t}"
+              th:text="${t}"
+            ></option>
+          </select>
         </div>
-        
-        <hr class="my-4">
-        
+
+        <hr class="my-4" />
+
         <h4>Variante Inicial (Estándar)</h4>
-        <p class="text-muted">Crea la primera variante del producto. Podrás añadir más variantes (tallas, colores, etc.) después de guardar.</p>
-        
+        <p class="text-muted">
+          Crea la primera variante del producto. Podrás añadir más variantes
+          (tallas, colores, etc.) después de guardar.
+        </p>
+
         <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="price" class="form-label">Precio (€)</label>
-                <input type="number" step="0.01" class="form-control" id="price" name="price">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="stock" class="form-label">Stock Inicial</label>
-                <input type="number" class="form-control" id="stock" name="stock">
-            </div>
+          <div class="col-md-6 mb-3">
+            <label for="price" class="form-label">Precio (€)</label>
+            <input
+              type="number"
+              step="0.01"
+              class="form-control"
+              id="price"
+              name="price"
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="stock" class="form-label">Stock Inicial</label>
+            <input type="number" class="form-control" id="stock" name="stock" />
+          </div>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Imágenes (Máx 3)</label>
-            <div class="d-flex gap-2">
-                <input type="file" class="form-control" name="image1" accept="image/*">
-                <input type="file" class="form-control" name="image2" accept="image/*">
-                <input type="file" class="form-control" name="image3" accept="image/*">
-            </div>
+          <label class="form-label">Imágenes (Máx 3)</label>
+          <div class="d-flex gap-2">
+            <input
+              type="file"
+              class="form-control"
+              name="image1"
+              accept="image/*"
+            />
+            <input
+              type="file"
+              class="form-control"
+              name="image2"
+              accept="image/*"
+            />
+            <input
+              type="file"
+              class="form-control"
+              name="image3"
+              accept="image/*"
+            />
+          </div>
         </div>
 
         <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Crear Producto y Gestionar Variantes</button>
-            <a href="/admin/admin" class="btn btn-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary">
+            Crear Producto y Gestionar Variantes
+          </button>
+          <a href="/admin/admin" class="btn btn-secondary">Cancelar</a>
         </div>
-    </form>
-    
-    <div class="alert alert-info mt-4">
-        <i class="bi bi-info-circle"></i> Una vez creado el producto, serás redirigido a la pantalla de edición donde podrás añadir, eliminar y modificar múltiples variantes.
-    </div>
-</div>
+      </form>
 
-<script src="/js/bootstrap.bundle.min.js"></script>
+      <div class="alert alert-info mt-4">
+        <i class="bi bi-info-circle"></i> Una vez creado el producto, serás
+        redirigido a la pantalla de edición donde podrás añadir, eliminar y
+        modificar múltiples variantes.
+      </div>
+    </div>
+
+    <footer class="text-center py-4 text-muted small">
+      <div class="container">
+        Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida
+      </div>
+    </footer>
+    <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
-</body>
+  </body>
 </html>

@@ -254,7 +254,8 @@ public class PaymentController {
             @RequestParam(value = "startDates", required = false) java.util.List<String> startDates,
             @RequestParam(value = "startHour", required = false) String startHourStr,
             @RequestParam(value = "date", required = false) String dateStr,
-            HttpSession session) {
+            HttpSession session,
+            Model model) {
         Object sid = session.getAttribute("USER_ID");
         if (!(sid instanceof Long)) {
             return "redirect:/login?error=" + URLEncoder.encode("Necesitas iniciar sesión para pagar", StandardCharsets.UTF_8);
@@ -374,7 +375,7 @@ public class PaymentController {
                     shiftService.findById(shiftId).ifPresent(r::addShift);
                 }
                 r = receiptService.save(r);
-                return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, r.getId(), startHours, startDates);
+                return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, r.getId(), startHours, startDates, model);
             }
             if ("Online".equalsIgnoreCase(pm)) {
                 // online: create pending receipt and redirect to simulated completion
@@ -459,7 +460,7 @@ public class PaymentController {
                 shiftService.findById(shiftId).ifPresent(r::addShift);
             }
             r = receiptService.save(r);
-            return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, r.getId(), startHours, startDates);
+            return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, r.getId(), startHours, startDates, model);
         } catch (Exception ex) {
             String err = URLEncoder.encode("Error procesando pago", StandardCharsets.UTF_8);
             if (returnUrl != null && !returnUrl.isBlank()) {
@@ -482,7 +483,8 @@ public class PaymentController {
             @RequestParam(value = "shiftId", required = false) Long shiftId,
             @RequestParam(value = "shiftIds", required = false) String shiftIdsCsv,
             @RequestParam(value = "startHours", required = false) String startHoursCsv,
-            @RequestParam(value = "returnUrl", required = false) String returnUrl) {
+            @RequestParam(value = "returnUrl", required = false) String returnUrl,
+            Model model) {
         /*
          * Callback simulado tras pago online: marca el recibo como pagado y
          * delega en performPostPaymentAction para completar la operación.
@@ -510,7 +512,7 @@ public class PaymentController {
                         .map(Integer::valueOf)
                         .toList();
             }
-            return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, receiptId, startHours, null);
+            return performPostPaymentAction(type, itemId, shiftId, startHourStr, dateStr, user, shiftIds, receiptId, startHours, null, model);
         }
         String err = URLEncoder.encode("Recibo online no encontrado", StandardCharsets.UTF_8);
         if (returnUrl != null && !returnUrl.isBlank()) {
@@ -523,7 +525,7 @@ public class PaymentController {
         return "redirect:/?paymentError=" + err;
     }
 
-    private String performPostPaymentAction(String type, Long itemId, Long shiftId, String startHourStr, String dateStr, User user, java.util.List<Long> shiftIds, Long receiptId, java.util.List<Integer> startHours, java.util.List<String> startDates) {
+    private String performPostPaymentAction(String type, Long itemId, Long shiftId, String startHourStr, String dateStr, User user, java.util.List<Long> shiftIds, Long receiptId, java.util.List<Integer> startHours, java.util.List<String> startDates, Model model) {
         /**
          * Ejecuta la acción posterior al pago: crear inscripción o reservas.
          *
@@ -557,7 +559,10 @@ public class PaymentController {
                     ins.setCourse(course);
                     ins.setDate(LocalDate.now());
                     inscriptionService.save(ins);
-                    return "redirect:/courses/" + course.getId() + "?success=1";
+                    
+                    // Mostrar modal de éxito y redirigir
+                    model.addAttribute("targetUrl", "/courses/" + course.getId() + "?success=1");
+                    return "payment-success";
                 } else {
                     // Receipt pending: do not create inscription yet, admin will confirm later
                     return "redirect:/courses/" + course.getId() + "?pending=1";
@@ -595,7 +600,9 @@ public class PaymentController {
                         cartService.clearCart(user);
                     }
                 }
-                return "redirect:/recibos";
+                // Mostrar modal de éxito y redirigir a productos
+                model.addAttribute("targetUrl", "/products");
+                return "payment-success";
             } else if (("reservation".equalsIgnoreCase(type) || "reservation_multi".equalsIgnoreCase(type)) && itemId != null) {
                 var mopt = machineService.findById(itemId);
                 if (mopt.isEmpty()) {
@@ -705,7 +712,9 @@ public class PaymentController {
                             receiptService.save(recForAssoc);
                         }
                     }
-                    return "redirect:/machines/" + machine.getId() + "/reserve?success=1&date=" + date + (receiptId != null ? "&paymentSuccess=Recibo+" + receiptId : "");
+                    // Mostrar modal de éxito y redirigir
+                    model.addAttribute("targetUrl", "/machines/" + machine.getId() + "/reserve?success=1&date=" + date + (receiptId != null ? "&paymentSuccess=Recibo+" + receiptId : ""));
+                    return "payment-success";
                 }
                 // Modo único: reservar un turno
                 Shift shift = null;
@@ -767,10 +776,13 @@ public class PaymentController {
                         shiftService.save(shift);
                     }
                 }
-                return "redirect:/machines/" + machine.getId() + "/reserve?success=1&date=" + date + (receiptId != null ? "&paymentSuccess=Recibo+" + receiptId : "");
+                // Mostrar modal de éxito y redirigir
+                model.addAttribute("targetUrl", "/machines/" + machine.getId() + "/reserve?success=1&date=" + date + (receiptId != null ? "&paymentSuccess=Recibo+" + receiptId : ""));
+                return "payment-success";
             }
             return "redirect:/";
         } catch (Exception ex) {
+            ex.printStackTrace(); // Imprimir error en consola para depuración
             return "redirect:/?paymentError=" + URLEncoder.encode("Error creando recurso tras pago", StandardCharsets.UTF_8);
         }
     }
