@@ -15,6 +15,8 @@ import com.uex.fablab.data.repository.CartRepository;
 import com.uex.fablab.data.repository.SubProductRepository;
 import com.uex.fablab.data.repository.UserRepository;
 
+import jakarta.persistence.EntityManager;
+
 @Service
 public class CartService {
 
@@ -22,12 +24,14 @@ public class CartService {
     private final SubProductRepository subProductRepository;
     private final UserRepository userRepository;
     private final CartItemRepository cartItemRepository;
+    private final EntityManager entityManager;
 
-    public CartService(CartRepository cartRepository, SubProductRepository subProductRepository, UserRepository userRepository, CartItemRepository cartItemRepository) {
+    public CartService(CartRepository cartRepository, SubProductRepository subProductRepository, UserRepository userRepository, CartItemRepository cartItemRepository, EntityManager entityManager) {
         this.cartRepository = cartRepository;
         this.subProductRepository = subProductRepository;
         this.userRepository = userRepository;
         this.cartItemRepository = cartItemRepository;
+        this.entityManager = entityManager;
     }
 
     @Transactional
@@ -96,7 +100,7 @@ public class CartService {
     public void clearCart(User user) {
         Cart cart = getCartByUser(user);
         cartItemRepository.deleteByCartId(cart.getId());
-        cart.getItems().clear();
-        cartRepository.save(cart);
+        entityManager.flush();
+        entityManager.clear();
     }
 }
