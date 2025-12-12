@@ -57,7 +57,7 @@
                 <small class="text-muted">Total gastado: <span th:text="${totalRecibos}">0.00</span> €</small>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-start" th:each="recibo : ${recibos}">
+                <li class="list-group-item d-flex justify-content-between align-items-start" th:each="recibo : ${recibosRecientes}">
                   <div>
                     <strong th:text="${recibo.concepto} ?: 'Recibo'">Recibo</strong>
                     <div class="mt-1">
@@ -90,7 +90,7 @@
                 <a th:href="@{/mis-cursos}" class="small">Ver todos</a>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-start" th:each="curso : ${cursos}">
+                <li class="list-group-item d-flex justify-content-between align-items-start" th:each="curso : ${cursosRecientes}">
                   <div>
                     <div th:text="${curso.name}">Nombre del curso</div>
                     <div class="mt-1">
@@ -119,7 +119,7 @@
                 <a th:href="@{/mis-reservas}" class="small">Ver todas</a>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-start" th:each="reserva : ${reservas}">
+                <li class="list-group-item d-flex justify-content-between align-items-start" th:each="reserva : ${reservasRecientes}">
                   <div>
                     <div th:text="${reserva.maquina}">Máquina</div>
                     <div class="mt-1">
