@@ -49,57 +49,63 @@
       
       <div th:if="${#lists.isEmpty(products)}" class="alert alert-info mt-3">No hay productos registrados aún.</div>
 
-      <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center" th:if="${!#lists.isEmpty(products)}">
-        <div class="col product-card d-flex justify-content-center" th:each="p : ${products}" th:attr="data-name=${p.name},data-type=${p.type}">
-          <div class="card h-100">
-            <div th:if="${!#lists.isEmpty(p.allImages)}" th:id="'carousel-' + ${p.id}" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <div th:each="img, iterStat : ${p.allImages}" 
-                         class="carousel-item" 
-                         th:classappend="${iterStat.first} ? 'active'">
-                        <img th:src="@{${img}}" class="d-block w-100 card-img-top" alt="Product Image" style="height: 200px; object-fit: cover;">
+      <div class="product-grid" th:if="${!#lists.isEmpty(products)}">
+        <div class="card product-card" th:each="p : ${products}" th:attr="data-name=${p.name},data-type=${p.type}">
+            
+            <div class="product-image-container">
+                <div th:if="${!#lists.isEmpty(p.allImages)}" th:id="'carousel-' + ${p.id}" class="carousel slide h-100" data-bs-ride="carousel">
+                    <div class="carousel-inner h-100">
+                        <div th:each="img, iterStat : ${p.allImages}" 
+                             class="carousel-item h-100" 
+                             th:classappend="${iterStat.first} ? 'active'">
+                            <img th:src="@{${img}}" class="d-block w-100 h-100" alt="Product Image">
+                        </div>
                     </div>
+                    <button class="carousel-control-prev" type="button" th:data-bs-target="'#carousel-' + ${p.id}" data-bs-slide="prev" th:if="${p.allImages.size() > 1}">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" th:data-bs-target="'#carousel-' + ${p.id}" data-bs-slide="next" th:if="${p.allImages.size() > 1}">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
-                <button class="carousel-control-prev" type="button" th:data-bs-target="'#carousel-' + ${p.id}" data-bs-slide="prev" th:if="${p.allImages.size() > 1}">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" th:data-bs-target="'#carousel-' + ${p.id}" data-bs-slide="next" th:if="${p.allImages.size() > 1}">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+                <img th:if="${#lists.isEmpty(p.allImages)}" src="/img/logo.png" class="d-block w-100 h-100 p-4" alt="No Image" style="opacity: 0.5;">
             </div>
-            <img th:if="${#lists.isEmpty(p.allImages)}" src="/img/logo.png" class="card-img-top p-3" alt="No Image" style="height: 200px; object-fit: contain; opacity: 0.5;">
+
             <div class="card-body">
               <h5 class="card-title" th:text="${p.name}">Nombre Producto</h5>
-              <h6 class="card-subtitle mb-2 text-muted" th:text="${p.type}">Tipo</h6>
+              <h6 class="card-subtitle" th:text="${p.type}">Tipo</h6>
               <p class="card-text" th:text="${p.description}">Descripción del producto.</p>
             </div>
+
             <div class="card-footer">
                 <!-- Add to Cart Form -->
-                <form action="/cart/add" method="post" class="mb-2 add-to-cart-form" th:if="${session.USER_ID != null}">
-                    <div class="input-group input-group-sm">
+                <form action="/cart/add" method="post" class="add-to-cart-form" th:if="${session.USER_ID != null}">
+                    <div class="input-group">
                         <select class="form-select product-variant-select" name="subProductId" required onchange="updateMaxStock(this)">
                              <option th:each="sp : ${p.subProducts}" 
                                      th:value="${sp.id}" 
-                                     th:text="${sp.subName + ' (' + #numbers.formatDecimal(sp.price,1,2) + '€)'}"
+                                     th:text="|${sp.subName} (${#numbers.formatDecimal(sp.price,1,2)}€)|"
                                      th:data-stock="${sp.stock}"
                                      th:disabled="${sp.stock <= 0}">
                              </option>
                         </select>
-                        <input type="number" name="quantity" class="form-control quantity-input" value="1" min="1" style="max-width: 60px;" required>
-                        <button class="btn btn-primary" type="submit" title="Añadir al carrito"><i class="bi bi-cart-plus"></i></button>
+                        <input type="number" name="quantity" class="form-control quantity-input" value="1" min="1" style="max-width: 70px;" required>
+                        <button class="btn btn-add-cart" type="submit" title="Añadir al carrito"><i class="bi bi-cart-plus-fill"></i></button>
                     </div>
                 </form>
-                <div th:if="${session.USER_ID == null}" class="text-center mb-2">
-                    <a href="/login" class="btn btn-sm btn-outline-primary">Inicia sesión para comprar</a>
+                
+                <div th:if="${session.USER_ID == null}" class="text-center">
+                    <a href="/login" class="btn btn-sm btn-outline-primary w-100">Inicia sesión para comprar</a>
                 </div>
 
-                <div th:if="${isAdmin}">
-                    <a th:href="@{/admin/modify-product(id=${p.id})}" class="btn btn-sm btn-outline-primary w-100">Editar</a>
+                <div th:if="${isAdmin}" class="admin-actions">
+                    <a th:href="@{/admin/modify-product(id=${p.id})}" class="btn btn-primary btn-sm w-100">
+                        <i class="bi bi-pencil-square me-1"></i>Editar
+                    </a>
                 </div>
             </div>
-          </div>
         </div>
       </div>
 

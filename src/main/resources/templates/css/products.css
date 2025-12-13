@@ -97,153 +97,138 @@
 }
 
 
-/* === ESTILO DE TARJETA GENERAL === */
+/* === GRID LAYOUT === */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+}
 
-.card {
+/* === ESTILO DE TARJETA GENERAL === */
+.card.product-card {
   position: relative;
-  max-width: 320px; 
-  min-width: 280px;
   background: var(--card-bg); 
   border: 1px solid var(--border-color);
   border-radius: 12px; 
   padding: 0; 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  /* Transición para el efecto hover */
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease; 
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; 
   display: flex;
   flex-direction: column;
   overflow: hidden; 
+  height: 100%;
 }
 
-/* EFECTO HOVER: Resaltado en amarillo y sombra intensa */
-.card:hover {
+.card.product-card:hover {
   transform: translateY(-5px); 
-  box-shadow: 0 10px 25px rgba(248, 188, 30, 0.4); 
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); 
   border-color: var(--hero-border); 
-  background-color: var(--hero-bg); 
 }
 
-
-/* === 1. Sección Superior (Imagen y Título) - .card-hero === */
-
-.card-hero {
-    height: 180px; 
-    position: relative;
+/* === Carousel / Imagen === */
+.product-image-container {
+    height: 220px;
     overflow: hidden;
-    border-radius: 12px 12px 0 0;
+    position: relative;
+    background-color: #f8f9fa;
 }
 
-.card-hero img {
-    position: absolute;
-    top: 0; left: 0;
+[data-theme="dark"] .product-image-container {
+    background-color: #2c2c2c;
+}
+
+.product-image-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    z-index: 0;
+    object-fit: contain; /* Products usually look better with contain if they have white backgrounds, or cover if they are photos */
+    padding: 1rem;
+    transition: transform 0.5s ease;
 }
 
-.card-hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);
-    z-index: 1;
+.card.product-card:hover .product-image-container img {
+    transform: scale(1.05);
 }
 
-.card-hero h3 {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #ffffff; 
-    margin: 0;
-    padding: 1rem; 
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    z-index: 2; 
-    /* ALINEACIÓN: Centrar el texto del título */
-    text-align: center;
-}
-
-
-/* === 2. Sección Inferior (Información y Botones) - .card-info === */
-
-.card-info {
+/* === Cuerpo de la Tarjeta === */
+.card-body {
     padding: 1.5rem;
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    /* ALINEACIÓN: Centrar todo el texto en la info-card */
-    text-align: center;
+    flex-grow: 1;
 }
 
-/* Descripción del curso */
-.card-info p:first-of-type {
-    color: #555;
-    font-size: 0.9rem;
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.card-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
     margin-bottom: 1rem;
-    /* Centrado y límite de líneas */
-    text-align: center; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-text {
+    color: var(--text-muted);
+    font-size: 0.95rem;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
+    margin-bottom: 1.5rem;
 }
 
-/* === ESTILOS DE BADGES Y ESTADO === */
-
-.badge {
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.4em 0.6em;
-    border-radius: 4px;
-    white-space: nowrap; 
+/* === Footer / Acciones === */
+.card-footer {
+    background-color: transparent;
+    border-top: 1px solid var(--border-color);
+    padding: 1.25rem;
 }
 
-/* Contenedor de badges (d-flex) para centrar los badges como un grupo */
-.card-info .d-flex.flex-wrap {
-    justify-content: center;
+.add-to-cart-form .input-group {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-radius: 6px;
+    overflow: hidden;
 }
 
-/* Badge de Precio */
-.text-bg-primary { 
-    background-color: #3498db !important; 
-    color: #fff !important; 
+.product-variant-select {
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--input-text);
 }
 
-/* Badge de Duración/Fecha */
-.duration-badge {
-    background-color: #eee;
-    color: #333;
-}
-
-/* Ajuste de colores de disponibilidad */
-.text-bg-success { background-color: #d1e7dd !important; color: #0f5132 !important; } 
-.text-bg-danger { background-color: #f8d7da !important; color: #842029 !important; } 
-
-
-/* === ESTILOS DE BOTONES Y ADMIN === */
-
-/* Contenedor de botones (d-flex) para centrar los botones como un grupo */
-.card-info .d-flex.flex-wrap {
-    justify-content: center;
-}
-
-/* Botón principal de acción 'Saber más' (.btn-action) */
-.btn-action {
-    background-color: #f8bc1e; 
-    border-color: #f8bc1e;
-    color: #2c3e50;
+.quantity-input {
+    text-align: center;
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--input-text);
     font-weight: 600;
-    transition: background-color 0.2s;
-    font-size: 0.875rem;
 }
 
-.btn-action:hover {
+.btn-add-cart {
+    background-color: var(--hero-border);
+    border-color: var(--hero-border);
+    color: var(--hero-text);
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-add-cart:hover {
     background-color: #e0a800;
     border-color: #e0a800;
-    color: #2c3e50;
+    color: var(--hero-text);
 }
+
+/* Admin Buttons */
+.admin-actions {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.5rem;
+}
+
 

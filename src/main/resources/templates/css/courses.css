@@ -97,153 +97,96 @@
 }
 
 
-/* === ESTILO DE TARJETA GENERAL === */
+/* === GRID LAYOUT === */
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+}
 
-.card {
+/* === ESTILO DE TARJETA GENERAL === */
+.card.course-card {
   position: relative;
-  max-width: 320px; 
-  min-width: 280px;
   background: var(--card-bg); 
   border: 1px solid var(--border-color);
   border-radius: 12px; 
   padding: 0; 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  /* Transición para el efecto hover */
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease; 
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; 
   display: flex;
   flex-direction: column;
   overflow: hidden; 
 }
 
-/* EFECTO HOVER: Resaltado en amarillo y sombra intensa */
-.card:hover {
+.card.course-card:hover {
   transform: translateY(-5px); 
-  box-shadow: 0 10px 25px rgba(248, 188, 30, 0.4); 
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); 
   border-color: var(--hero-border); 
-  background-color: var(--hero-bg); 
 }
 
-
 /* === 1. Sección Superior (Imagen y Título) - .card-hero === */
-
 .card-hero {
-    height: 180px; 
+    height: 200px; 
     position: relative;
     overflow: hidden;
-    border-radius: 12px 12px 0 0;
 }
 
 .card-hero img {
-    position: absolute;
-    top: 0; left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 0;
+    transition: transform 0.5s ease;
 }
 
-.card-hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);
-    z-index: 1;
+.card.course-card:hover .card-hero img {
+    transform: scale(1.05);
 }
 
-.card-hero h3 {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #ffffff; 
-    margin: 0;
-    padding: 1rem; 
+.card-hero-overlay {
     position: absolute;
     bottom: 0;
+    left: 0;
     width: 100%;
-    z-index: 2; 
-    /* ALINEACIÓN: Centrar el texto del título */
-    text-align: center;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    padding: 1.5rem 1rem 1rem;
+    z-index: 2;
 }
 
+.card-hero-overlay h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff; 
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
 
-/* === 2. Sección Inferior (Información y Botones) - .card-info === */
-
-.card-info {
+/* === 2. Cuerpo de la Tarjeta === */
+.card-body {
     padding: 1.5rem;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    /* ALINEACIÓN: Centrar todo el texto en la info-card */
-    text-align: center;
+    background-color: var(--card-bg);
 }
 
-/* Descripción del curso */
-.card-info p:first-of-type {
-    color: #555;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    /* Centrado y límite de líneas */
-    text-align: center; 
+.card-text {
+    color: var(--text-muted);
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
-
-/* === ESTILOS DE BADGES Y ESTADO === */
-
-.badge {
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.4em 0.6em;
-    border-radius: 4px;
-    white-space: nowrap; 
-}
-
-/* Contenedor de badges (d-flex) para centrar los badges como un grupo */
-.card-info .d-flex.flex-wrap {
-    justify-content: center;
-}
-
-/* Badge de Precio */
-.text-bg-primary { 
-    background-color: #3498db !important; 
-    color: #fff !important; 
-}
-
-/* Badge de Duración/Fecha */
-.duration-badge {
-    background-color: #eee;
-    color: #333;
-}
-
-/* Ajuste de colores de disponibilidad */
-.text-bg-success { background-color: #d1e7dd !important; color: #0f5132 !important; } 
-.text-bg-danger { background-color: #f8d7da !important; color: #842029 !important; } 
-
 
 /* === ESTILOS DE BOTONES Y ADMIN === */
-
-/* Contenedor de botones (d-flex) para centrar los botones como un grupo */
-.card-info .d-flex.flex-wrap {
-    justify-content: center;
-}
-
-/* Botón principal de acción 'Saber más' (.btn-action) */
 .btn-action {
-    background-color: #f8bc1e; 
-    border-color: #f8bc1e;
-    color: #2c3e50;
+    background-color: var(--hero-border); 
+    border-color: var(--hero-border);
+    color: var(--hero-text);
     font-weight: 600;
-    transition: background-color 0.2s;
-    font-size: 0.875rem;
+    transition: all 0.2s;
 }
 
 .btn-action:hover {
     background-color: #e0a800;
     border-color: #e0a800;
-    color: #2c3e50;
+    color: var(--hero-text);
 }
 
