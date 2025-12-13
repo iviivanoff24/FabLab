@@ -14,49 +14,57 @@
   </head>
   <body>
     <div th:replace="~{fragments/header :: siteHeader('mis-reservas')}"></div>
-    <main class="container my-4">
-      <h2>Mis reservas</h2>
-      <p class="text-muted">Listado completo de tus reservas. Ordenado por defecto del más reciente al más antiguo.</p>
-
-      <div class="mb-3 d-flex gap-2">
-        <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar reservas..." data-target="bookings" />
-        <select class="form-select form-select-sm table-filter" data-target="bookings" data-key="machine">
-          <option value="">Todas las máquinas</option>
-          <option th:each="m : ${misMaquinas}" th:value="${m}" th:text="${m}"></option>
-        </select>
-        <input type="date" class="form-control form-control-sm table-filter" data-target="bookings" data-key="fecha" title="Filtrar por fecha" />
-        <select class="form-select form-select-sm table-filter" data-target="bookings" data-key="hora">
-          <option value="">Todas las horas</option>
-          <option th:each="h : ${misHoras}" th:value="${h}" th:text="${h}"></option>
-        </select>
-        <button type="button" class="btn btn-sm btn-outline-secondary table-search-clear" data-target="bookings">Limpiar</button>
+    
+    <div class="container mt-4">
+      <!-- Hero Section -->
+      <div class="admin-hero">
+        <h1>Mis Reservas</h1>
+        <p class="lead">Listado completo de tus reservas. Ordenado por defecto del más reciente al más antiguo.</p>
       </div>
 
-      <div th:if="${#lists.isEmpty(reservas)}" class="alert alert-info">No tienes reservas.</div>
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <div class="mb-3 d-flex gap-2">
+            <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar reservas..." data-target="bookings" />
+            <select class="form-select form-select-sm table-filter" data-target="bookings" data-key="machine">
+              <option value="">Todas las máquinas</option>
+              <option th:each="m : ${misMaquinas}" th:value="${m}" th:text="${m}"></option>
+            </select>
+            <input type="date" class="form-control form-control-sm table-filter" data-target="bookings" data-key="fecha" title="Filtrar por fecha" />
+            <select class="form-select form-select-sm table-filter" data-target="bookings" data-key="hora">
+              <option value="">Todas las horas</option>
+              <option th:each="h : ${misHoras}" th:value="${h}" th:text="${h}"></option>
+            </select>
+            <button type="button" class="btn btn-sm btn-outline-secondary table-search-clear" data-target="bookings">Limpiar</button>
+          </div>
 
-      <div th:if="${!#lists.isEmpty(reservas)}" class="table-responsive">
-        <table class="table table-sm admin-table" data-entity="bookings">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Máquina</th>
-              <th>Turno</th>
-              <th>Fecha</th>
-              <th>Hora</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="b : ${reservas}" th:attr="data-estado=${b.estadoReserva}, data-machine=${b.maquina}, data-fecha=${b.fecha}, data-hora=${b.hora}">
-              <td th:text="${b.id}"></td>
-              <td th:text="${b.maquina}"></td>
-              <td th:text="${(b.hora != null && b.fecha != null) ? (b.hora + ' · ' + b.fecha) : ''}"></td>
-              <td th:text="${b.fecha}"></td>
-              <td th:text="${b.hora}"></td>
-            </tr>
-          </tbody>
-        </table>
+          <div th:if="${#lists.isEmpty(reservas)}" class="alert alert-info">No tienes reservas.</div>
+
+          <div th:if="${!#lists.isEmpty(reservas)}" class="table-responsive">
+            <table class="table table-sm admin-table" data-entity="bookings">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Máquina</th>
+                  <th>Turno</th>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="b : ${reservas}" th:attr="data-estado=${b.estadoReserva}, data-machine=${b.maquina}, data-fecha=${b.fecha}, data-hora=${b.hora}">
+                  <td th:text="${b.id}"></td>
+                  <td th:text="${b.maquina}"></td>
+                  <td th:text="${(b.hora != null && b.fecha != null) ? (b.hora + ' · ' + b.fecha) : ''}"></td>
+                  <td th:text="${b.fecha}"></td>
+                  <td th:text="${b.hora}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
 
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/js/main.js}"></script>

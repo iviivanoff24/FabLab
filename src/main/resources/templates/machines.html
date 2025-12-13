@@ -14,24 +14,25 @@
   <body>
     <div th:replace="~{fragments/header :: siteHeader('machines')}"></div>
 
-    <br />
-
-    <main class="container">
+    <main class="container mt-4">
       
-      <div class="machine-hero-title">
-        <h2>Catálogo de Máquinas</h2>
+      <div class="admin-hero has-search">
+        <h1>Catálogo de Máquinas</h1>
+        <p class="lead">Reserva y utiliza nuestro equipamiento especializado</p>
       </div>
       
-      <div class="machine-search-bar">
-        <div class="input-group">
-          <input id="machineSearch" class="form-control" type="search" placeholder="Buscar máquinas por nombre..." aria-label="Buscar máquinas">
-          <select id="machineStatusFilter" class="form-select" aria-label="Filtrar por estado" style="max-width: 200px;">
-              <option value="">Todos los estados</option>
-              <option value="Disponible">Disponible</option>
-              <option value="En_mantenimiento">En mantenimiento</option>
-              <option value="No_disponible">No disponible</option>
-          </select>
-          <button class="btn btn-action-search" type="button"><i class="bi bi-search"></i> Buscar</button>
+      <div class="hero-search-container p-3">
+        <div class="machine-search-bar p-0">
+          <div class="input-group">
+            <input id="machineSearch" class="form-control" type="search" placeholder="Buscar máquinas por nombre..." aria-label="Buscar máquinas">
+            <select id="machineStatusFilter" class="form-select" aria-label="Filtrar por estado" style="max-width: 200px;">
+                <option value="">Todos los estados</option>
+                <option value="Disponible">Disponible</option>
+                <option value="En_mantenimiento">En mantenimiento</option>
+                <option value="No_disponible">No disponible</option>
+            </select>
+            <button class="btn btn-action-search" type="button"><i class="bi bi-search"></i> Buscar</button>
+          </div>
         </div>
       </div>
 

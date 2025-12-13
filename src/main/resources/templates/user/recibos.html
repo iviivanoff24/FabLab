@@ -14,50 +14,58 @@
   </head>
   <body>
     <div th:replace="~{fragments/header :: siteHeader('recibos')}"></div>
-    <main class="container my-4">
-      <h2>Recibos</h2>
-      <p class="text-muted">Listado completo de tus recibos. Ordenado por defecto del más reciente al más antiguo.</p>
-
-      <div class="mb-3 d-flex gap-2">
-        <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar recibos..." data-target="receipts" />
-        <select class="form-select form-select-sm table-filter" data-target="receipts" data-key="status">
-          <option value="">Todos los estados</option>
-          <option th:each="st : ${T(com.uex.fablab.data.model.ReceiptStatus).values()}" th:value="${st}" th:text="${st}"></option>
-        </select>
-        <select class="form-select form-select-sm table-filter" data-target="receipts" data-key="method">
-          <option value="">Todos los métodos</option>
-          <option th:each="m : ${metodosPago}" th:value="${m}" th:text="${m}"></option>
-        </select>
-        <button type="button" class="btn btn-sm btn-outline-secondary table-search-clear" data-target="receipts">Limpiar</button>
+    
+    <div class="container mt-4">
+      <!-- Hero Section -->
+      <div class="admin-hero">
+        <h1>Mis Recibos</h1>
+        <p class="lead">Listado completo de tus recibos. Ordenado por defecto del más reciente al más antiguo.</p>
       </div>
 
-      <div th:if="${#lists.isEmpty(recibos)}" class="alert alert-info">No hay recibos.</div>
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <div class="mb-3 d-flex gap-2">
+            <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar recibos..." data-target="receipts" />
+            <select class="form-select form-select-sm table-filter" data-target="receipts" data-key="status">
+              <option value="">Todos los estados</option>
+              <option th:each="st : ${T(com.uex.fablab.data.model.ReceiptStatus).values()}" th:value="${st}" th:text="${st}"></option>
+            </select>
+            <select class="form-select form-select-sm table-filter" data-target="receipts" data-key="method">
+              <option value="">Todos los métodos</option>
+              <option th:each="m : ${metodosPago}" th:value="${m}" th:text="${m}"></option>
+            </select>
+            <button type="button" class="btn btn-sm btn-outline-secondary table-search-clear" data-target="receipts">Limpiar</button>
+          </div>
 
-      <div th:if="${!#lists.isEmpty(recibos)}" class="table-responsive">
-        <table class="table table-sm admin-table" data-entity="receipts">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Concepto</th>
-              <th>Importe</th>
-              <th>Método</th>
-              <th>Estado</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="r : ${recibos}" th:attr="data-status=${r.estado}, data-method=${r.metodoPago}">
-              <td th:text="${r.id}"></td>
-              <td th:text="${r.concepto}"></td>
-              <td th:text="${#numbers.formatDecimal(r.totalPrice,1,2)}"></td>
-              <td th:text="${r.metodoPago}"></td>
-              <td th:text="${r.estado}"></td>
-              <td th:text="${#temporals.format(r.fechaEmision,'yyyy-MM-dd')}"></td>
-            </tr>
-          </tbody>
-        </table>
+          <div th:if="${#lists.isEmpty(recibos)}" class="alert alert-info">No hay recibos.</div>
+
+          <div th:if="${!#lists.isEmpty(recibos)}" class="table-responsive">
+            <table class="table table-sm admin-table" data-entity="receipts">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Concepto</th>
+                  <th>Importe</th>
+                  <th>Método</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="r : ${recibos}" th:attr="data-status=${r.estado}, data-method=${r.metodoPago}">
+                  <td th:text="${r.id}"></td>
+                  <td th:text="${r.concepto}"></td>
+                  <td th:text="${#numbers.formatDecimal(r.totalPrice,1,2)}"></td>
+                  <td th:text="${r.metodoPago}"></td>
+                  <td th:text="${r.estado}"></td>
+                  <td th:text="${#temporals.format(r.fechaEmision,'yyyy-MM-dd')}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
 
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/js/main.js}"></script>

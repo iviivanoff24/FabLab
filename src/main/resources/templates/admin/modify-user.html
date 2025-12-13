@@ -11,12 +11,23 @@
 </head>
 <body>
 <div th:replace="~{fragments/header :: siteHeader('admin')}"></div>
-<div class="container mt-4">
-    <h1>Modificar Usuario</h1>
-    <div th:if="${param.error != null}" class="alert alert-danger" th:text="${param.error}"></div>
-    <div th:if="${user == null}" class="alert alert-warning">Usuario no encontrado.</div>
 
-    <form th:if="${user != null}" th:action="@{'/admin/users/' + ${user.id}}" method="post" class="needs-validation" novalidate>
+<div class="container mt-4">
+  <!-- Hero Section -->
+  <div class="admin-hero">
+    <h1>Modificar Usuario</h1>
+    <p class="lead">Gestiona los permisos y datos de acceso del usuario</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-md-5">
+          
+          <div th:if="${param.error != null}" class="alert alert-danger mb-4" th:text="${param.error}"></div>
+          <div th:if="${user == null}" class="alert alert-warning mb-4">Usuario no encontrado.</div>
+
+          <form th:if="${user != null}" th:action="@{'/admin/users/' + ${user.id}}" method="post" class="needs-validation" novalidate>
         <input type="hidden" name="id" th:value="${user.id}" />
         <div class="mb-3">
             <label for="name" class="form-label">Nombre</label>
@@ -39,11 +50,21 @@
         </div>
         <div class="mb-3">
             <label for="newPassword" class="form-label">Nueva contraseña</label>
-            <input type="password" class="form-control" id="newPassword" name="newPassword" minlength="6" />
+            <div class="input-group">
+                <input type="password" class="form-control border-end-0" id="newPassword" name="newPassword" minlength="6" />
+                <button class="btn border border-start-0" type="button" id="toggleNewPassword" style="background-color: var(--input-bg); border-color: var(--input-border); color: var(--text-muted);">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
         </div>
         <div class="mb-3">
             <label for="confirmPassword" class="form-label">Confirmar nueva contraseña</label>
-            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" minlength="6" />
+            <div class="input-group">
+                <input type="password" class="form-control border-end-0" id="confirmPassword" name="confirmPassword" minlength="6" />
+                <button class="btn border border-start-0" type="button" id="toggleConfirmPassword" style="background-color: var(--input-bg); border-color: var(--input-border); color: var(--text-muted);">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
             <div class="form-text">Introduce la misma contraseña que en "Nueva contraseña".</div>
         </div>
         <div class="mb-3">
@@ -55,7 +76,11 @@
             <a th:href="@{/admin/admin}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 <footer class="text-center py-4 text-muted small">
       <div class="container">Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida</div>
     </footer>   
@@ -65,6 +90,31 @@
     (function(){
         document.addEventListener('DOMContentLoaded', function(){
             var form = document.querySelector('form[th\\:if]') || document.querySelector('form');
+            
+            function setupPasswordToggle(toggleId, inputId) {
+                const toggle = document.getElementById(toggleId);
+                const input = document.getElementById(inputId);
+                
+                if (toggle && input) {
+                    toggle.addEventListener('click', function() {
+                        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                        input.setAttribute('type', type);
+                        
+                        const icon = this.querySelector('i');
+                        if (type === 'password') {
+                            icon.classList.remove('bi-eye-slash');
+                            icon.classList.add('bi-eye');
+                        } else {
+                            icon.classList.remove('bi-eye');
+                            icon.classList.add('bi-eye-slash');
+                        }
+                    });
+                }
+            }
+
+            setupPasswordToggle('toggleNewPassword', 'newPassword');
+            setupPasswordToggle('toggleConfirmPassword', 'confirmPassword');
+
             if (!form) return;
             form.addEventListener('submit', function(e){
                 var newP = document.getElementById('newPassword').value;

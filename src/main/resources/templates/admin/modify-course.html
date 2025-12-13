@@ -53,21 +53,31 @@
 </head>
 <body>
   <div th:replace="~{fragments/header :: siteHeader('')}"></div>
-  <main class="container" id="editForm">
-    <br>
-    <h1 class="h4 mb-3">Editar curso <span id="courseIdSpan" class="text-secondary"></span></h1>
-    <div id="adminGuard" class="alert alert-warning d-none">Solo administradores pueden editar cursos.</div>
-
-    <div class="mb-3">
-      <label class="form-label">Imagen actual</label><br />
-       <img id="currentImage" class="border rounded img-preview" src="/img/logo.png"
-         th:src="${course != null ? (courseImageUrls != null ? courseImageUrls[course.id] : courseImageUrl) : '/img/logo.png'}"
-         alt="Imagen actual" />
-      <div class="form-text">Si subes una nueva, la anterior se reemplaza.</div>
+  
+  <div class="container mt-4">
+    <!-- Hero Section -->
+    <div class="admin-hero">
+      <h1>Editar Curso <span id="courseIdSpan" class="opacity-75"></span></h1>
+      <p class="lead">Modifica los detalles, fechas y capacidad del curso</p>
     </div>
 
-    <!-- Formulario renderizado por Thymeleaf cuando el modelo contiene 'course' -->
-    <form id="courseForm" th:if="${course != null}" method="post" th:action="@{/admin/courses/{id}(id=${course.id})}" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-sm border-0" id="editForm">
+          <div class="card-body p-4 p-md-5">
+            
+            <div id="adminGuard" class="alert alert-warning d-none mb-4">Solo administradores pueden editar cursos.</div>
+
+            <div class="mb-4 text-center">
+               <label class="form-label d-block fw-bold">Imagen actual</label>
+               <img id="currentImage" class="border rounded img-preview shadow-sm" src="/img/logo.png"
+                 th:src="${course != null ? (courseImageUrls != null ? courseImageUrls[course.id] : courseImageUrl) : '/img/logo.png'}"
+                 alt="Imagen actual" />
+              <div class="form-text mt-2">Si subes una nueva, la anterior se reemplaza.</div>
+            </div>
+
+            <!-- Formulario renderizado por Thymeleaf cuando el modelo contiene 'course' -->
+            <form id="courseForm" th:if="${course != null}" method="post" th:action="@{/admin/courses/{id}(id=${course.id})}" enctype="multipart/form-data" class="needs-validation" novalidate>
       <input type="hidden" name="id" th:value="${course.id}" />
       <div class="mb-3">
         <label for="title" class="form-label">Título</label>
@@ -159,7 +169,11 @@
       <a href="/courses" class="btn btn-secondary ms-2">Cancelar</a>
     </form>
     <br>
-  </main>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 <footer class="text-center py-4 text-muted small">
       <div class="container">Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida</div>
     </footer>

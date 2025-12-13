@@ -48,32 +48,32 @@
 /* === BARRA DE BÚSQUEDA PEGADA (.product-search-bar) === */
 
 .product-search-bar {
-    /* Fondo AMARILLO CLARO */
-    background: var(--hero-bg); 
-    /* Borde principal amarillo fuerte */
+    /* El fondo y la forma ahora los maneja .hero-search-container en main.css */
+    background: transparent; 
     border: none; 
-    border-top: none; /* Quitamos el borde superior para que se pegue al título */
-    /* Bordes inferiores redondeados para terminar la sección */
-    border-radius: 0 0 15px 15px; 
-    
-    padding: 1rem;
-    
-    margin-top: 0; 
-    margin-bottom: 3rem; /* Margen inferior para separarlo del resto del contenido */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15); 
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
 }
 
-/* Estilo del INPUT dentro de la barra */
-.product-search-bar .form-control {
+/* Estilo del INPUT y SELECT dentro de la barra */
+.product-search-bar .form-control,
+.product-search-bar .form-select {
     border-radius: 8px 0 0 8px; 
-    border-color: var(--hero-border); /* Borde amarillo fuerte */
+    border-color: var(--hero-border); 
     transition: border-color 0.3s, box-shadow 0.3s;
-    background-color: var(--input-bg);
+    background-color: var(--input-bg); /* Revertir a fondo de input normal */
     color: var(--input-text);
 }
 
-.product-search-bar .form-control:focus {
-    border-color: #e0a800; /* Amarillo más oscuro al hacer focus */
+.product-search-bar .form-select {
+    border-radius: 0; 
+    border-left: 1px solid var(--hero-border);
+}
+
+.product-search-bar .form-control:focus,
+.product-search-bar .form-select:focus {
+    border-color: #e0a800; 
     box-shadow: 0 0 0 0.25rem rgba(248, 188, 30, 0.25);
     background-color: var(--input-bg);
     color: var(--input-text);

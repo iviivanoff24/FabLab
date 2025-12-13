@@ -57,7 +57,7 @@ html {
     --navbar-toggler-filter: invert(1);
 
     /* Variables para Hero/Search (Oscuro con acento amarillo) */
-    --hero-bg: #2a2a2a;
+    --hero-bg: #1e1e1e;
     --hero-border: #f8bc1e;
     --hero-text: #e0e0e0;
     --hero-accent: #444;
@@ -303,7 +303,7 @@ footer {
 
 /* Dark mode overrides for admin hero */
 [data-theme="dark"] .admin-hero, [data-theme="dark"] .cart-hero, [data-theme="dark"] .payment-hero, [data-theme="dark"] .reserve-hero, [data-theme="dark"] .course-hero {
-    background-color: var(--card-bg);
+    background-color: var(--hero-bg);
     border-top-color: var(--hero-border);
     color: var(--text-color);
 }
@@ -688,4 +688,22 @@ footer {
 
 [data-theme="dark"] .list-group-item .text-muted {
     color: var(--text-muted) !important;
+}
+
+/* Hero with attached search bar */
+.admin-hero.has-search {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: 0;
+    box-shadow: none;
+    padding-bottom: 1rem;
+}
+
+.hero-search-container {
+    background: var(--hero-bg);
+    border-radius: 0 0 15px 15px;
+    padding: 0 2rem 2.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+    text-align: center;
 }

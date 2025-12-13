@@ -14,44 +14,52 @@
   </head>
   <body>
     <div th:replace="~{fragments/header :: siteHeader('mis-cursos')}"></div>
-    <main class="container my-4">
-      <h2>Cursos apuntados</h2>
-      <p class="text-muted">Listado completo de tus inscripciones. Ordenado por defecto del más reciente al más antiguo.</p>
-
-      <div class="mb-3 d-flex gap-2">
-        <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar cursos..." data-target="courses" />
-        <select class="form-select form-select-sm table-filter" data-target="courses" data-key="estado">
-          <option value="">Todos los estados</option>
-          <option th:each="s : ${estadosCurso}" th:value="${s}" th:text="${s}"></option>
-        </select>
-        <button type="button" class="btn btn-sm btn-outline-secondary table-search-clear" data-target="courses">Limpiar</button>
+    
+    <div class="container mt-4">
+      <!-- Hero Section -->
+      <div class="admin-hero">
+        <h1>Cursos Apuntados</h1>
+        <p class="lead">Listado completo de tus inscripciones. Ordenado por defecto del más reciente al más antiguo.</p>
       </div>
 
-      <div th:if="${#lists.isEmpty(cursos)}" class="alert alert-info">No estás apuntado a ningún curso.</div>
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <div class="mb-3 d-flex gap-2">
+            <input type="search" class="form-control form-control-sm table-search" placeholder="Buscar cursos..." data-target="courses" />
+            <select class="form-select form-select-sm table-filter" data-target="courses" data-key="estado">
+              <option value="">Todos los estados</option>
+              <option th:each="s : ${estadosCurso}" th:value="${s}" th:text="${s}"></option>
+            </select>
+            <button type="button" class="btn btn-sm btn-outline-secondary table-search-clear" data-target="courses">Limpiar</button>
+          </div>
 
-      <div th:if="${!#lists.isEmpty(cursos)}" class="table-responsive">
-        <table class="table table-sm admin-table" data-entity="courses">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Precio</th>
-              <th>Estado</th>
-              <th>Fecha inicio</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="c : ${cursos}" th:attr="data-estado=${c.estado}">
-              <td th:text="${c.id}"></td>
-              <td><a th:href="@{/courses/{id}(id=${c.id})}" th:text="${c.name}"></a></td>
-              <td th:text="${#numbers.formatDecimal(c.precio,1,2)}"></td>
-              <td th:text="${c.estado}"></td>
-              <td th:text="${c.startDate}"></td>
-            </tr>
-          </tbody>
-        </table>
+          <div th:if="${#lists.isEmpty(cursos)}" class="alert alert-info">No estás apuntado a ningún curso.</div>
+
+          <div th:if="${!#lists.isEmpty(cursos)}" class="table-responsive">
+            <table class="table table-sm admin-table" data-entity="courses">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Precio</th>
+                  <th>Estado</th>
+                  <th>Fecha inicio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="c : ${cursos}" th:attr="data-estado=${c.estado}">
+                  <td th:text="${c.id}"></td>
+                  <td><a th:href="@{/courses/{id}(id=${c.id})}" th:text="${c.name}"></a></td>
+                  <td th:text="${#numbers.formatDecimal(c.precio,1,2)}"></td>
+                  <td th:text="${c.estado}"></td>
+                  <td th:text="${c.startDate}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
 
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/js/main.js}"></script>

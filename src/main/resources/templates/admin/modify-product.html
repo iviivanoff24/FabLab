@@ -13,24 +13,34 @@
   <body>
     <div th:replace="~{fragments/header :: siteHeader('admin')}"></div>
 
-    <div class="container mt-5 mb-5">
-      <div class="d-flex justify-content-between align-items-center">
-        <h2>Modificar Producto</h2>
-        <form
-          action="/admin/products/delete"
-          method="post"
-          onsubmit="return confirm('¿Estás seguro de eliminar este producto?');"
-        >
-          <input type="hidden" name="id" th:value="${product.id}" />
-          <button type="submit" class="btn btn-danger">
-            Eliminar Producto
-          </button>
-        </form>
+    <div class="container mt-4">
+      <!-- Hero Section -->
+      <div class="admin-hero">
+        <h1>Modificar Producto</h1>
+        <p class="lead">Gestiona los detalles y variantes del producto</p>
       </div>
 
-      <!-- Edit Product Form -->
-      <form action="/admin/products/update" method="post" class="mt-4 card p-4">
-        <h4>Datos Generales</h4>
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+              
+              <div class="d-flex justify-content-end mb-4">
+                <form
+                  action="/admin/products/delete"
+                  method="post"
+                  onsubmit="return confirm('¿Estás seguro de eliminar este producto?');"
+                >
+                  <input type="hidden" name="id" th:value="${product.id}" />
+                  <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash"></i> Eliminar Producto
+                  </button>
+                </form>
+              </div>
+
+              <!-- Edit Product Form -->
+              <form action="/admin/products/update" method="post">
+                <h4 class="mb-4 text-primary">Datos Generales</h4>
         <input type="hidden" name="id" th:value="${product.id}" />
         <div class="mb-3">
           <label for="name" class="form-label">Nombre del Producto</label>
@@ -306,6 +316,10 @@
             </tr>
           </tbody>
         </table>
+      </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -14,25 +14,26 @@
   <body>
     <div th:replace="~{fragments/header :: siteHeader('products')}"></div>
 
-    <br />
-
     <main class="products-page">
-      <div class="container">
+      <div class="container mt-4">
         
-        <div class="product-hero-title">
-          <h2>Catálogo de Productos</h2>
+        <div class="admin-hero has-search">
+          <h1>Catálogo de Productos</h1>
+          <p class="lead">Explora nuestra variedad de materiales y componentes</p>
         </div>
-
-        <div class="product-search-bar">
-          <div class="input-group">
-            <input id="productSearch" class="form-control" type="search" placeholder="Buscar productos por nombre..." aria-label="Buscar productos">
-            <select id="productTypeFilter" class="form-select" aria-label="Filtrar por tipo" style="max-width: 200px;">
-                <option value="">Todos los tipos</option>
-                <option th:each="type : ${#lists.sort(#lists.toList(#sets.toSet(products.![type])))}" 
-                        th:value="${type}" 
-                        th:text="${type}">Tipo</option>
-            </select>
-            <button class="btn btn-action-search" type="button"><i class="bi bi-search"></i> Buscar</button>
+        
+        <div class="hero-search-container p-3">
+          <div class="product-search-bar p-0">
+            <div class="input-group">
+              <input id="productSearch" class="form-control" type="search" placeholder="Buscar productos por nombre..." aria-label="Buscar productos">
+              <select id="productTypeFilter" class="form-select" aria-label="Filtrar por tipo" style="max-width: 200px;">
+                  <option value="">Todos los tipos</option>
+                  <option th:each="type : ${#lists.sort(#lists.toList(#sets.toSet(products.![type])))}" 
+                          th:value="${type}" 
+                          th:text="${type}">Tipo</option>
+              </select>
+              <button class="btn btn-action-search" type="button"><i class="bi bi-search"></i> Buscar</button>
+            </div>
           </div>
         </div>
 
