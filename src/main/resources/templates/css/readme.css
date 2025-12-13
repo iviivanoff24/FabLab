@@ -305,17 +305,18 @@ main ul li::before {
 /* Utilidad personalizada para dividir por 3 */
 .w-33 {
     width: 33.333333%;
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
 }
 
-/* Contenedor principal del carrusel: permitir que ocupe todo el ancho */
+/* Contenedor principal del carrusel */
 .fablab-carousel-container {
-    max-width: 100%; /* Permitir que ocupe todo el ancho del contenedor <main> */
+    max-width: 100%;
     margin: 3rem auto;
     padding: 0;
 }
 
-/* Eliminar el estilo de sección para el carrusel y mantener el contenedor simple */
-/* Esto se aplica a la segunda sección dentro de <main> que ahora es el carrusel */
+/* Eliminar el estilo de sección para el carrusel */
 main section:nth-child(2) { 
     background: transparent !important; 
     box-shadow: none !important; 
@@ -325,79 +326,120 @@ main section:nth-child(2) {
 }
 
 /* Estilo para las imágenes dentro del carrusel */
-.fablab-carousel-container .carousel-multi-item img {
-    height: 300px; /* Altura más manejable para tres imágenes */
-    object-fit: cover; /* Asegura que la imagen cubra el área */
-    border-radius: 8px; /* Pequeño radio para suavizar los bordes */
-    /* Asegurar que el relleno (padding) de Bootstrap no se coma el espacio */
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
+/* AHORA APLICA A .carousel-item img DIRECTAMENTE */
+.fablab-carousel-container .carousel-item img {
+    height: 300px; 
+    object-fit: cover; 
+    border-radius: 8px; 
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
 }
 
-/* Estilo de los indicadores (puntos) inferiores */
+/* Estilo de los indicadores */
 .fablab-carousel-container .carousel-indicators [data-bs-target] {
-    background-color: #f8bc1e; /* Color primario FabLab (Amarillo) */
+    background-color: #f8bc1e;
     opacity: 0.5;
 }
 .fablab-carousel-container .carousel-indicators .active {
     opacity: 1;
 }
 
-/* Estilo de los controles (flechas) */
+/* Estilo de los controles */
 .fablab-carousel-container .carousel-control-prev-icon,
 .fablab-carousel-container .carousel-control-next-icon {
-    /* Filtro para cambiar el color de las flechas (SVG blanco por defecto) a un color amarillo */
     filter: invert(79%) sepia(85%) saturate(542%) hue-rotate(345deg) brightness(101%) contrast(97%); 
 }
 
-/* Ajuste para móviles: mostrar solo una imagen */
+/* Ajuste para móviles */
 @media (max-width: 768px) {
-    .fablab-carousel-container .carousel-multi-item img:not(:first-child) {
-        display: none !important; /* Ocultar la segunda y tercera imagen en pantallas pequeñas */
+    .fablab-carousel-container .carousel-item .d-flex {
+        display: block !important;
     }
-    .fablab-carousel-container .carousel-multi-item img:first-child {
+    .fablab-carousel-container .carousel-item img {
         width: 100% !important;
-        height: 400px; /* Volver a una altura decente para móvil */
+        max-width: 100% !important;
+        height: 300px;
+        margin-bottom: 10px;
+    }
+    .fablab-carousel-container .carousel-item img:not(:first-child) {
+        display: none !important;
     }
 }
 
 /* =========================================
-   8. DARK MODE OVERRIDES
+   8. DARK MODE OVERRIDES (MEJORADO)
    ========================================= */
-[data-theme="dark"] main section:not(.hero):nth-child(3) {
-    background: var(--card-bg);
-    border-color: var(--border-color);
+
+/* Fondos y Textos Generales */
+[data-theme="dark"] body {
     color: var(--text-color);
 }
 
-[data-theme="dark"] main h2,
-[data-theme="dark"] main h3,
-[data-theme="dark"] aside .card p,
-[data-theme="dark"] aside .card .small,
-[data-theme="dark"] .feature h5,
-[data-theme="dark"] main ul li {
-    color: var(--text-color);
+/* Sobreescribir utilidades de Bootstrap que usan blanco/gris claro */
+[data-theme="dark"] .bg-light {
+    background-color: var(--card-bg) !important;
 }
 
-[data-theme="dark"] .feature p.text-muted {
-    color: var(--text-muted) !important;
+[data-theme="dark"] .bg-white {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
 }
 
-[data-theme="dark"] .info-box {
+/* Tarjetas */
+[data-theme="dark"] .card {
     background-color: var(--card-bg);
     border-color: var(--border-color);
 }
 
-[data-theme="dark"] .info-box-dark {
-    background-color: rgba(52, 152, 219, 0.15); /* Azul oscuro transparente */
+[data-theme="dark"] .card-header {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-bottom-color: var(--border-color);
+    color: var(--text-color);
 }
 
-[data-theme="dark"] aside .card pre {
-    background: #2c2c2c;
-    border-color: #f8bc1e;
+/* Listas */
+[data-theme="dark"] .list-group-item {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+/* Tablas */
+[data-theme="dark"] .table-light {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .table-light th,
+[data-theme="dark"] .table-light td {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+    color: var(--text-color);
+    background-color: rgba(255,255,255,0.075);
+}
+
+/* Bloques de código y elementos específicos */
+[data-theme="dark"] .code-block {
+    background-color: #121212; /* Más oscuro que el card */
+    border: 1px solid var(--border-color);
     color: #e0e0e0;
 }
 
-[data-theme="dark"] .feature:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+[data-theme="dark"] .team-img {
+    border-color: var(--hero-border);
+}
+
+/* Ajuste de iconos en modo oscuro */
+[data-theme="dark"] .feature-icon {
+    filter: brightness(1.2); /* Hacerlos resaltar un poco más */
+}
+
+/* Bordes */
+[data-theme="dark"] .border {
+    border-color: var(--border-color) !important;
 }

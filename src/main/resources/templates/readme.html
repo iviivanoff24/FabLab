@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>README — FabLab Mérida</title>
+    <title>README  FabLab Mérida</title>
     <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="img/logo.png" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -11,62 +11,66 @@
     <link rel="stylesheet" href="css/readme.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-      /* Mantengo el style original, pero el CSS externo lo sobreescribirá */
-      .hero { padding: 4rem 1rem; background: linear-gradient(90deg,#0d6efd22,#6c757d11); }
-      .feature { padding: 1.25rem; }
-      .logo-lg { width:96px; height:96px; object-fit:contain; }
-      .kbd { background:#f8f9fa; border:1px solid #e9ecef; padding:.25rem .5rem; border-radius:.25rem }
+        .team-img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid var(--hero-border); }
+        .badge-img { height: 22px; margin: 0 2px; }
+        .code-block { background: #212529; color: #f8f9fa; padding: 1rem; border-radius: 0.5rem; font-family: monospace; font-size: 0.9rem; }
+        .feature-icon { font-size: 2rem; margin-bottom: 0.5rem; }
     </style>
   </head>
   <body>
     <div th:replace="~{fragments/header :: siteHeader('readme')}"></div>
 
-    <main class="container">
-      <section class="hero text-center my-4 rounded-3 shadow-sm">
-        <div class="d-flex align-items-center justify-content-center gap-3">
-          <img src="img/logo.png" alt="Logo FabLab" class="logo-lg">
-          <div class="text-start">
-            <h1 class="h2 mb-1">FabLab Mérida</h1>
-            <p class="text-muted mb-0">El futuro se fabrica aquí — plataforma de gestión del laboratorio de fabricación digital.</p>
+    <main class="container mt-4">
+      
+      <!-- Hero Section -->
+      <div class="admin-hero mb-5">
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-4">
+          <img src="img/logo.png" alt="Logo FabLab" width="100">
+          <div class="text-center text-md-start">
+            <h1 class="display-5 fw-bold mb-1">FabLab Mérida</h1>
+            <p class="lead mb-2">"El futuro se fabrica aquí."</p>
+            <div class="mt-2">
+                <img src="https://img.shields.io/badge/status-acad%C3%A9mico-blue" class="badge-img" alt="Status">
+                <img src="https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen" class="badge-img" alt="Spring Boot">
+                <img src="https://img.shields.io/badge/Thymeleaf-enabled-orange" class="badge-img" alt="Thymeleaf">
+                <img src="https://img.shields.io/badge/Docker-ready-pink" class="badge-img" alt="Docker">
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      
-      <section class="my-4">
+      <!-- Carousel -->
+      <section class="mb-5">
         <div class="fablab-carousel-container mx-auto">
-            <div id="galleryCarousel" class="carousel slide rounded-3 shadow" data-bs-ride="carousel" data-bs-interval="3000">
-                
+            <div id="galleryCarousel" class="carousel slide rounded-3 shadow overflow-hidden" data-bs-ride="carousel" data-bs-interval="3000">
                 <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                    <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                    <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="2"></button>
                 </div>
-
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <div class="d-flex justify-content-center align-items-center carousel-multi-item">
-                            <img src="img/galeria/1.jpg" class="d-block w-33 px-2" alt="Imagen 1">
-                            <img src="img/galeria/2.jpg" class="d-block w-33 px-2" alt="Imagen 2">
-                            <img src="img/galeria/3.jpg" class="d-block w-33 px-2" alt="Imagen 3">
+                        <div class="d-flex justify-content-center align-items-center bg-light">
+                            <img src="img/galeria/1.jpg" class="d-block w-33 px-1" alt="Imagen 1">
+                            <img src="img/galeria/2.jpg" class="d-block w-33 px-1" alt="Imagen 2">
+                            <img src="img/galeria/3.jpg" class="d-block w-33 px-1" alt="Imagen 3">
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <div class="d-flex justify-content-center align-items-center carousel-multi-item">
-                            <img src="img/galeria/4.jpg" class="d-block w-33 px-2" alt="Imagen 4">
-                            <img src="img/galeria/5.jpg" class="d-block w-33 px-2" alt="Imagen 5">
-                            <img src="img/galeria/6.jpg" class="d-block w-33 px-2" alt="Imagen 6">
+                        <div class="d-flex justify-content-center align-items-center bg-light">
+                            <img src="img/galeria/4.jpg" class="d-block w-33 px-1" alt="Imagen 4">
+                            <img src="img/galeria/5.jpg" class="d-block w-33 px-1" alt="Imagen 5">
+                            <img src="img/galeria/6.jpg" class="d-block w-33 px-1" alt="Imagen 6">
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <div class="d-flex justify-content-center align-items-center carousel-multi-item">
-                            <img src="img/galeria/7.jpg" class="d-block w-33 px-2" alt="Imagen 7">
-                            <img src="img/insta.jpg" class="d-block w-33 px-2" alt="Imagen 8">
-                            <img src="img/galeria/8.jpg" class="d-block w-33 px-2 d-none d-sm-block" alt="Imagen repetida para relleno">
+                        <div class="d-flex justify-content-center align-items-center bg-light">
+                            <img src="img/galeria/7.jpg" class="d-block w-33 px-1" alt="Imagen 7">
+                            <img src="img/insta.jpg" class="d-block w-33 px-1" alt="Imagen 8">
+                            <img src="img/galeria/8.jpg" class="d-block w-33 px-1 d-none d-sm-block" alt="Imagen 8">
                         </div>
                     </div>
                 </div>
-                
                 <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
@@ -79,61 +83,80 @@
         </div>
       </section>
 
-
-      <section class="row align-items-start my-4">
-        <div class="col-md-8">
-          <h2>Resumen</h2>
-          <p>Aplicación web para gestionar usuarios, máquinas, reservas y cursos del FabLab. Incluye interfaz pública, panel administrativo y catálogo de recursos.</p>
-
-          <h3 class="mt-4">Características principales</h3>
-          <div class="info-box mb-4">
-            <div class="row">
-              <div class="col-sm-6 feature">
-                <h5>Usuarios</h5>
-                <p class="text-muted mb-0">Registro, inicio de sesión y gestión de suscripciones.</p>
-              </div>
-              <div class="col-sm-6 feature">
-                <h5>Máquinas y reservas</h5>
-                <p class="text-muted mb-0">Catálogo de máquinas, disponibilidad y sistema de reservas con calendario.</p>
-              </div>
-              <div class="col-sm-6 feature">
-                <h5>Cursos y talleres</h5>
-                <p class="text-muted mb-0">Listado de cursos, inscripción y gestión de plazas.</p>
-              </div>
-              <div class="col-sm-6 feature">
-                <h5>Panel administrativo</h5>
-                <p class="text-muted mb-0">CRUD para máquinas, cursos y usuarios.</p>
-              </div>
+      <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            
+            <!-- Descripción -->
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-body p-4">
+                    <h3 class="h4 mb-4 border-bottom pb-2">1. Descripción y Funcionalidades</h3>
+                    <p class="text-muted">La aplicación web del FabLab de Mérida busca ser una plataforma integral para la gestión y difusión de los servicios del laboratorio de fabricación digital de la Universidad de Mérida.</p>
+                    
+                    <div class="row mt-4 text-center">
+                        <div class="col-md-6 mb-4">
+                            <div class="p-3 border rounded bg-light h-100">
+                                <i class="bi bi-people-fill feature-icon text-primary"></i>
+                                <h5 class="h6">Gestión de Usuarios</h5>
+                                <p class="small text-muted mb-0">Registro, login y perfiles.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="p-3 border rounded bg-light h-100">
+                                <i class="bi bi-calendar-check-fill feature-icon text-success"></i>
+                                <h5 class="h6">Reservas</h5>
+                                <p class="small text-muted mb-0">Calendario y turnos de máquinas.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="p-3 border rounded bg-light h-100">
+                                <i class="bi bi-mortarboard-fill feature-icon text-warning"></i>
+                                <h5 class="h6">Cursos</h5>
+                                <p class="small text-muted mb-0">Inscripción y gestión académica.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="p-3 border rounded bg-light h-100">
+                                <i class="bi bi-gear-fill feature-icon text-secondary"></i>
+                                <h5 class="h6">Administración</h5>
+                                <p class="small text-muted mb-0">Control total de recursos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
 
-          <h3 class="mt-4">A futuro</h3>
-          <ul>
-            <li>Habilitar notificaciones por correo para reservas y recordatorios.</li>
-            <li>Registrar historial de uso por usuario para auditoría.</li>
-            <li>Incluir galería de proyectos y tienda en línea como extensiones futuras.</li>
-          </ul>
+            <!-- Tecnologías -->
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-body p-4">
+                    <h3 class="h4 mb-4 border-bottom pb-2">2. Tecnologías</h3>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr><th>Tecnología</th><th>Versión</th><th>Uso</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><i class="bi bi-filetype-java me-2 text-danger"></i>Java</td><td>21</td><td>Backend</td></tr>
+                                <tr><td><i class="bi bi-box-seam me-2 text-success"></i>Spring Boot</td><td>3.5.6</td><td>Framework</td></tr>
+                                <tr><td><i class="bi bi-database me-2 text-primary"></i>MySQL</td><td>8.0</td><td>Datos</td></tr>
+                                <tr><td><i class="bi bi-window me-2 text-info"></i>Thymeleaf</td><td>3.1.3</td><td>Vistas</td></tr>
+                                <tr><td><i class="bi bi-bootstrap me-2 text-purple"></i>Bootstrap</td><td>5.3</td><td>Estilos</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-          <h3>Estructura del proyecto</h3>
-          <div class="info-box info-box-dark">
-            <ul>
-              <li><code>src/main/java</code> — Código Java (Spring Boot)</li>
-              <li><code>src/main/resources/templates</code> — Vistas Thymeleaf</li>
-              <li><code>pom.xml</code> — Dependencias y configuración Maven</li>
-              <li><code>Documentacion/</code> — Scripts SQL y notas (MySQL / Docker)</li>
-            </ul>
-          </div>
-        </div>
+            <!-- Instalación -->
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-body p-4">
+                    <h3 class="h4 mb-4 border-bottom pb-2">3. Instalación</h3>
+                    
+                    <h5 class="h6 mt-3"><i class="bi bi-1-circle me-2"></i>Base de Datos (Docker)</h5>
+                    <div class="code-block mb-3">
+docker network create fablab_net
 
-        <aside class="col-md-4">
-          <div class="card mb-3">
-            <div class="card-body">
-              <h5 class="card-title">Configuración previa: Base de Datos</h5>
-              <h6 class="card-text small">Antes de ejecutar la aplicación:</h6>
-              <p>1. Accede a la terminal desde la carpeta general del proyecto ("ProyectoFinal")</p>
-              <p>2. Ejecuta los siguientes comandos</p>
-              <pre class="small"><code class="kbd">docker network create fablab_net</code></pre>
-              <pre class="small"><code class="kbd">$root = (Get-Location).Path
+$root = (Get-Location).Path
 docker run --name fablab-mysql `
   --network fablab_net `
   -e MYSQL_ROOT_PASSWORD=admin `
@@ -143,31 +166,80 @@ docker run --name fablab-mysql `
   -p 3307:3306 `
   -v fablab_mysql_data:/var/lib/mysql `
   -v "$root\docker\mysql\init:/docker-entrypoint-initdb.d:ro" `
-  -d mysql:8.0</code></pre>
-            </div>
-          </div>
+  -d mysql:8.0
+                    </div>
 
-          <div class="card mb-3">
-            <div class="card-body">
-              <h6>Configuración</h6>
-              <p class="small text-muted">Ajusta `application.properties` con tu conexión a MySQL (ver carpeta <code>Documentacion/</code>).</p>
+                    <h5 class="h6 mt-3"><i class="bi bi-2-circle me-2"></i>Ejecutar Aplicación</h5>
+                    <div class="code-block">
+./mvnw spring-boot:run
+                    </div>
+                    <p class="mt-2 small text-muted">Accede a: <a href="http://localhost:8081" target="_blank">http://localhost:8081</a></p>
+                </div>
             </div>
-          </div>
+        </div>
 
-          <div class="card">
-            <div class="card-body">
-              <h6>Autores</h6>
-              <p class="mb-0">Iván Herculano García — 80100837W</p>
-              <p class="mb-0">Carmen Álvarez Murillo — 80230317S</p>
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            
+            <!-- Equipo -->
+            <div class="card shadow-sm mb-4 border-0 text-center">
+                <div class="card-header bg-white fw-bold py-3">Equipo de Desarrollo</div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <img src="img/ivan.png" alt="Iván" class="team-img mb-2 shadow-sm">
+                        <h6 class="mb-0 fw-bold">Iván Herculano García</h6>
+                        <small class="text-muted">80100837W</small>
+                    </div>
+                    <hr class="my-3">
+                    <div>
+                        <img src="img/carmen.png" alt="Carmen" class="team-img mb-2 shadow-sm">
+                        <h6 class="mb-0 fw-bold">Carmen Álvarez Murillo</h6>
+                        <small class="text-muted">80230317S</small>
+                    </div>
+                </div>
             </div>
-          </div>
-        </aside>
-      </section>
+
+            <!-- Datos de Prueba -->
+            <div class="card shadow-sm mb-4 border-0 bg-light">
+                <div class="card-body">
+                    <h5 class="card-title h6 text-primary"><i class="bi bi-database-check me-2"></i>Datos de Prueba</h5>
+                    <p class="small mb-2 text-muted">Credenciales pre-cargadas:</p>
+                    <ul class="list-group list-group-flush small rounded">
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                            <span>Admin</span>
+                            <span class="badge bg-dark">admin / admin</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                            <span>Usuario</span>
+                            <span class="badge bg-secondary">user / user</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Estructura -->
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-header bg-white fw-bold py-3">Estructura</div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush small font-monospace">
+                        <li class="list-group-item"><i class="bi bi-folder-fill text-warning me-2"></i>docker/mysql/init</li>
+                        <li class="list-group-item"><i class="bi bi-folder-fill text-warning me-2"></i>src/main/java</li>
+                        <li class="list-group-item"><i class="bi bi-folder-fill text-warning me-2"></i>src/main/resources</li>
+                        <li class="list-group-item"><i class="bi bi-file-earmark-code text-muted me-2"></i>pom.xml</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+      </div>
 
     </main>
 
-    <footer class="text-center py-4 text-muted small">
-      <div class="container">Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida</div>
+    <footer class="text-center py-4 text-muted small mt-5 border-top">
+      <div class="container">
+        <p class="mb-0">Proyecto académico  FabLab Mérida</p>
+        <p class="mb-0">Metodología y Desarrollo de Aplicaciones para Internet (2025-26)</p>
+      </div>
     </footer>
 
     <script src="js/bootstrap.bundle.min.js"></script>
