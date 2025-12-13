@@ -64,16 +64,24 @@
                 </div>
             </div>
             <div class='d-flex flex-wrap align-items-center gap-2 mt-1'>
-              <a th:if="${isAdmin or statusName != 'En_mantenimiento'}" th:href="@{/machines/{id}/reserve(id=${m.id})}" class='btn btn-sm btn-fablab-action'>Reservar</a>
-              <a th:if="${isAdmin}" th:href="@{/admin/modify-machine(id=${m.id})}" class='btn btn-sm btn-outline-primary'><i class='bi bi-pencil-square'></i> Editar</a>
+              <a th:if="${isAdmin or statusName != 'En_mantenimiento'}" th:href="@{/machines/{id}/reserve(id=${m.id})}" class='btn btn-fablab-action'>
+                  <i class="bi bi-calendar-check me-2"></i>Reservar
+              </a>
+              <button th:if="${!isAdmin and statusName == 'En_mantenimiento'}" class="btn btn-secondary disabled" disabled>
+                  <i class="bi bi-tools me-2"></i>En Mantenimiento
+              </button>
+              
+              <a th:if="${isAdmin}" th:href="@{/admin/modify-machine(id=${m.id})}" class='btn btn-primary'><i class='bi bi-pencil-square'></i> Editar</a>
               <form th:if="${isAdmin}" th:id="${'form-delete-machine-' + m.id}" th:action="@{/admin/machines/{id}/delete(id=${m.id})}" method='post' class='d-inline'></form>
-              <button th:if="${isAdmin}" type='button' class='btn btn-sm btn-outline-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' 
+              <button th:if="${isAdmin}" type='button' class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#deleteMachineModal' 
               th:data-machine-id="${m.id}" th:data-machine-name="${m.name}"><i class='bi bi-trash'></i> Borrar</button>
             </div>
           </div>
 
-          <div class="col-lg-4 d-flex align-items-center">
-            <img th:src="${machineImageUrls[m.id]}" alt="Imagen máquina" class="d-block mx-auto img-fluid mb-4 img-float" style="max-width: 80%;" />
+          <div class="col-lg-4 d-flex align-items-center justify-content-center">
+            <div class="machine-image-container rounded-4" style="width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+                <img th:src="${machineImageUrls[m.id]}" alt="Imagen máquina" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+            </div>
           </div>
         </div>
       </div>
