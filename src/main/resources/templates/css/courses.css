@@ -5,9 +5,9 @@
 /* === ESTILO DEL CONTENEDOR DEL TÍTULO PRINCIPAL (Recuadro Amarillo) === */
 
 .course-hero-title {
-    background: #fff6d1 !important; 
+    background: var(--hero-bg) !important; 
     border: none !important;
-    border-top: 6px solid #f8bc1e !important; 
+    border-top: 6px solid var(--hero-border) !important; 
     
     /* Borde inferior del título a 0 para que se pegue al buscador */
     border-radius: 0 0 0 0 !important; 
@@ -31,13 +31,13 @@
     right: 30px;
     width: 60px;
     height: 6px;
-    background-color: #ffeaa7; 
+    background-color: var(--hero-accent); 
     border-radius: 0 0 4px 4px;
 }
 
 /* Estilo del H2 dentro del contenedor amarillo */
 .course-hero-title h2 {
-    color: #2C3E50; 
+    color: var(--hero-text); 
     font-size: 43.8504px;
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     font-weight: 700; 
@@ -49,9 +49,9 @@
 
 .course-search-bar {
     /* Fondo AMARILLO CLARO */
-    background: #fff6d1; 
+    background: var(--hero-bg); 
     /* Borde principal amarillo fuerte */
-    border: 1px solid #f8bc1e; 
+    border: none; 
     border-top: none; /* Quitamos el borde superior para que se pegue al título */
     /* Bordes inferiores redondeados para terminar la sección */
     border-radius: 0 0 15px 15px; 
@@ -66,20 +66,24 @@
 /* Estilo del INPUT dentro de la barra */
 .course-search-bar .form-control {
     border-radius: 8px 0 0 8px; 
-    border-color: #f8bc1e; /* Borde amarillo fuerte */
+    border-color: var(--hero-border); /* Borde amarillo fuerte */
     transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: var(--input-bg);
+    color: var(--input-text);
 }
 
 .course-search-bar .form-control:focus {
     border-color: #e0a800; /* Amarillo más oscuro al hacer focus */
     box-shadow: 0 0 0 0.25rem rgba(248, 188, 30, 0.25);
+    background-color: var(--input-bg);
+    color: var(--input-text);
 }
 
 /* Estilo del BOTÓN de Buscar (SÓLIDO AMARILLO) */
 .course-search-bar .btn-action-search {
-    background-color: #f8bc1e; 
-    border-color: #f8bc1e;
-    color: #2c3e50; /* Texto oscuro para el contraste */
+    background-color: var(--hero-border); 
+    border-color: var(--hero-border);
+    color: var(--hero-text); /* Texto oscuro para el contraste */
     font-weight: 600;
     
     border-radius: 0 8px 8px 0; 
@@ -89,7 +93,7 @@
 .course-search-bar .btn-action-search:hover {
     background-color: #e0a800;
     border-color: #e0a800;
-    color: #2c3e50;
+    color: var(--hero-text);
 }
 
 
@@ -99,8 +103,8 @@
   position: relative;
   max-width: 320px; 
   min-width: 280px;
-  background: #ffffff; 
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--card-bg); 
+  border: 1px solid var(--border-color);
   border-radius: 12px; 
   padding: 0; 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -115,8 +119,8 @@
 .card:hover {
   transform: translateY(-5px); 
   box-shadow: 0 10px 25px rgba(248, 188, 30, 0.4); 
-  border-color: #f8bc1e; 
-  background-color: #fff6d1; 
+  border-color: var(--hero-border); 
+  background-color: var(--hero-bg); 
 }
 
 
@@ -243,16 +247,3 @@
     color: #2c3e50;
 }
 
-/* Estilo para la Tarjeta de Añadir Curso (Admin) */
-.card-add-course {
-    border: 2px dashed #f8bc1e;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background-color: #fff6d1; 
-    color: #2c3e50;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.card-add-course:hover {
-    transform: translateY(-5px); 
-    box-shadow: 0 10px 20px rgba(248, 188, 30, 0.4); 
-}

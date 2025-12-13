@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,12 +71,19 @@ public class ProductController {
             sp.setSubName("Estándar");
             sp.setPrice(price);
             sp.setStock(stock != null ? stock : 0);
-            
-            sp.setImage1(saveImage(image1));
-            sp.setImage2(saveImage(image2));
-            sp.setImage3(saveImage(image3));
-            
-            productService.saveSubProduct(sp);
+
+            // Save first to get ID
+            SubProduct savedSp = productService.saveSubProduct(sp);
+
+            String img1 = saveImage(image1, saved.getId(), savedSp.getId(), 1);
+            String img2 = saveImage(image2, saved.getId(), savedSp.getId(), 2);
+            String img3 = saveImage(image3, saved.getId(), savedSp.getId(), 3);
+
+            savedSp.setImage1(img1);
+            savedSp.setImage2(img2);
+            savedSp.setImage3(img3);
+
+            productService.saveSubProduct(savedSp);
         }
 
         return "redirect:/admin/modify-product?id=" + saved.getId();
@@ -98,12 +106,18 @@ public class ProductController {
             sp.setSubName(subName);
             sp.setPrice(price);
             sp.setStock(stock);
-            
-            sp.setImage1(saveImage(image1));
-            sp.setImage2(saveImage(image2));
-            sp.setImage3(saveImage(image3));
-            
-            productService.saveSubProduct(sp);
+
+            SubProduct savedSp = productService.saveSubProduct(sp);
+
+            String img1 = saveImage(image1, productId, savedSp.getId(), 1);
+            String img2 = saveImage(image2, productId, savedSp.getId(), 2);
+            String img3 = saveImage(image3, productId, savedSp.getId(), 3);
+
+            savedSp.setImage1(img1);
+            savedSp.setImage2(img2);
+            savedSp.setImage3(img3);
+
+            productService.saveSubProduct(savedSp);
         }
         return "redirect:/admin/modify-product?id=" + productId;
     }
@@ -125,22 +139,23 @@ public class ProductController {
     }
 
     private void deleteImage(String imagePath) {
-        if (imagePath == null || imagePath.isEmpty()) return;
+        if (imagePath == null || imagePath.isEmpty()) {
+            return;
+        }
         try {
-            // imagePath is like "/img/upload/filename.jpg"
-            // We need to remove the leading "/" and prepend the project path
+            // imagePath is like "/img/upload/product_1/subproduct_1_1.jpg"
             String relativePath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
-            
+
             String userDir = System.getProperty("user.dir");
             Path projectRoot = Paths.get(userDir);
             if (Files.exists(projectRoot.resolve("ProyectoMDAI"))) {
                 projectRoot = projectRoot.resolve("ProyectoMDAI");
             }
-            
+
             // Delete from src/main/resources/static/
             Path srcPath = projectRoot.resolve("src/main/resources/static/" + relativePath);
             Files.deleteIfExists(srcPath);
-            
+
             // Delete from target/classes/static/
             Path targetPath = projectRoot.resolve("target/classes/static/" + relativePath);
             Files.deleteIfExists(targetPath);
@@ -149,11 +164,17 @@ public class ProductController {
         }
     }
 
-    private String saveImage(MultipartFile file) {
+    private String saveImage(MultipartFile file, Long productId, Long subProductId, int imageNumber) {
         if (file == null || file.isEmpty()) return null;
         try {
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            byte[] bytes = file.getBytes();
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.lastIndexOf(".") > 0) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            
+            String fileName = "subproduct_" + subProductId + "_" + imageNumber + extension;
+            String folderName = "product_" + productId;
             
             String userDir = System.getProperty("user.dir");
             Path projectRoot = Paths.get(userDir);
@@ -161,17 +182,17 @@ public class ProductController {
                 projectRoot = projectRoot.resolve("ProyectoMDAI");
             }
             
-            // Save to src/main/resources/static/img/upload/
-            Path uploadPath = projectRoot.resolve("src/main/resources/static/img/upload/");
+            // Save to src/main/resources/static/img/products/product_{id}/
+            Path uploadPath = projectRoot.resolve("src/main/resources/static/img/products/").resolve(folderName);
             if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
-            Files.write(uploadPath.resolve(fileName), bytes);
+            Files.write(uploadPath.resolve(fileName), file.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             
-            // Also copy to target/classes/static/img/upload/ so it's available immediately without restart
-            Path targetPath = projectRoot.resolve("target/classes/static/img/upload/");
+            // Save to target/classes/static/img/products/product_{id}/
+            Path targetPath = projectRoot.resolve("target/classes/static/img/products/").resolve(folderName);
             if (!Files.exists(targetPath)) Files.createDirectories(targetPath);
-            Files.write(targetPath.resolve(fileName), bytes);
+            Files.write(targetPath.resolve(fileName), file.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             
-            return "/img/upload/" + fileName;
+            return "/img/products/" + folderName + "/" + fileName;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -210,10 +231,32 @@ public class ProductController {
 
     @PostMapping("/admin/products/delete")
     public String deleteProduct(@RequestParam("id") Long id) {
+        deleteProductFolder(id);
         productService.deleteById(id);
         return "redirect:/admin/admin";
     }
-    
+
+    private void deleteProductFolder(Long productId) {
+        try {
+            String folderName = "product_" + productId;
+            String userDir = System.getProperty("user.dir");
+            Path projectRoot = Paths.get(userDir);
+            if (Files.exists(projectRoot.resolve("ProyectoMDAI"))) {
+                projectRoot = projectRoot.resolve("ProyectoMDAI");
+            }
+
+            // Delete from src
+            Path srcPath = projectRoot.resolve("src/main/resources/static/img/products/").resolve(folderName);
+            FileSystemUtils.deleteRecursively(srcPath);
+            
+            // Delete from target
+            Path targetPath = projectRoot.resolve("target/classes/static/img/products/").resolve(folderName);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @PostMapping("/admin/subproducts/update")
     public String updateSubProduct(
             @RequestParam("id") Long id,
@@ -231,22 +274,28 @@ public class ProductController {
             sp.setSubName(subName);
             sp.setPrice(price);
             sp.setStock(stock);
-            
-            String img1 = saveImage(image1);
+
+            String img1 = saveImage(image1, productId, sp.getId(), 1);
             if (img1 != null) {
-                deleteImage(sp.getImage1());
+                if (sp.getImage1() != null && !sp.getImage1().equals(img1)) {
+                    deleteImage(sp.getImage1());
+                }
                 sp.setImage1(img1);
             }
-            
-            String img2 = saveImage(image2);
+
+            String img2 = saveImage(image2, productId, sp.getId(), 2);
             if (img2 != null) {
-                deleteImage(sp.getImage2());
+                if (sp.getImage2() != null && !sp.getImage2().equals(img2)) {
+                    deleteImage(sp.getImage2());
+                }
                 sp.setImage2(img2);
             }
-            
-            String img3 = saveImage(image3);
+
+            String img3 = saveImage(image3, productId, sp.getId(), 3);
             if (img3 != null) {
-                deleteImage(sp.getImage3());
+                if (sp.getImage3() != null && !sp.getImage3().equals(img3)) {
+                    deleteImage(sp.getImage3());
+                }
                 sp.setImage3(img3);
             }
 

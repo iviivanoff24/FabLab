@@ -477,7 +477,7 @@ public class CourseController {
         String[] exts = {".jpg",".png",".gif"};
         for (String ext: exts) {
             Path p = getUploadsDir().resolve("course-" + id + ext);
-            if (Files.exists(p)) return "/img/upload/courses/course-" + id + ext;
+            if (Files.exists(p)) return "/img/courses/course-" + id + ext;
         }
         return "/img/curso.png";
     }
@@ -501,9 +501,9 @@ public class CourseController {
      * @return {@code Path} al directorio de uploads
      */
     private Path getUploadsDir() {
-        Path moduleDir = Path.of("ProyectoMDAI","src","main","resources","templates","img","upload","courses");
+        Path moduleDir = Path.of("ProyectoMDAI","src","main","resources","static","img","courses");
         if (Files.exists(moduleDir.getParent() != null ? moduleDir.getParent().getParent() : moduleDir)) return moduleDir;
-        Path localDir = Path.of("src","main","resources","templates","img","upload","courses");
+        Path localDir = Path.of("src","main","resources","static","img","courses");
         return localDir;
     }
 }

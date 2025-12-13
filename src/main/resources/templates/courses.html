@@ -26,15 +26,27 @@
         <div class="course-search-bar">
           <div class="input-group">
             <input id="courseSearch" class="form-control" type="search" placeholder="Buscar cursos por nombre o descripción..." aria-label="Buscar cursos">
+            <select id="courseStatusFilter" class="form-select" aria-label="Filtrar por estado" style="max-width: 180px;">
+                <option value="">Todos los estados</option>
+                <option value="Disponible">Disponible</option>
+                <option value="Plazas_completas">Plazas completas</option>
+                <option value="No_disponible">No disponible</option>
+                <option value="Inscrito" th:if="${session.USER_ID != null}">Inscrito</option>
+            </select>
+            <select id="coursePriceFilter" class="form-select" aria-label="Filtrar por precio" style="max-width: 150px;">
+                <option value="">Cualquier precio</option>
+                <option value="free">Gratis</option>
+                <option value="paid">De pago</option>
+            </select>
             <button class="btn btn-action-search" type="button"><i class="bi bi-search"></i> Buscar</button>
           </div>
         </div>
         
         <div th:if="${isAdmin}" class="mb-5 mt-5"> <div class="card card-add-course mx-auto" style="max-width: 320px;">
-            <a href="/admin/courses/new" class="text-decoration-none text-dark">
+            <a href="/admin/courses/new" class="text-decoration-none">
               <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
                 <i class="bi bi-plus-circle-fill display-4 text-warning mb-2"></i>
-                <h5 class="card-title text-dark m-0">Añadir Nuevo Curso</h5>
+                <h5 class="card-title m-0">Añadir Nuevo Curso</h5>
               </div>
             </a>
           </div>
@@ -45,7 +57,7 @@
         <div th:if="${!#lists.isEmpty(courses)}" class="d-flex flex-wrap justify-content-around gap-4">
           
           <div class="card course-card" th:each="c : ${courses}"
-            th:attr="data-name=${c.name},data-desc=${c.description}"
+            th:attr="data-name=${c.name},data-desc=${c.description},data-status=${courseStatus[c.id]},data-price-type=${c.precio == 0 ? 'free' : 'paid'}"
             th:with="spotsFull=${c.capacity != null and c.inscriptions.size() >= c.capacity},
                   statusName=${courseStatus[c.id]},
                   statusClass=${statusName == 'Inscrito' ? ' text-bg-info' : (statusName == 'No_disponible' ? ' text-bg-secondary' : (statusName == 'Plazas_completas' ? ' text-bg-danger' : ' text-bg-success'))},
@@ -139,22 +151,42 @@
     // Filtro de búsqueda cliente para cursos
     document.addEventListener('DOMContentLoaded', function(){
       var input = document.getElementById('courseSearch');
-      if(!input) return;
-      var noResults = document.getElementById('noResults'); 
+      var statusSelect = document.getElementById('courseStatusFilter');
+      var priceSelect = document.getElementById('coursePriceFilter');
+      
+      if(!input || !statusSelect || !priceSelect) return;
+      
       var cards = function(){ return Array.from(document.querySelectorAll('.course-card')); };
       var normalize = function(s){ return (s||'').toString().toLowerCase().trim(); };
+      
       var applyFilter = function(){
         var q = normalize(input.value);
-        var visible = 0;
+        var s = statusSelect.value;
+        var p = priceSelect.value;
+        
         cards().forEach(function(card){
           var name = normalize(card.getAttribute('data-name'));
           var desc = normalize(card.getAttribute('data-desc'));
-          var match = q === '' || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
-          card.style.display = match ? '' : 'none';
-          if(match) visible++;
+          var status = card.getAttribute('data-status');
+          var priceType = card.getAttribute('data-price-type');
+          
+          var matchName = q === '' || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+          var matchStatus = s === '' || status === s;
+          var matchPrice = p === '' || priceType === p;
+          
+          if (matchName && matchStatus && matchPrice) {
+             card.classList.remove('d-none');
+             card.style.display = '';
+          } else {
+             card.classList.add('d-none');
+             card.style.display = 'none';
+          }
         });
       };
+      
       input.addEventListener('input', applyFilter);
+      statusSelect.addEventListener('change', applyFilter);
+      priceSelect.addEventListener('change', applyFilter);
     });
     /*]]>*/
     </script>

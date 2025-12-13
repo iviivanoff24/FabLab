@@ -33,18 +33,29 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Recursos estáticos dentro de templates
-        String basePath = "classpath:/templates/";
-        registry.addResourceHandler("/css/**").addResourceLocations(basePath + "css/");
-        registry.addResourceHandler("/js/**").addResourceLocations(basePath + "js/");
-        registry.addResourceHandler("/img/**").addResourceLocations(basePath + "img/");
-        // Carpeta de subidas dentro del proyecto: resolvemos ruta absoluta de forma robusta
-        Path moduleUpload = Path.of("ProyectoMDAI", "src", "main", "resources", "templates", "img", "upload");
-        Path localUpload = Path.of("src", "main", "resources", "templates", "img", "upload");
-        Path chosen = Files.exists(moduleUpload) ? moduleUpload : localUpload;
-        String fileUrl = "file:" + chosen.toAbsolutePath().toString().replace('\\', '/') + "/";
-        registry.addResourceHandler("/img/upload/**")
-            .addResourceLocations(fileUrl);
+        // Recursos estáticos estándar (Spring Boot busca en static/ por defecto, pero aquí forzamos/añadimos)
+        registry.addResourceHandler("/css/**").addResourceLocations("classpath:/static/css/", "classpath:/templates/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/js/", "classpath:/templates/js/");
+        
+        // Imágenes estáticas generales
+        registry.addResourceHandler("/img/**").addResourceLocations("classpath:/static/img/", "classpath:/templates/img/");
+
+        // Configuración para servir imágenes subidas dinámicamente desde el sistema de archivos (src)
+        // Esto permite ver las imágenes recién subidas sin reiniciar
+        String userDir = System.getProperty("user.dir");
+        Path projectRoot = Path.of(userDir);
+        if (Files.exists(projectRoot.resolve("ProyectoMDAI"))) {
+            projectRoot = projectRoot.resolve("ProyectoMDAI");
+        }
+        
+        Path staticImgPath = projectRoot.resolve("src/main/resources/static/img");
+        String fileUrl = "file:///" + staticImgPath.toAbsolutePath().toString().replace('\\', '/') + "/";
+
+        // Handlers específicos para cada tipo de entidad
+        registry.addResourceHandler("/img/products/**").addResourceLocations(fileUrl + "products/");
+        registry.addResourceHandler("/img/machines/**").addResourceLocations(fileUrl + "machines/");
+        registry.addResourceHandler("/img/courses/**").addResourceLocations(fileUrl + "courses/");
+        registry.addResourceHandler("/img/upload/**").addResourceLocations(fileUrl + "upload/"); // Legacy support
     }
 
     /**

@@ -17,15 +17,54 @@ html {
     --primary-color: #3498db;
     --secondary-color: #2ecc71;
     --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    /* Variables para el fondo */
+    
+    /* Variables para el tema CLARO (Default) */
     --bg-color: #f8f9fa;
-    --grid-line: #e5e7eb; /* Gris suave para las líneas */
+    --text-color: #222;
+    --text-muted: #6c757d;
+    --header-bg: rgba(255, 255, 255, 0.95);
+    --footer-bg: #ffffff;
+    --card-bg: #ffffff;
+    --border-color: #eaeaea;
+    --grid-line: #e5e7eb; 
+    --radial-center: #ffffff;
+    --input-bg: #fff;
+    --input-border: #ced4da;
+    --input-text: #212529;
+
+    /* Variables para Hero/Search (Amarillo) */
+    --hero-bg: #fff6d1;
+    --hero-border: #f8bc1e;
+    --hero-text: #2C3E50;
+    --hero-accent: #ffeaa7;
+}
+
+[data-theme="dark"] {
+    /* Variables para el tema OSCURO */
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --header-bg: rgba(18, 18, 18, 0.95);
+    --footer-bg: #1e1e1e;
+    --card-bg: #1e1e1e;
+    --border-color: #333;
+    --grid-line: #333;
+    --radial-center: #1e1e1e;
+    --input-bg: #2c2c2c;
+    --input-border: #444;
+    --input-text: #e0e0e0;
+
+    /* Variables para Hero/Search (Oscuro con acento amarillo) */
+    --hero-bg: #2a2a2a;
+    --hero-border: #f8bc1e;
+    --hero-text: #e0e0e0;
+    --hero-accent: #444;
 }
 
 /* Estilos generales del body */
 body {
     font-family: var(--font-main);
-    color: #222;
+    color: var(--text-color);
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -37,8 +76,8 @@ body {
     /* === FONDO DE CUADRÍCULA DIFUMINADO === */
     background-color: var(--bg-color);
     background-image: 
-        /* CAPA 1: Máscara Radial (Blanco en centro -> Transparente en bordes) */
-        radial-gradient(circle at center, #ffffff 20%, rgba(255, 255, 255, 0) 90%),
+        /* CAPA 1: Máscara Radial */
+        radial-gradient(circle at center, var(--radial-center) 20%, rgba(255, 255, 255, 0) 90%),
         /* CAPA 2: Líneas Horizontales */
         linear-gradient(var(--grid-line) 1px, transparent 1px),
         /* CAPA 3: Líneas Verticales */
@@ -52,6 +91,15 @@ body {
     
     /* Fijamos el fondo para que el efecto "luz" se quede en el centro al hacer scroll */
     background-attachment: fixed;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Ajuste para modo oscuro en el degradado radial */
+[data-theme="dark"] body {
+    background-image: 
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
 }
 
 main {
@@ -62,20 +110,33 @@ main {
 
 /* === BARRA DE NAVEGACIÓN === */
 header {
-    border-bottom: 1px solid #eaeaea;
-    background-color: rgba(255, 255, 255, 0.95); /* Ligeramente transparente */
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--header-bg) !important; 
     backdrop-filter: blur(5px);
     position: relative;
     z-index: 10;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Textos en header */
+header .text-dark, 
+header .nav-link,
+header .btn-link {
+    color: var(--text-color) !important;
+}
+
+header .bg-white {
+    background-color: transparent !important;
 }
 
 .nav-underline .nav-link {
   font-weight: 500;
   padding: 0.75rem 1rem;
+  color: var(--text-color) !important;
 }
 
 .nav-underline .nav-link:hover {
-  color: #0d6efd;
+  color: #0d6efd !important;
 }
 
 .nav-underline .nav-link.active {
@@ -92,53 +153,62 @@ header {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 1rem;
-    background-color: #fff; 
+    background-color: var(--card-bg); 
 }
 
 .week-table th, .week-table td {
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
     text-align: center;
     vertical-align: middle;
     padding: 0.5rem;
     min-width: 2.5rem; 
+    color: var(--text-color);
 }
 
-.week-table th { background: #f8f9fa; }
-.week-table td.slot-available { background: var(--secondary-color, #28a745); color: #fff; }
-.week-table td.slot-medium { background: #ffc107; color: #212529; }
-.week-table td.slot-high { background: #fd7e14; color: #fff; }
-.week-table td.slot-full { background: #dc3545; color: #fff; }
-.week-table td.slot-unavailable { background: #6c757d; color: #fff; opacity: 0.95; }
+.week-table th { background: var(--bg-color); }
 
-.week-table td {
-  height: 2.1rem;
-  padding: 0;
-}
-.week-table td::before {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 100%;
+/* Inputs y Selects en modo oscuro */
+[data-theme="dark"] .form-control, 
+[data-theme="dark"] .form-select {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-text);
 }
 
-@media (max-width: 720px) {
-  .week-table th, .week-table td { min-width: 1.6rem; }
-  .week-table td { width: 1.6rem; height: 1.6rem; }
-  .week-table thead th { font-size: 0.7rem; }
+[data-theme="dark"] .form-control::placeholder {
+    color: #888;
 }
 
-.week-grid .hour {
-  background: #ffffff;
-  color: #6c757d;
+/* Cards en modo oscuro */
+[data-theme="dark"] .card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .card-title, 
+[data-theme="dark"] .card-text,
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .text-secondary {
+    color: var(--text-muted) !important;
 }
 
 footer {
-    border-top: 1px solid #eaeaea;
+    border-top: 1px solid var(--border-color);
     margin-top: 4rem;
     padding-top: 2rem;
-    background-color: #fff;
+    background-color: var(--footer-bg) !important;
     position: relative;
     z-index: 2;
+    color: var(--text-muted);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 /* Alineaciones específicas: forzar texto a la izquierda para recibos, cursos y reservas */
@@ -153,4 +223,429 @@ footer {
   .list-group-item > div {
     text-align: left !important;
   }
+}
+
+/* =========================================
+   ADMIN HERO TITLE
+   ========================================= */
+.admin-hero, .cart-hero, .payment-hero, .reserve-hero, .course-hero {
+    background: var(--hero-bg);
+    border-top: 6px solid var(--hero-border);
+    border-radius: 0 0 15px 15px;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+    position: relative;
+    text-align: center;
+}
+
+.admin-hero::after, .cart-hero::after, .payment-hero::after, .reserve-hero::after, .course-hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 30px;
+    width: 60px;
+    height: 6px;
+    background-color: var(--hero-accent); 
+    border-radius: 0 0 4px 4px;
+}
+
+.admin-hero h1, .cart-hero h1, .payment-hero h1, .reserve-hero h1, .course-hero h1 {
+    color: var(--hero-text);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.admin-hero p, .cart-hero p, .payment-hero p, .reserve-hero p, .course-hero p {
+    color: var(--text-muted);
+    margin-bottom: 0;
+}
+
+/* Dark mode overrides for admin hero */
+[data-theme="dark"] .admin-hero, [data-theme="dark"] .cart-hero, [data-theme="dark"] .payment-hero, [data-theme="dark"] .reserve-hero, [data-theme="dark"] .course-hero {
+    background-color: var(--card-bg);
+    border-top-color: var(--hero-border);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .admin-hero h1, [data-theme="dark"] .cart-hero h1, [data-theme="dark"] .payment-hero h1, [data-theme="dark"] .reserve-hero h1, [data-theme="dark"] .course-hero h1 {
+    color: var(--text-color);
+}
+
+/* =========================================
+   PAYMENT PAGE STYLES
+   ========================================= */
+.custom-radio-card {
+    padding: 0;
+    margin: 0;
+}
+
+.custom-radio-card .form-check-input {
+    display: none; /* Hide default radio */
+}
+
+.custom-radio-card .form-check-label {
+    display: block;
+    padding: 1rem 1.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    min-width: 120px;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+.custom-radio-card .form-check-input:checked + .form-check-label {
+    border-color: var(--hero-border);
+    background-color: rgba(248, 188, 30, 0.1);
+    color: var(--hero-text);
+    font-weight: bold;
+}
+
+.custom-radio-card .form-check-label:hover {
+    border-color: var(--hero-border);
+}
+
+[data-theme="dark"] .custom-radio-card .form-check-input:checked + .form-check-label {
+    color: var(--hero-text); /* Uses the yellow/white adjusted hero text */
+}
+
+/* =========================================
+   BOOTSTRAP DARK MODE OVERRIDES
+   ========================================= */
+
+/* Tables */
+[data-theme="dark"] .table {
+    color: var(--text-color);
+    --bs-table-color: var(--text-color);
+    --bs-table-bg: var(--card-bg);
+    --bs-table-border-color: var(--border-color);
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
+    --bs-table-striped-color: var(--text-color);
+    --bs-table-active-bg: rgba(255, 255, 255, 0.1);
+    --bs-table-active-color: var(--text-color);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.075);
+    --bs-table-hover-color: var(--text-color);
+}
+
+[data-theme="dark"] .table-light {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .table-light th,
+[data-theme="dark"] .table-light td {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+/* Nav Tabs */
+[data-theme="dark"] .nav-tabs .nav-link {
+    color: var(--text-muted);
+    border-color: transparent;
+}
+
+[data-theme="dark"] .nav-tabs .nav-link:hover {
+    color: var(--text-color);
+    border-color: var(--border-color) var(--border-color) transparent;
+}
+
+[data-theme="dark"] .nav-tabs .nav-link.active {
+    color: var(--text-color);
+    background-color: var(--card-bg);
+    border-color: var(--border-color) var(--border-color) var(--card-bg);
+}
+
+[data-theme="dark"] .nav-tabs {
+    border-bottom-color: var(--border-color);
+}
+
+/* Modals */
+[data-theme="dark"] .modal-content {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Dropdowns */
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+}
+
+/* Border utilities */
+[data-theme="dark"] .border {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .border-top, 
+[data-theme="dark"] .border-bottom, 
+[data-theme="dark"] .border-start, 
+[data-theme="dark"] .border-end {
+    border-color: var(--border-color) !important;
+}
+
+/* Input Group Text */
+[data-theme="dark"] .input-group-text {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--input-border);
+}
+
+/* List Group */
+[data-theme="dark"] .list-group-item {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .list-group-item-action:hover,
+[data-theme="dark"] .list-group-item-action:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+}
+
+/* Machine Cards in Dark Mode */
+[data-theme="dark"] .machine-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+/* Index Welcome Card in Dark Mode */
+[data-theme="dark"] .welcome-card:not(.machine-card) {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-top: 6px solid var(--hero-border);
+    border-radius: 0 0 1rem 1rem;
+    padding: 3rem;
+}
+
+[data-theme="dark"] .info-panel {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================================
+   ADD ITEM CARDS (Shared across Machines, Products, Courses)
+   ========================================= */
+.card.card-add-course, 
+.card.card-add-machine, 
+.card.card-add-product {
+    border: 2px dashed #f8bc1e;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff6d1;
+    color: #2c3e50;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card.card-add-course:hover, 
+.card.card-add-machine:hover, 
+.card.card-add-product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(248, 188, 30, 0.4);
+    background-color: #fff6d1; /* Ensure hover doesn't change bg to white/default */
+}
+
+/* Dark Mode for Add Cards */
+[data-theme="dark"] .card.card-add-course, 
+[data-theme="dark"] .card.card-add-machine,
+[data-theme="dark"] .card.card-add-product {
+    background-color: rgba(248, 188, 30, 0.1); 
+    border-color: var(--hero-border);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .card.card-add-course .card-title, 
+[data-theme="dark"] .card.card-add-machine .card-title,
+[data-theme="dark"] .card.card-add-product .card-title {
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .card.card-add-course:hover, 
+[data-theme="dark"] .card.card-add-machine:hover,
+[data-theme="dark"] .card.card-add-product:hover {
+    background-color: rgba(248, 188, 30, 0.2);
+    box-shadow: 0 10px 20px rgba(248, 188, 30, 0.2);
+}
+
+/* =========================================
+   ADMIN PANEL & PROFILE FIXES
+   ========================================= */
+
+/* Admin Panel Tabs Container */
+[data-theme="dark"] .tab-content {
+    background-color: var(--card-bg);
+    border-color: var(--border-color) !important;
+    color: var(--text-color);
+}
+
+/* Profile Hero Section */
+[data-theme="dark"] .hero {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+/* Profile Cards & General Cards in Dark Mode */
+[data-theme="dark"] .card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .card-header {
+    border-bottom-color: var(--border-color);
+    background-color: rgba(255, 255, 255, 0.02);
+    color: var(--text-color);
+}
+
+/* Buttons in Dark Mode */
+[data-theme="dark"] .btn-outline-secondary {
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    border-color: var(--text-muted);
+}
+
+[data-theme="dark"] .btn-outline-danger {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+[data-theme="dark"] .btn-outline-danger:hover {
+    background-color: #ff6b6b;
+    color: #fff;
+}
+
+/* Badges & Payment Texts in Dark Mode */
+[data-theme="dark"] .badge.bg-light {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .badge.bg-success,
+[data-theme="dark"] .text-bg-success {
+    background-color: rgba(25, 135, 84, 0.2) !important;
+    color: #75b798 !important;
+    border: 1px solid #75b798;
+}
+
+[data-theme="dark"] .badge.bg-danger,
+[data-theme="dark"] .text-bg-danger {
+    background-color: rgba(220, 53, 69, 0.2) !important;
+    color: #ea868f !important;
+    border: 1px solid #ea868f;
+}
+
+[data-theme="dark"] .badge.bg-warning,
+[data-theme="dark"] .text-bg-warning {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+    color: #ffda6a !important;
+    border: 1px solid #ffda6a;
+}
+
+[data-theme="dark"] .badge.bg-info,
+[data-theme="dark"] .text-bg-info {
+    background-color: rgba(13, 202, 240, 0.2) !important;
+    color: #6edff6 !important;
+    border: 1px solid #6edff6;
+}
+
+[data-theme="dark"] .badge.bg-secondary,
+[data-theme="dark"] .text-bg-secondary {
+    background-color: rgba(108, 117, 125, 0.2) !important;
+    color: #a7acb1 !important;
+    border: 1px solid #a7acb1;
+}
+
+[data-theme="dark"] .badge.bg-primary,
+[data-theme="dark"] .text-bg-primary {
+    background-color: rgba(13, 110, 253, 0.2) !important;
+    color: #6ea8fe !important;
+    border: 1px solid #6ea8fe;
+}
+
+/* =========================================
+   PROFILE PAGE SPECIFIC DARK MODE OVERRIDES
+   ========================================= */
+
+/* Fix for white sections in profile page */
+[data-theme="dark"] main section:not(.hero) {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color);
+    box-shadow: none;
+}
+
+/* Fix for sidebar card in profile page */
+[data-theme="dark"] aside .card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color);
+    box-shadow: none;
+}
+
+[data-theme="dark"] aside .card:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Fix for code blocks in profile sidebar */
+[data-theme="dark"] aside .card pre {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+/* Fix for info boxes */
+[data-theme="dark"] .info-box {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .info-box-dark {
+    background-color: rgba(13, 110, 253, 0.1);
+    border-left-color: #0d6efd;
+}
+
+/* Fix for feature items hover */
+[data-theme="dark"] .feature:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Fix for profile list items */
+[data-theme="dark"] .list-group-item {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .list-group-item .text-muted {
+    color: var(--text-muted) !important;
 }

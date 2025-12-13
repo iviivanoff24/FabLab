@@ -8,7 +8,7 @@ html {
 body {
     /* Usamos la fuente definida en main.css */
     font-family: var(--font-main, 'Segoe UI', system-ui, -apple-system, sans-serif); 
-    color: #333;
+    color: var(--text-color);
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -16,13 +16,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     
-    /* Fondo con cuadrícula (Depende de main.css, pero se mantiene la definición local) */
-    background-color: #f8f9fa;
-    background-image: 
-        linear-gradient(#e5e7eb 1px, transparent 1px),
-        linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
-    background-size: 40px 40px; 
-    background-position: center top;
+    /* Fondo con cuadrícula (Depende de main.css) */
 }
 
 main {
@@ -35,15 +29,15 @@ main {
    2. BARRA DE NAVEGACIÓN (INTACTA)
    ========================================= */
 header {
-    background-color: #ffffff;
-    border-bottom: 1px solid #eaeaea;
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
     box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
 .nav-underline .nav-link {
     font-weight: 500;
     padding: 0.75rem 1rem;
-    color: #212529;
+    color: var(--text-color);
     transition: color 0.15s ease-in-out;
     background-color: transparent !important;
     border-radius: 0;
@@ -65,9 +59,9 @@ header {
    ========================================= */
 .hero {
     /* Fondo y borde amarillo fuerte */
-    background: #fff6d1 !important; 
+    background: var(--hero-bg) !important; 
     border: none !important;
-    border-top: 6px solid #f8bc1e !important; 
+    border-top: 6px solid var(--hero-border) !important; 
     border-radius: 0 0 15px 15px !important;
     padding: 3.5rem 2rem !important;
     margin-bottom: 3rem !important;
@@ -87,19 +81,19 @@ header {
     right: 30px;
     width: 60px;
     height: 6px;
-    background-color: #ffeaa7; 
+    background-color: var(--hero-accent); 
     border-radius: 0 0 4px 4px;
 }
 
 .hero h1 {
-    color: #2c3e50;
+    color: var(--hero-text);
     font-weight: 800;
     font-size: 2.5rem;
     letter-spacing: -1px;
 }
 
 .hero p.text-muted {
-    color: #5d6d7e !important; 
+    color: var(--text-muted) !important; 
     font-weight: 400;
     font-size: 1.1rem;
 }
@@ -113,8 +107,8 @@ header {
    ========================================= */
 aside .card {
     border: none;
-    background: #fff6d1; 
-    border: 1px solid #f8bc1e50; 
+    background: var(--hero-bg); 
+    border: 1px solid var(--hero-border); 
     border-radius: 12px; 
     margin-bottom: 1.5rem;
     position: relative;
@@ -131,7 +125,7 @@ aside .card::before {
     top: 0;
     height: 100%;
     width: 4px;
-    background: #f8bc1e; 
+    background: var(--hero-border); 
     transform: scaleY(0);
     transition: transform 0.3s ease;
     transform-origin: bottom;
@@ -140,7 +134,7 @@ aside .card::before {
 /* Hover común para todas */
 aside .card:hover {
     transform: translateY(-3px); 
-    background: #ffde8b; 
+    background: var(--hero-bg); 
     box-shadow: 0 15px 30px rgba(248, 188, 30, 0.25); 
 }
 
@@ -365,4 +359,45 @@ main section:nth-child(2) {
         width: 100% !important;
         height: 400px; /* Volver a una altura decente para móvil */
     }
+}
+
+/* =========================================
+   8. DARK MODE OVERRIDES
+   ========================================= */
+[data-theme="dark"] main section:not(.hero):nth-child(3) {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] main h2,
+[data-theme="dark"] main h3,
+[data-theme="dark"] aside .card p,
+[data-theme="dark"] aside .card .small,
+[data-theme="dark"] .feature h5,
+[data-theme="dark"] main ul li {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .feature p.text-muted {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .info-box {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .info-box-dark {
+    background-color: rgba(52, 152, 219, 0.15); /* Azul oscuro transparente */
+}
+
+[data-theme="dark"] aside .card pre {
+    background: #2c2c2c;
+    border-color: #f8bc1e;
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .feature:hover {
+    background-color: rgba(255, 255, 255, 0.05);
 }

@@ -12,9 +12,12 @@
 <body>
     <main>
     <div th:replace="~{fragments/header :: siteHeader('admin')}"></div>
+
     <div class="container mt-4">
-        <h1>Panel de Administración</h1>
-        <p>Bienvenido al panel de administración. Aquí podrás ver las tablas importantes de la base de datos.</p>
+        <div class="admin-hero">
+            <h1>Panel de Administración</h1>
+            <p>Bienvenido al panel de administración. Aquí podrás ver las tablas importantes de la base de datos.</p>
+        </div>
 
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" id="adminTabs" role="tablist">

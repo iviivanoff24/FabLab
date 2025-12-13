@@ -14,16 +14,17 @@
     />
   </head>
   <body class="d-flex flex-column min-vh-100">
-    <div th:insert="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/header :: siteHeader('')}"></div>
 
     <div class="container mt-4 flex-grow-1">
-      <br />
-      <h2>Pago</h2>
+      <!-- Hero Section -->
+      <div class="payment-hero">
+        <h1>Finalizar Pago</h1>
+        <p>Completa los detalles para procesar tu pedido de forma segura.</p>
+      </div>
+
       <div th:if="${param.paymentSuccess}">
-        <div
-          class="alert alert-success"
-          th:text="${param.paymentSuccess}"
-        ></div>
+        <div class="alert alert-success" th:text="${param.paymentSuccess}"></div>
       </div>
       <div th:if="${param.paymentError}">
         <div class="alert alert-danger" th:text="${param.paymentError}"></div>
@@ -36,227 +37,174 @@
         <input type="hidden" name="returnUrl" th:value="${returnUrl}" />
         <input type="hidden" name="shiftId" th:value="${shiftId}" />
         <div th:if="${shiftIds != null}">
-          <input
-            type="hidden"
-            name="shiftIds"
-            th:each="sid : ${shiftIds}"
-            th:value="${sid}"
-          />
+          <input type="hidden" name="shiftIds" th:each="sid : ${shiftIds}" th:value="${sid}" />
         </div>
         <div th:if="${startHours != null}">
-          <input
-            type="hidden"
-            name="startHours"
-            th:each="h : ${startHours}"
-            th:value="${h}"
-          />
+          <input type="hidden" name="startHours" th:each="h : ${startHours}" th:value="${h}" />
         </div>
         <div th:if="${startDates != null}">
-          <input
-            type="hidden"
-            name="startDates"
-            th:each="d : ${startDates}"
-            th:value="${d}"
-          />
+          <input type="hidden" name="startDates" th:each="d : ${startDates}" th:value="${d}" />
         </div>
         <input type="hidden" name="startHour" th:value="${startHour}" />
         <input type="hidden" name="date" th:value="${date}" />
 
-        <div class="mb-3">
-          <label class="form-label">Descripción</label>
-          <input
-            class="form-control-plaintext"
-            readonly
-            th:value="${type == 'cart' ? 'Compra de productos' : (type == null ? 'Pago' : (type + (itemName != null ? ' - ' + itemName : '')))}"
-          />
-        </div>
+        <div class="row">
+            <!-- Left Column: Payment Details -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header py-3">
+                        <h5 class="mb-0">Método de Pago</h5>
+                    </div>
+                    <div class="card-body">
+                        <input type="hidden" name="paymentMethod" id="paymentMethod" value="Tarjeta" />
+                        <input type="hidden" name="onlineProvider" id="onlineProvider" value="" />
 
-        <div class="mb-3" th:if="${type == 'cart' and cart != null}">
-          <label class="form-label">Resumen del Pedido</label>
-          <div class="list-group">
-            <div
-              class="list-group-item d-flex justify-content-between align-items-center"
-              th:each="item : ${cart.items}"
-            >
-              <div>
-                <span th:text="${item.subProduct.product.name}">Producto</span>
-                <span
-                  class="text-muted small"
-                  th:text="'(' + ${item.subProduct.subName} + ')'"
-                  >Variante</span
-                >
-                <span
-                  class="badge bg-secondary"
-                  th:text="'x' + ${item.quantity}"
-                  >x1</span
-                >
-              </div>
-              <span th:text="${item.subProduct.price * item.quantity} + ' €'"
-                >0.00 €</span
-              >
+                        <!-- Payment Method Selection -->
+                        <div class="mb-4">
+                            <label class="form-label mb-3">Selecciona una opción:</label>
+                            <div class="d-flex gap-3 flex-wrap">
+                                <!-- Styled Radio Buttons -->
+                                <div class="form-check custom-radio-card">
+                                    <input class="form-check-input" type="radio" name="pm" id="pmTarjeta" value="Tarjeta" checked>
+                                    <label class="form-check-label" for="pmTarjeta">
+                                        <i class="bi bi-credit-card fs-4 d-block mb-2"></i>
+                                        Tarjeta
+                                    </label>
+                                </div>
+                                <div class="form-check custom-radio-card">
+                                    <input class="form-check-input" type="radio" name="pm" id="pmEfectivo" value="Efectivo">
+                                    <label class="form-check-label" for="pmEfectivo">
+                                        <i class="bi bi-cash-coin fs-4 d-block mb-2"></i>
+                                        Efectivo
+                                    </label>
+                                </div>
+                                <div class="form-check custom-radio-card">
+                                    <input class="form-check-input" type="radio" name="pm" id="pmOnline" value="Online">
+                                    <label class="form-check-label" for="pmOnline">
+                                        <i class="bi bi-globe fs-4 d-block mb-2"></i>
+                                        Online
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Fields -->
+                        <div id="cardFields">
+                            <h6 class="mb-3">Detalles de la Tarjeta</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                  <label class="form-label">Nombre en la tarjeta</label>
+                                  <input name="cardName" class="form-control" placeholder="Titular" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                  <label class="form-label">Email</label>
+                                  <input name="email" type="email" class="form-control" placeholder="tu@ejemplo.com" />
+                                </div>
+                            </div>
+                    
+                            <div class="mb-3">
+                                <label class="form-label">Número de tarjeta</label>
+                                <input name="cardNumber" class="form-control" placeholder="0000 0000 0000 0000" />
+                            </div>
+                    
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                  <label class="form-label">Expiración (MM/AA)</label>
+                                  <input name="exp" class="form-control" placeholder="MM/AA" />
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                  <label class="form-label">CVV</label>
+                                  <input name="cvv" class="form-control" placeholder="123" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Online Fields -->
+                        <div id="onlineFields" style="display: none">
+                            <div class="mb-3">
+                                <label class="form-label">Proveedor online</label>
+                                <select id="onlineSelect" class="form-select">
+                                  <option value="">Selecciona...</option>
+                                  <option value="Bizum">Bizum</option>
+                                  <option value="PayPal">PayPal</option>
+                                </select>
+                                <div class="form-text">
+                                  El proveedor redirigirá a una página de pago simulada.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2 justify-content-end mb-4">
+                    <button type="button" id="cancelBtn" class="btn btn-outline-secondary" th:attr="data-return=${returnUrl}">Cancelar</button>
+                    <button type="submit" class="btn btn-primary px-4">Pagar Ahora</button>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <div class="mb-3">
-          <label class="form-label">Importe (€)</label>
-          <input type="hidden" name="amount" th:value="${amount} ?: ''" />
-          <input
-            class="form-control-plaintext"
-            readonly
-            th:value="${amount} ?: ''"
-          />
-        </div>
+            <!-- Right Column: Order Summary -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header py-3">
+                        <h5 class="mb-0">Resumen del Pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <small class="text-muted">Concepto</small>
+                            <div class="fw-bold" th:text="${type == 'cart' ? 'Compra de productos' : (type == null ? 'Pago' : (type + (itemName != null ? ' - ' + itemName : '')))}"></div>
+                        </div>
 
-        <div class="mb-2" th:if="${unitPrice != null}">
-          <div class="text-muted small">
-            <span
-              th:text="${'Precio por turno: € ' + #numbers.formatDecimal(unitPrice,1,2)}"
-            ></span>
-            <span
-              th:if="${selectedCount > 0}"
-              th:text="${' · Turnos: ' + selectedCount}"
-            ></span>
-          </div>
-        </div>
+                        <!-- Cart Items List -->
+                        <div th:if="${type == 'cart' and cart != null}" class="mb-3">
+                            <small class="text-muted">Productos</small>
+                            <ul class="list-group list-group-flush mt-2">
+                                <li class="list-group-item px-0 d-flex justify-content-between align-items-center" th:each="item : ${cart.items}">
+                                    <div>
+                                        <span th:text="${item.subProduct.product.name}">Product</span>
+                                        <div class="text-muted small" th:text="'(' + ${item.subProduct.subName} + ')'">Variante</div>
+                                        <span class="badge bg-secondary" th:text="'x' + ${item.quantity}">x1</span>
+                                    </div>
+                                    <span th:text="${#numbers.formatDecimal(item.subProduct.price * item.quantity, 1, 2) + ' €'}">0.00 €</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Reservation Items -->
+                        <div th:if="${paymentItems != null and !#lists.isEmpty(paymentItems)}" class="mb-3">
+                            <small class="text-muted">Reservas</small>
+                            <ul class="list-group list-group-flush mt-2">
+                                <li class="list-group-item px-0 d-flex justify-content-between align-items-center" th:each="item : ${paymentItems}">
+                                    <div>
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        <strong th:text="${item.date}"></strong>
+                                        <span class="text-muted mx-1">·</span>
+                                        <span th:text="${item.time}"></span>
+                                    </div>
+                                    <span class="badge bg-primary">Reserva</span>
+                                </li>
+                            </ul>
+                        </div>
 
-        <div
-          class="mb-3"
-          th:if="${paymentItems != null and !#lists.isEmpty(paymentItems)}"
-        >
-          <label class="form-label">Reservas a confirmar</label>
-          <div class="list-group">
-            <div
-              class="list-group-item d-flex justify-content-between align-items-center"
-              th:each="item : ${paymentItems}"
-            >
-              <span>
-                <i class="bi bi-calendar-event me-2"></i>
-                <strong th:text="${item.date}"></strong>
-                <span class="text-muted mx-1">·</span>
-                <span th:text="${item.time}"></span>
-              </span>
-              <span class="badge bg-primary">Reserva de turno</span>
+                        <div class="mb-2" th:if="${unitPrice != null}">
+                            <div class="text-muted small">
+                              <span th:text="${'Precio por turno: € ' + #numbers.formatDecimal(unitPrice,1,2)}"></span>
+                              <span th:if="${selectedCount > 0}" th:text="${' · Turnos: ' + selectedCount}"></span>
+                            </div>
+                        </div>
+
+                        <hr>
+                        
+                        <!-- Total -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0">Total a Pagar</span>
+                            <span class="h4 mb-0 text-primary" th:text="${amount} + ' €'">0.00 €</span>
+                        </div>
+                        <input type="hidden" name="amount" th:value="${amount} ?: ''" />
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-
-        <input
-          type="hidden"
-          name="paymentMethod"
-          id="paymentMethod"
-          value="Tarjeta"
-        />
-        <input
-          type="hidden"
-          name="onlineProvider"
-          id="onlineProvider"
-          value=""
-        />
-
-        <div class="mb-3">
-          <label class="form-label">Método de pago</label>
-          <div>
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="pm"
-                id="pmTarjeta"
-                value="Tarjeta"
-                checked
-              />
-              <label class="form-check-label" for="pmTarjeta">Tarjeta</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="pm"
-                id="pmEfectivo"
-                value="Efectivo"
-              />
-              <label class="form-check-label" for="pmEfectivo">Efectivo</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="pm"
-                id="pmOnline"
-                value="Online"
-              />
-              <label class="form-check-label" for="pmOnline">Pago online</label>
-            </div>
-          </div>
-        </div>
-
-        <div id="cardFields">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Nombre en la tarjeta</label>
-              <input
-                name="cardName"
-                class="form-control"
-                placeholder="Titular"
-              />
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Email</label>
-              <input
-                name="email"
-                type="email"
-                class="form-control"
-                placeholder="tu@ejemplo.com"
-              />
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Número de tarjeta</label>
-            <input
-              name="cardNumber"
-              class="form-control"
-              placeholder="0000 0000 0000 0000"
-            />
-          </div>
-
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Expiración (MM/AA)</label>
-              <input name="exp" class="form-control" placeholder="MM/AA" />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label class="form-label">CVV</label>
-              <input name="cvv" class="form-control" placeholder="123" />
-            </div>
-          </div>
-        </div>
-
-        <div id="onlineFields" style="display: none">
-          <div class="mb-3">
-            <label class="form-label">Proveedor online</label>
-            <select id="onlineSelect" class="form-select">
-              <option value="">Selecciona...</option>
-              <option value="Bizum">Bizum</option>
-              <option value="PayPal">PayPal</option>
-            </select>
-            <div class="form-text">
-              El proveedor redirigirá a una página de pago simulada.
-            </div>
-          </div>
-        </div>
-
-        <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-primary">Pagar</button>
-          <button
-            type="button"
-            id="cancelBtn"
-            class="btn btn-secondary"
-            th:attr="data-return=${returnUrl}"
-          >
-            Cancelar
-          </button>
         </div>
       </form>
     </div>
@@ -270,20 +218,43 @@
             document.querySelector("input[name=pm]:checked")?.value ||
             "Tarjeta";
           document.getElementById("paymentMethod").value = pm;
-          document.getElementById("cardFields").style.display =
-            pm === "Tarjeta" ? "" : "none";
-          document.getElementById("onlineFields").style.display =
-            pm === "Online" ? "" : "none";
+          
+          const cardFields = document.getElementById("cardFields");
+          const onlineFields = document.getElementById("onlineFields");
+          
+          // Toggle visibility
+          cardFields.style.display = pm === "Tarjeta" ? "" : "none";
+          onlineFields.style.display = pm === "Online" ? "" : "none";
+
+          // Toggle required attributes
+          const cardInputs = cardFields.querySelectorAll("input");
+          const onlineSelect = document.getElementById("onlineSelect");
+
+          if (pm === "Tarjeta") {
+            cardInputs.forEach(input => input.setAttribute("required", ""));
+            if (onlineSelect) onlineSelect.removeAttribute("required");
+          } else if (pm === "Online") {
+            cardInputs.forEach(input => input.removeAttribute("required"));
+            if (onlineSelect) onlineSelect.setAttribute("required", "");
+          } else {
+            // Efectivo
+            cardInputs.forEach(input => input.removeAttribute("required"));
+            if (onlineSelect) onlineSelect.removeAttribute("required");
+          }
         }
+
         document
           .querySelectorAll("input[name=pm]")
           .forEach((r) => r.addEventListener("change", updateVisibility));
+        
         const onlineSel = document.getElementById("onlineSelect");
         if (onlineSel)
           onlineSel.addEventListener("change", function () {
             document.getElementById("onlineProvider").value = this.value;
           });
+        
         updateVisibility();
+        
         const cancelBtn = document.getElementById("cancelBtn");
         if (cancelBtn) {
           cancelBtn.addEventListener("click", function () {

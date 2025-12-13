@@ -1,5 +1,5 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="siteHeader(active)">
-  <header class="border-0 bg-white">
+  <header class="border-0">
     <div class="container py-2 d-flex justify-content-between align-items-center">
       <!-- LOGO -->
       <div class="d-flex align-items-center">
@@ -9,6 +9,12 @@
 
       <!-- LOGIN / REGISTER / PROFILE -->
       <div class="d-flex align-items-center gap-3" id="authLinks">
+        
+        <!-- Theme Toggle Button -->
+        <button id="themeToggle" class="btn btn-link text-dark p-0 me-2" title="Cambiar tema">
+            <i class="bi bi-moon-stars" id="themeIcon" style="font-size: 1.2rem;"></i>
+        </button>
+
         <!-- Not Logged In -->
         <th:block th:if="${session.USER_ID == null}">
             <a href="/cart" class="text-dark"><i class="bi bi-cart" style="font-size: 1.1rem"></i></a>
@@ -47,6 +53,43 @@
       </div>
     </nav>
   </header>
+
+  <script>
+    (function() {
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        
+        // 1. Determinar tema inicial
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        let currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+        
+        // 2. Aplicar tema
+        function applyTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                themeIcon.classList.remove('bi-moon-stars');
+                themeIcon.classList.add('bi-sun-fill');
+            } else {
+                themeIcon.classList.remove('bi-sun-fill');
+                themeIcon.classList.add('bi-moon-stars');
+            }
+        }
+        
+        applyTheme(currentTheme);
+        
+        // 3. Evento Toggle
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                applyTheme(currentTheme);
+                localStorage.setItem('theme', currentTheme);
+            });
+        }
+    })();
+  </script>
 </th:block>
 
 <!-- Script de autenticación eliminado ya que ahora se maneja con Thymeleaf en el servidor -->

@@ -1,20 +1,13 @@
 /* index.css - Estilos Portada */
 
-body {
-    background-color: #f8f9fa;
-    background-image: 
-        linear-gradient(#e5e7eb 1px, transparent 1px),
-        linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
-    background-size: 40px 40px; 
-    background-position: center top;
-}
+/* Eliminamos el body background de aquí para que use el de main.css */
 
 /* === ESTILO DEL CONTENEDOR DEL TÍTULO PRINCIPAL (Recuadro Amarillo) === */
 
 .machine-hero-title {
-    background: #fff6d1 !important; 
+    background: var(--hero-bg) !important; 
     border: none !important;
-    border-top: 6px solid #f8bc1e !important; 
+    border-top: 6px solid var(--hero-border) !important; 
     border-radius: 0 0 0 0 !important; 
     padding: 1.5rem 1rem !important; 
     
@@ -35,12 +28,12 @@ body {
     right: 30px;
     width: 60px;
     height: 6px;
-    background-color: #ffeaa7; 
+    background-color: var(--hero-accent); 
     border-radius: 0 0 4px 4px;
 }
 
 .machine-hero-title h2 {
-    color: #2C3E50; 
+    color: var(--hero-text); 
     font-size: 43.8504px;
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     font-weight: 700; 
@@ -48,11 +41,62 @@ body {
     text-align: center;
 }
 
+/* === BARRA DE BÚSQUEDA PEGADA (.machine-search-bar) === */
+
+.machine-search-bar {
+    /* Fondo AMARILLO CLARO */
+    background: var(--hero-bg); 
+    /* Borde principal amarillo fuerte */
+    border: none; 
+    border-top: none; /* Quitamos el borde superior para que se pegue al título */
+    /* Bordes inferiores redondeados para terminar la sección */
+    border-radius: 0 0 15px 15px; 
+    
+    padding: 1rem;
+    
+    margin-top: 0; 
+    margin-bottom: 3rem; /* Margen inferior para separarlo del resto del contenido */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15); 
+}
+
+/* Estilo del INPUT dentro de la barra */
+.machine-search-bar .form-control {
+    border-radius: 8px 0 0 8px; 
+    border-color: var(--hero-border); /* Borde amarillo fuerte */
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: var(--input-bg);
+    color: var(--input-text);
+}
+
+.machine-search-bar .form-control:focus {
+    border-color: #e0a800; /* Amarillo más oscuro al hacer focus */
+    box-shadow: 0 0 0 0.25rem rgba(248, 188, 30, 0.25);
+    background-color: var(--input-bg);
+    color: var(--input-text);
+}
+
+/* Estilo del BOTÓN de Buscar (SÓLIDO AMARILLO) */
+.machine-search-bar .btn-action-search {
+    background-color: var(--hero-border); 
+    border-color: var(--hero-border);
+    color: var(--hero-text); /* Texto oscuro para el contraste */
+    font-weight: 600;
+    
+    border-radius: 0 8px 8px 0; 
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.machine-search-bar .btn-action-search:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+    color: var(--hero-text);
+}
+
 /* === BARRA DE BÚSQUEDA PEGADA (.search-footer-bar) === */
 
 .search-footer-bar {
-    background: #fff6d1; 
-    border: 1px solid #f8bc1e; 
+    background: var(--hero-bg); 
+    border: none; 
     border-top: none; 
     border-radius: 0 0 15px 15px; 
     
@@ -66,20 +110,24 @@ body {
 /* Estilo del INPUT dentro de la barra */
 .search-footer-bar .form-control {
     border-radius: 8px 0 0 8px; 
-    border-color: #f8bc1e; 
+    border-color: var(--hero-border); 
     transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: var(--input-bg);
+    color: var(--input-text);
 }
 
 .search-footer-bar .form-control:focus {
     border-color: #e0a800; 
     box-shadow: 0 0 0 0.25rem rgba(248, 188, 30, 0.25);
+    background-color: var(--input-bg);
+    color: var(--input-text);
 }
 
 /* Estilo del BOTÓN de Buscar */
 .search-footer-bar .btn-outline-secondary {
-    background-color: #f8bc1e; 
-    border-color: #f8bc1e;
-    color: #2c3e50; 
+    background-color: var(--hero-border); 
+    border-color: var(--hero-border);
+    color: var(--hero-text); 
     font-weight: 600;
     
     border-radius: 0 8px 8px 0; 
@@ -89,15 +137,15 @@ body {
 .search-footer-bar .btn-outline-secondary:hover {
     background-color: #e0a800;
     border-color: #e0a800;
-    color: #2c3e50;
+    color: var(--hero-text);
 }
 
 /* === ESTILO PARA BOTONES DE ACCIÓN (RESERVAR) === */
 .btn-fablab-action {
     /* Mismos estilos que el botón de Buscar */
-    background-color: #f8bc1e !important; 
-    border-color: #f8bc1e !important;
-    color: #2c3e50 !important; 
+    background-color: var(--hero-border) !important; 
+    border-color: var(--hero-border) !important;
+    color: var(--hero-text) !important; 
     font-weight: 600 !important;
     
     transition: background-color 0.3s, border-color 0.3s;
@@ -106,7 +154,7 @@ body {
 .btn-fablab-action:hover {
     background-color: #e0a800 !important;
     border-color: #e0a800 !important;
-    color: #2c3e50 !important;
+    color: var(--hero-text) !important;
 }
 
 
@@ -212,16 +260,36 @@ footer {
     z-index: 2;
 }
 
-/* ===== Estilos para la tarjeta "Añadir" (reutiliza styles de courses.css) ===== */
-.card-add-course, .card-add-machine {
-    border: 2px dashed #f8bc1e;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background-color: #fff6d1;
-    color: #2c3e50;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+
+/* =========================================
+   DARK MODE OVERRIDES
+   ========================================= */
+
+[data-theme="dark"] .welcome-card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.card-add-course:hover, .card-add-machine:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(248, 188, 30, 0.4);
+[data-theme="dark"] .welcome-card:hover {
+    background-color: #252525; /* Slightly lighter than #1e1e1e */
+    border-color: var(--hero-border);
+    box-shadow: 0 10px 25px rgba(248, 188, 30, 0.15); /* Reduced intensity */
 }
+
+[data-theme="dark"] .info-panel {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .welcome-card:hover .info-panel {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .title-maker {
+    color: var(--text-color);
+}
+
+

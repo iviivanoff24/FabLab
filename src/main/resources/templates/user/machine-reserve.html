@@ -20,31 +20,22 @@
     <div th:replace="~{fragments/header :: siteHeader('reservar')}"></div>
 
     <main class="container mb-5">
-      <br />
+      
+      <!-- Hero Section -->
+      <div class="reserve-hero">
+        <h1 th:text="${'Reservar: ' + machine.name}">Reservar Máquina</h1>
+        <p>
+            <i class="bi bi-geo-alt-fill text-warning"></i> <span th:text="${machine.location} ?: 'Ubicación no especificada'"></span>
+            &nbsp;|&nbsp; 
+            <span class="badge bg-primary" th:text="${machine.status} ?: 'Desconocido'"></span>
+            &nbsp;|&nbsp;
+            <strong>€ <span th:text="${#numbers.formatDecimal(machine.hourlyPrice,1,2)} ?: '0.00'"></span> / hora</strong>
+        </p>
+      </div>
+
       <a href="/machines" class="btn btn-sm btn-outline-secondary mb-3"
-        >&larr; Volver</a
+        >&larr; Volver al catálogo</a
       >
-      <h2 class="h4 mb-2" th:text="${'Reservar: ' + machine.name}">
-        Reservar: Máquina
-      </h2>
-      <p class="text-muted mb-1">
-        Ubicación:
-        <span th:text="${machine.location} ?: 'No especificada'"></span>
-      </p>
-      <p class="mb-1">
-        Precio: €
-        <span
-          th:text="${#numbers.formatDecimal(machine.hourlyPrice,1,2)} ?: '0.00'"
-        ></span>
-        / hora
-      </p>
-      <p class="mb-3">
-        Estado:
-        <span
-          class="badge bg-primary"
-          th:text="${machine.status} ?: 'Desconocido'"
-        ></span>
-      </p>
 
       <style>
         .calendar-grid {
@@ -79,10 +70,28 @@
           border-color: #0d6efd;
         }
         .calendar-day.disabled {
-          color: #adb5bd;
-          background-color: #f8f9fa;
-          cursor: default;
+          color: #999;
+          background-color: #e2e6ea; /* Darker gray for visibility */
+          cursor: not-allowed;
+          opacity: 0.7;
+          background-image: linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.05) 75%, transparent 75%, transparent);
+          background-size: 10px 10px;
         }
+        
+        /* Dark mode support for calendar */
+        [data-theme="dark"] .calendar-day {
+            border-color: #444;
+            color: #e0e0e0;
+        }
+        [data-theme="dark"] .calendar-day:hover {
+            background-color: #333;
+        }
+        [data-theme="dark"] .calendar-day.disabled {
+            background-color: #2c2c2c;
+            color: #555;
+            background-image: linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.05) 75%, transparent 75%, transparent);
+        }
+
         .calendar-day.has-selection {
             position: relative;
         }
