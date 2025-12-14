@@ -49,6 +49,8 @@
                   <th>Turno</th>
                   <th>Fecha</th>
                   <th>Hora</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -58,6 +60,12 @@
                   <td th:text="${(b.hora != null && b.fecha != null) ? (b.hora + ' · ' + b.fecha) : ''}"></td>
                   <td th:text="${b.fecha}"></td>
                   <td th:text="${b.hora}"></td>
+                  <td th:text="${b.estadoReserva}"></td>
+                  <td>
+                    <form th:if="${b.estadoReserva == 'Pendiente'}" th:action="@{/user/cancel-booking/{id}(id=${b.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar la reserva?');">Eliminar</button>
+                    </form>
+                  </td>
                 </tr>
               </tbody>
             </table>

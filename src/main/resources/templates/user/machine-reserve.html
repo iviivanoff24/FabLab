@@ -185,6 +185,7 @@
       <p class="text-muted small">
         Selecciona días en el calendario y añade turnos a tu carrito. Puedes seleccionar turnos de diferentes días antes de pagar.
       </p>
+    </main>
 
       <!-- Modal cancelación -->
       <div
@@ -198,7 +199,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="cancelBookingModalLabel">
-                Confirmar cancelación de reserva
+                Confirmar eliminación de reserva
               </h1>
               <button
                 type="button"
@@ -208,7 +209,7 @@
               ></button>
             </div>
             <div class="modal-body">
-              <p>¿Seguro que deseas cancelar esta reserva?</p>
+              <p>¿Seguro que deseas eliminar esta reserva?</p>
             </div>
             <div class="modal-footer">
               <button
@@ -221,9 +222,9 @@
               <button
                 type="button"
                 id="confirmCancelBookingBtn"
-                class="btn btn-primary"
+                class="btn btn-danger"
               >
-                Sí, cancelar
+                Sí, eliminar
               </button>
             </div>
           </div>
@@ -240,9 +241,8 @@
         <input type="hidden" name="shiftId" id="cancelShiftId" />
         <input type="hidden" name="bookingId" id="cancelBookingId" />
       </form>
-    </main>
 
-    <script src="js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
     <script th:inline="javascript">
       document.addEventListener("DOMContentLoaded", function () {
@@ -412,7 +412,7 @@
                             data-shift-id="${slot.shiftId}"
                             data-start-hour="${slot.hour}"
                             data-date="${dateStr}">
-                            Cancelar
+                            Eliminar
                         </button>
                      `;
                 }

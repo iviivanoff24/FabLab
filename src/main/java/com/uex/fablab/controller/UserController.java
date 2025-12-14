@@ -22,9 +22,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.uex.fablab.data.model.BookingStatus;
 import com.uex.fablab.data.model.CourseStatus;
+import com.uex.fablab.data.model.InscriptionStatus;
 import com.uex.fablab.data.model.PaymentMethod;
 import com.uex.fablab.data.model.ReceiptStatus;
 import com.uex.fablab.data.model.User;
+import com.uex.fablab.data.services.BookingService;
+import com.uex.fablab.data.services.InscriptionService;
+import com.uex.fablab.data.services.ReceiptService;
 import com.uex.fablab.data.services.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -37,9 +41,15 @@ import jakarta.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final BookingService bookingService;
+    private final InscriptionService inscriptionService;
+    private final ReceiptService receiptService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, BookingService bookingService, InscriptionService inscriptionService, ReceiptService receiptService) {
         this.userService = userService;
+        this.bookingService = bookingService;
+        this.inscriptionService = inscriptionService;
+        this.receiptService = receiptService;
     }
 
     @GetMapping({"/recibos","/recibos.html"})
@@ -92,6 +102,8 @@ public class UserController {
                     Map<String, Object> m = new HashMap<>();
                     if (c != null) {
                         m.put("id", c.getId());
+                        m.put("inscriptionId", i.getId());
+                        m.put("inscriptionStatus", i.getEstado() != null ? i.getEstado().name() : null);
                         m.put("name", c.getName());
                         m.put("startDate", c.getStartDate());
                         m.put("capacity", c.getCapacity());
@@ -343,5 +355,52 @@ public class UserController {
         } else {
             return "redirect:/profile?error=delete_failed";
         }
+    }
+
+    @PostMapping("/user/cancel-receipt/{id}")
+    public String cancelReceipt(@PathVariable Long id, HttpSession session) {
+        Object userIdObj = session.getAttribute("USER_ID");
+        if (userIdObj == null) return "redirect:/login";
+        Long userId;
+        if (userIdObj instanceof Number number) userId = number.longValue(); else userId = Long.valueOf(userIdObj.toString());
+
+        receiptService.findById(id).ifPresent(r -> {
+            if (r.getUser().getId().equals(userId)) {
+                r.setEstadoRecibo(ReceiptStatus.Anulado);
+                receiptService.save(r);
+            }
+        });
+        return "redirect:/recibos";
+    }
+
+    @PostMapping("/user/cancel-course/{id}")
+    public String cancelCourse(@PathVariable Long id, HttpSession session) {
+        Object userIdObj = session.getAttribute("USER_ID");
+        if (userIdObj == null) return "redirect:/login";
+        Long userId;
+        if (userIdObj instanceof Number number) userId = number.longValue(); else userId = Long.valueOf(userIdObj.toString());
+
+        inscriptionService.findById(id).ifPresent(i -> {
+             if (i.getUser().getId().equals(userId)) {
+                 i.setEstado(InscriptionStatus.Cancelado);
+                 inscriptionService.save(i);
+             }
+        });
+        return "redirect:/mis-cursos";
+    }
+
+    @PostMapping("/user/cancel-booking/{id}")
+    public String cancelBooking(@PathVariable Long id, HttpSession session) {
+        Object userIdObj = session.getAttribute("USER_ID");
+        if (userIdObj == null) return "redirect:/login";
+        Long userId;
+        if (userIdObj instanceof Number number) userId = number.longValue(); else userId = Long.valueOf(userIdObj.toString());
+
+        bookingService.findById(id).ifPresent(b -> {
+            if (b.getUser().getId().equals(userId)) {
+                bookingService.delete(b.getId());
+            }
+        });
+        return "redirect:/mis-reservas";
     }
 }

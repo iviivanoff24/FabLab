@@ -318,7 +318,12 @@ public class BookingController {
                 return "redirect:/machines/" + machineId + "/reserve?error=" + java.net.URLEncoder.encode("No se puede cancelar una reserva pasada", StandardCharsets.UTF_8) + "&date=" + date;
             }
         }
-        Long uid = (Long) userId;
+        if (userId == null) {
+            return "redirect:/login";
+        }
+        Long uid;
+        if (userId instanceof Number number) uid = number.longValue(); else uid = Long.valueOf(userId.toString());
+        
         var userOpt = userService.findById(uid);
         if (userOpt.isEmpty()) {
             return "redirect:/login?error=" + java.net.URLEncoder.encode("Usuario inválido", StandardCharsets.UTF_8);
@@ -369,12 +374,21 @@ public class BookingController {
         }
         try {
             Booking b = bookingOpt.get();
+            Shift s = b.getShift();
+            
+            // 1. Eliminar la reserva
             bookingService.delete(b.getId());
-            var refreshedShiftOpt = shiftService.findById(shift.getId());
-            if (refreshedShiftOpt.isPresent() && (refreshedShiftOpt.get().getBookings() == null || refreshedShiftOpt.get().getBookings().isEmpty())) {
-                Shift rs = refreshedShiftOpt.get();
-                rs.setStatus(ShiftStatus.Disponible);
-                shiftService.save(rs);
+            
+            // 2. Actualizar el turno
+            if (s != null) {
+                // Eliminar de la lista en memoria para evitar inconsistencias
+                s.getBookings().removeIf(booking -> booking.getId().equals(b.getId()));
+                
+                // Si no quedan reservas, liberar el turno
+                if (s.getBookings().isEmpty()) {
+                    s.setStatus(ShiftStatus.Disponible);
+                }
+                shiftService.save(s);
             }
             return "redirect:/machines/" + machineId + "/reserve?canceled=1&date=" + date;
         } catch (Exception ex) {

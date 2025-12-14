@@ -44,6 +44,7 @@
                   <th>Precio</th>
                   <th>Estado</th>
                   <th>Fecha inicio</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -53,6 +54,11 @@
                   <td th:text="${#numbers.formatDecimal(c.precio,1,2)}"></td>
                   <td th:text="${c.estado}"></td>
                   <td th:text="${c.startDate}"></td>
+                  <td>
+                    <form th:if="${c.inscriptionStatus == 'Activo'}" th:action="@{/user/cancel-course/{id}(id=${c.inscriptionId})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de cancelar la inscripción?');">Cancelar</button>
+                    </form>
+                  </td>
                 </tr>
               </tbody>
             </table>
