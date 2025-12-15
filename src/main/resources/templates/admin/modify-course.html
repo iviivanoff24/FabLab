@@ -4,52 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar Curso - FabLab</title>
-  <link rel="icon" href="/img/logo.png" type="image/png" />
-  <link rel="stylesheet" href="/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="icon" th:href="@{/img/logo.png}" href="/img/logo.png" type="image/png" />
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" th:href="@{/css/main.css}" href="/css/main.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>.img-preview { max-width: 260px; max-height: 180px; object-fit: cover; }</style>
-  <script>
-    function getParam(name) { const url=new URL(window.location.href); return url.searchParams.get(name); }
-    async function findImageUrl(id){ const bases=[`.jpg`,`.png`,`.gif`]; for(const ext of bases){ const url=`/img/upload/courses/course-${id}${ext}`; try{ const r=await fetch(url,{method:'HEAD'}); if(r.ok) return url;}catch{} } return '/img/logo.png'; }
-    document.addEventListener('DOMContentLoaded', async ()=>{
-      const id = getParam('id');
-      const titleSpan = document.getElementById('courseIdSpan'); if (id) titleSpan.textContent = `#${id}`;
-      try{ const r = await fetch('/api/session/me'); if (r.ok) { const d = await r.json(); if(!d.admin){ document.getElementById('editForm').classList.add('d-none'); document.getElementById('adminGuard').classList.remove('d-none'); } } } catch{}
-      const form = document.getElementById('courseForm'); if (id) form.action = `/admin/courses/${id}`;
-      const img = document.getElementById('currentImage'); if (id) {
-        try{
-          // Obtener datos desde la API 
-          const resp = await fetch(`/api/courses/${id}`);
-          if (resp.ok){
-            const data = await resp.json();
-            if(img) img.src = data.imageUrl || await findImageUrl(id);
-            const title = document.getElementById('title');
-            const description = document.getElementById('description');
-            const startDate = document.getElementById('startDate');
-            const endDate = document.getElementById('endDate');
-            const capacity = document.getElementById('capacity');
-            const price = document.getElementById('price');
-            if(title && data.name) title.value = data.name;
-            if(description && data.description) description.value = data.description;
-            if(startDate && data.startDate) startDate.value = data.startDate;
-            if(endDate && data.endDate) endDate.value = data.endDate;
-            if(capacity && data.capacity != null) capacity.value = data.capacity;
-            // Precio puede venir en 'precio' o 'price' según el DTO; manejar ambos
-            if(price) {
-              if(data.precio != null) price.value = data.precio;
-              else if(data.price != null) price.value = data.price;
-            }
-          } else {
-            if(img) img.src = await findImageUrl(id);
-          }
-        } catch(err){
-          if(img) img.src = await findImageUrl(id);
-        }
-      }
-      form.addEventListener('submit', e => { form.classList.add('was-validated'); });
-    });
-  </script>
+  <script th:src="@{/js/admin/modify-course.js}" src="/js/admin/modify-course.js" defer></script>
 </head>
 <body>
   <div th:replace="~{fragments/header :: siteHeader('')}"></div>
@@ -177,7 +137,6 @@
 <footer class="text-center py-4 text-muted small">
       <div class="container">Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida</div>
     </footer>
-  <script src="/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

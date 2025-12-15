@@ -4,11 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Editar Máquina - FabLab</title>
-    <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
-    <link rel="apple-touch-icon" href="img/logo.png" />
-    <link rel="icon" href="/img/logo.png" type="image/png" />
-    <link rel="stylesheet" href="/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="icon" th:href="@{/img/logo.png}" href="/img/logo.png" type="image/png" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" th:href="@{/css/main.css}" href="/css/main.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
@@ -20,79 +18,7 @@
         object-fit: cover;
       }
     </style>
-    <script>
-      function getParam(name) {
-        const url = new URL(window.location.href);
-        return url.searchParams.get(name);
-      }
-      async function findImageUrl(id) {
-        const bases = [`.jpg`, `.png`, `.gif`];
-        for (const ext of bases) {
-          const url = `/img/upload/machines/machine-${id}${ext}`;
-          try {
-            const r = await fetch(url, { method: "HEAD" });
-            if (r.ok) return url;
-          } catch {}
-        }
-        return "/img/logo.png";
-      }
-      document.addEventListener("DOMContentLoaded", async () => {
-        const id = getParam("id");
-        const titleSpan = document.getElementById("machineIdSpan");
-        if (id) {
-          titleSpan.textContent = `#${id}`;
-        }
-
-        // Guardia admin (cliente)
-        try {
-          const r = await fetch("/api/session/me");
-          if (r.ok) {
-            const data = await r.json();
-            if (!data.admin) {
-              document.getElementById("editForm").classList.add("d-none");
-              document.getElementById("adminGuard").classList.remove("d-none");
-            }
-          }
-        } catch {}
-
-        // Setear action del formulario
-        const form = document.getElementById("machineForm");
-        if (id) form.action = `/admin/machines/${id}`;
-
-        // Cargar datos actuales y pre-rellenar
-        const img = document.getElementById("currentImage");
-        if (id) {
-          try {
-            const resp = await fetch(`/api/machines/${id}`);
-            if (resp.ok) {
-              const data = await resp.json();
-              if (img) img.src = data.imageUrl || (await findImageUrl(id));
-              const name = document.getElementById("name");
-              const location = document.getElementById("location");
-              const description = document.getElementById("description");
-              const hourlyPrice = document.getElementById("hourlyPrice");
-              const status = document.getElementById("status");
-              if (name && data.name) name.value = data.name;
-              if (location && data.location) location.value = data.location;
-              if (description && data.description)
-                description.value = data.description;
-              if (hourlyPrice && data.hourlyPrice != null)
-                hourlyPrice.value = data.hourlyPrice;
-              if (status && data.status) status.value = data.status;
-            } else {
-              if (img) img.src = await findImageUrl(id);
-            }
-          } catch {
-            if (img) img.src = await findImageUrl(id);
-          }
-        }
-
-        // Validación simple
-        form.addEventListener("submit", (e) => {
-          form.classList.add("was-validated");
-        });
-      });
-    </script>
+    <script th:src="@{/js/admin/modify-machine.js}" src="/js/admin/modify-machine.js" defer></script>
   </head>
   <body>
     <div th:replace="~{fragments/header :: siteHeader('admin')}"></div>
@@ -218,7 +144,6 @@
         Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida
       </div>
     </footer>
-    <script src="/js/bootstrap.bundle.min.js"></script>
-    <script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pago Realizado - Fablab Mérida</title>
     <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/main.css}" href="/css/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
     
     <div th:replace="~{fragments/header :: siteHeader('payment')}"></div>
 
-    <main class="container mt-5">
+    <main class="container mt-5" th:data-target-url="${targetUrl}">
         
         <div class="payment-hero">
             <h1>Pago Realizado</h1>
@@ -52,21 +52,7 @@
 
     </main>
 
-    <script src="/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var timeLeft = 10;
-            var elem = document.getElementById('countdown');
-            var timerId = setInterval(function() {
-                if (timeLeft == 0) {
-                    clearTimeout(timerId);
-                    window.location.href = "[[${targetUrl}]]";
-                } else {
-                    elem.innerHTML = timeLeft;
-                    timeLeft--;
-                }
-            }, 1000);
-        });
-    </script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/payment-success.js}" src="/js/payment-success.js" defer></script>
 </body>
 </html>

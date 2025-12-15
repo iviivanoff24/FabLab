@@ -38,13 +38,13 @@ public class SubProduct {
     @Column(name = "stock", nullable = false)
     private Integer stock = 0;
 
-    @Column(name = "imagen1")
+    @jakarta.persistence.Transient
     private String image1;
 
-    @Column(name = "imagen2")
+    @jakarta.persistence.Transient
     private String image2;
 
-    @Column(name = "imagen3")
+    @jakarta.persistence.Transient
     private String image3;
 
     public Long getId() {

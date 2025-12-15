@@ -55,6 +55,9 @@ function mainAvailability() {
 
             for(let i=0; i<5; i++) {
                 const td = document.createElement('td');
+                
+                const dayDate = new Date(monday);
+                dayDate.setDate(monday.getDate() + i);
 
                 // Si no hay datos del servidor, usar simulación ligera
                 if (!slots) {
@@ -63,11 +66,17 @@ function mainAvailability() {
                     else if(rand > 0.4) { td.className = 'avail-med'; td.title = 'Media ocupación'; }
                     else { td.className = 'avail-low'; td.title = 'Completo'; }
                 } else {
-                    const dayDate = new Date(monday);
-                    dayDate.setDate(monday.getDate() + i);
                     const info = getSlotForHour(slots, toIsoDate(dayDate), hour);
                     applyAvailabilityColor(td, info);
                 }
+                
+                // Hacer celda clicable para ver máquinas disponibles
+                td.style.cursor = 'pointer';
+                td.addEventListener('click', () => {
+                     const dateStr = toIsoDate(dayDate);
+                     // hour tiene formato "HH:00", el backend espera HH:MM
+                     window.location.href = `/machines?date=${dateStr}&time=${hour}`;
+                });
 
                 row.appendChild(td);
             }

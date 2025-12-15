@@ -3,14 +3,22 @@ package com.uex.fablab.data.services;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.uex.fablab.data.model.Machine;
+import com.uex.fablab.data.model.MachineStatus;
+import com.uex.fablab.data.model.Shift;
+import com.uex.fablab.data.model.ShiftStatus;
 import com.uex.fablab.data.repository.MachineRepository;
+import com.uex.fablab.data.repository.ShiftRepository;
 
 /**
  * Servicio de máquinas.
@@ -20,9 +28,11 @@ import com.uex.fablab.data.repository.MachineRepository;
 @Transactional
 public class MachineService {
     private final MachineRepository repo;
+    private final ShiftRepository shiftRepo;
 
-    public MachineService(MachineRepository repo) {
+    public MachineService(MachineRepository repo, ShiftRepository shiftRepo) {
         this.repo = repo;
+        this.shiftRepo = shiftRepo;
     }
 
     /** Lista todas las máquinas. */
@@ -34,6 +44,16 @@ public class MachineService {
     public List<Machine> searchByName(String text) {
         if (text == null || text.isBlank()) return repo.findAll();
         return repo.findByNameContainingIgnoreCase(text.trim());
+    }
+
+    /** Busca máquinas disponibles en una fecha y hora. */
+    public List<Machine> findAvailableMachines(LocalDate date, LocalTime time) {
+        List<Machine> allMachines = repo.findByStatus(MachineStatus.Disponible);
+        List<Shift> reservedShifts = shiftRepo.findByDateAndStartTimeAndStatus(date, time, ShiftStatus.Reservado);
+        Set<Long> reservedMachineIds = reservedShifts.stream().map(s -> s.getMachine().getId()).collect(Collectors.toSet());
+        return allMachines.stream()
+                .filter(m -> !reservedMachineIds.contains(m.getId()))
+                .collect(Collectors.toList());
     }
 
     /** Busca una máquina por id. */

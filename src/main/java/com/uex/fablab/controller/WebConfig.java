@@ -48,14 +48,18 @@ public class WebConfig implements WebMvcConfigurer {
             projectRoot = projectRoot.resolve("ProyectoMDAI");
         }
         
+        Path uploadsPath = projectRoot.resolve("src/main/resources/uploads");
+        String uploadsUrl = "file:///" + uploadsPath.toAbsolutePath().toString().replace('\\', '/') + "/";
+
+        registry.addResourceHandler("/uploads/**").addResourceLocations(uploadsUrl);
+
         Path staticImgPath = projectRoot.resolve("src/main/resources/static/img");
         String fileUrl = "file:///" + staticImgPath.toAbsolutePath().toString().replace('\\', '/') + "/";
 
-        // Handlers específicos para cada tipo de entidad
+        // Handlers específicos para cada tipo de entidad (Legacy / Static)
         registry.addResourceHandler("/img/products/**").addResourceLocations(fileUrl + "products/");
         registry.addResourceHandler("/img/machines/**").addResourceLocations(fileUrl + "machines/");
         registry.addResourceHandler("/img/courses/**").addResourceLocations(fileUrl + "courses/");
-        registry.addResourceHandler("/img/upload/**").addResourceLocations(fileUrl + "upload/"); // Legacy support
     }
 
     /**

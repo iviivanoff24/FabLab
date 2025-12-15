@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>README  FabLab Mérida</title>
-    <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
-    <link rel="apple-touch-icon" href="img/logo.png" />
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/readme.css" />
+    <link rel="icon" th:href="@{/img/logo.png}" href="img/logo.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" th:href="@{/img/logo.png}" href="img/logo.png" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" th:href="@{/css/main.css}" href="css/main.css" />
+    <link rel="stylesheet" th:href="@{/css/readme.css}" href="css/readme.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .team-img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid var(--hero-border); }
@@ -25,7 +25,7 @@
       <!-- Hero Section -->
       <div class="admin-hero mb-5">
         <div class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-4">
-          <img src="img/logo.png" alt="Logo FabLab" width="100">
+          <img th:src="@{/img/logo.png}" src="img/logo.png" alt="Logo FabLab" width="100">
           <div class="text-center text-md-start">
             <h1 class="display-5 fw-bold mb-1">FabLab Mérida</h1>
             <p class="lead mb-2">"El futuro se fabrica aquí."</p>
@@ -242,8 +242,7 @@ docker run --name fablab-mysql `
       </div>
     </footer>
 
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/main.js" defer></script>
-    <script src="js/autoplay-carousel.js" defer></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/autoplay-carousel.js}" src="/js/autoplay-carousel.js" defer></script>
   </body>
 </html>

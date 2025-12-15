@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mi perfil</title>
-    <link rel="icon" href="/img/logo.png" type="image/png" sizes="32x32" />
+    <link rel="icon" th:href="@{/img/logo.png}" href="/img/logo.png" type="image/png" sizes="32x32" />
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
     <link rel="stylesheet" th:href="@{/css/main.css}" />
     <link rel="stylesheet" th:href="@{/css/profile.css}" />
@@ -128,8 +128,7 @@
       </div>
     </main>
 
-    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
-    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
     <footer class="text-center py-4 text-muted small">
       <div class="container">
         Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida

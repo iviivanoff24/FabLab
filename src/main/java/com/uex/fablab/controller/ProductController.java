@@ -36,6 +36,11 @@ public class ProductController {
     public String products(HttpSession session, Model model) {
         boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
         List<Product> list = productService.findAll();
+        for (Product p : list) {
+            for (SubProduct sp : p.getSubProducts()) {
+                resolveSubProductImages(sp);
+            }
+        }
         model.addAttribute("products", list);
         model.addAttribute("isAdmin", isAdmin);
         return "products";
@@ -75,15 +80,9 @@ public class ProductController {
             // Save first to get ID
             SubProduct savedSp = productService.saveSubProduct(sp);
 
-            String img1 = saveImage(image1, saved.getId(), savedSp.getId(), 1);
-            String img2 = saveImage(image2, saved.getId(), savedSp.getId(), 2);
-            String img3 = saveImage(image3, saved.getId(), savedSp.getId(), 3);
-
-            savedSp.setImage1(img1);
-            savedSp.setImage2(img2);
-            savedSp.setImage3(img3);
-
-            productService.saveSubProduct(savedSp);
+            saveImage(image1, saved.getId(), savedSp.getId(), 1);
+            saveImage(image2, saved.getId(), savedSp.getId(), 2);
+            saveImage(image3, saved.getId(), savedSp.getId(), 3);
         }
 
         return "redirect:/admin/modify-product?id=" + saved.getId();
@@ -109,15 +108,9 @@ public class ProductController {
 
             SubProduct savedSp = productService.saveSubProduct(sp);
 
-            String img1 = saveImage(image1, productId, savedSp.getId(), 1);
-            String img2 = saveImage(image2, productId, savedSp.getId(), 2);
-            String img3 = saveImage(image3, productId, savedSp.getId(), 3);
-
-            savedSp.setImage1(img1);
-            savedSp.setImage2(img2);
-            savedSp.setImage3(img3);
-
-            productService.saveSubProduct(savedSp);
+            saveImage(image1, productId, savedSp.getId(), 1);
+            saveImage(image2, productId, savedSp.getId(), 2);
+            saveImage(image3, productId, savedSp.getId(), 3);
         }
         return "redirect:/admin/modify-product?id=" + productId;
     }
@@ -127,41 +120,16 @@ public class ProductController {
         Optional<SubProduct> sp = productService.findSubProductById(id);
         if (sp.isPresent()) {
             SubProduct sub = sp.get();
-            deleteImage(sub.getImage1());
-            deleteImage(sub.getImage2());
-            deleteImage(sub.getImage3());
-
             Long productId = sub.getProduct().getId();
+            
+            deleteSubProductImageSlot(productId, sub.getId(), 1);
+            deleteSubProductImageSlot(productId, sub.getId(), 2);
+            deleteSubProductImageSlot(productId, sub.getId(), 3);
+
             productService.deleteSubProductById(id);
             return "redirect:/admin/modify-product?id=" + productId;
         }
         return "redirect:/admin/admin";
-    }
-
-    private void deleteImage(String imagePath) {
-        if (imagePath == null || imagePath.isEmpty()) {
-            return;
-        }
-        try {
-            // imagePath is like "/img/upload/product_1/subproduct_1_1.jpg"
-            String relativePath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
-
-            String userDir = System.getProperty("user.dir");
-            Path projectRoot = Paths.get(userDir);
-            if (Files.exists(projectRoot.resolve("ProyectoMDAI"))) {
-                projectRoot = projectRoot.resolve("ProyectoMDAI");
-            }
-
-            // Delete from src/main/resources/static/
-            Path srcPath = projectRoot.resolve("src/main/resources/static/" + relativePath);
-            Files.deleteIfExists(srcPath);
-
-            // Delete from target/classes/static/
-            Path targetPath = projectRoot.resolve("target/classes/static/" + relativePath);
-            Files.deleteIfExists(targetPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private String saveImage(MultipartFile file, Long productId, Long subProductId, int imageNumber) {
@@ -173,6 +141,9 @@ public class ProductController {
                 extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
             
+            // Delete existing images for this slot first (to handle extension changes)
+            deleteSubProductImageSlot(productId, subProductId, imageNumber);
+
             String fileName = "subproduct_" + subProductId + "_" + imageNumber + extension;
             String folderName = "product_" + productId;
             
@@ -182,17 +153,17 @@ public class ProductController {
                 projectRoot = projectRoot.resolve("ProyectoMDAI");
             }
             
-            // Save to src/main/resources/static/img/products/product_{id}/
-            Path uploadPath = projectRoot.resolve("src/main/resources/static/img/products/").resolve(folderName);
+            // Save to src/main/resources/uploads/products/product_{id}/
+            Path uploadPath = projectRoot.resolve("src/main/resources/uploads/products/").resolve(folderName);
             if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
             Files.write(uploadPath.resolve(fileName), file.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             
-            // Save to target/classes/static/img/products/product_{id}/
-            Path targetPath = projectRoot.resolve("target/classes/static/img/products/").resolve(folderName);
+            // Save to target/classes/uploads/products/product_{id}/
+            Path targetPath = projectRoot.resolve("target/classes/uploads/products/").resolve(folderName);
             if (!Files.exists(targetPath)) Files.createDirectories(targetPath);
             Files.write(targetPath.resolve(fileName), file.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             
-            return "/img/products/" + folderName + "/" + fileName;
+            return "/uploads/products/" + folderName + "/" + fileName;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -205,9 +176,13 @@ public class ProductController {
         if (opt.isEmpty()) {
             return "redirect:/admin/admin";
         }
+        List<SubProduct> subproducts = productService.findSubProductsByProductId(id);
+        for (SubProduct sp : subproducts) {
+            resolveSubProductImages(sp);
+        }
         model.addAttribute("product", opt.get());
         model.addAttribute("types", ProductType.values());
-        model.addAttribute("subproducts", productService.findSubProductsByProductId(id));
+        model.addAttribute("subproducts", subproducts);
         return "admin/modify-product";
     }
 
@@ -246,11 +221,12 @@ public class ProductController {
             }
 
             // Delete from src
-            Path srcPath = projectRoot.resolve("src/main/resources/static/img/products/").resolve(folderName);
+            Path srcPath = projectRoot.resolve("src/main/resources/uploads/products/").resolve(folderName);
             FileSystemUtils.deleteRecursively(srcPath);
             
             // Delete from target
-            Path targetPath = projectRoot.resolve("target/classes/static/img/products/").resolve(folderName);
+            Path targetPath = projectRoot.resolve("target/classes/uploads/products/").resolve(folderName);
+            FileSystemUtils.deleteRecursively(targetPath);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -275,32 +251,70 @@ public class ProductController {
             sp.setPrice(price);
             sp.setStock(stock);
 
-            String img1 = saveImage(image1, productId, sp.getId(), 1);
-            if (img1 != null) {
-                if (sp.getImage1() != null && !sp.getImage1().equals(img1)) {
-                    deleteImage(sp.getImage1());
-                }
-                sp.setImage1(img1);
-            }
-
-            String img2 = saveImage(image2, productId, sp.getId(), 2);
-            if (img2 != null) {
-                if (sp.getImage2() != null && !sp.getImage2().equals(img2)) {
-                    deleteImage(sp.getImage2());
-                }
-                sp.setImage2(img2);
-            }
-
-            String img3 = saveImage(image3, productId, sp.getId(), 3);
-            if (img3 != null) {
-                if (sp.getImage3() != null && !sp.getImage3().equals(img3)) {
-                    deleteImage(sp.getImage3());
-                }
-                sp.setImage3(img3);
-            }
-
+            saveImage(image1, productId, sp.getId(), 1);
+            saveImage(image2, productId, sp.getId(), 2);
+            saveImage(image3, productId, sp.getId(), 3);
+            
             productService.saveSubProduct(sp);
         }
         return "redirect:/admin/modify-product?id=" + productId;
+    }
+
+    private Path getUploadsDir() {
+        Path moduleDir = Path.of("ProyectoMDAI", "src", "main", "resources", "uploads", "products");
+        if (Files.exists(moduleDir.getParent() != null ? moduleDir.getParent().getParent() : moduleDir)) {
+            return moduleDir;
+        }
+        Path localDir = Path.of("src", "main", "resources", "uploads", "products");
+        return localDir;
+    }
+
+    private void resolveSubProductImages(SubProduct sp) {
+        if (sp == null) return;
+        Long pId = sp.getProduct().getId();
+        Long spId = sp.getId();
+        String folderName = "product_" + pId;
+        
+        sp.setImage1(resolveSingleImage(folderName, spId, 1));
+        sp.setImage2(resolveSingleImage(folderName, spId, 2));
+        sp.setImage3(resolveSingleImage(folderName, spId, 3));
+    }
+
+    private String resolveSingleImage(String folderName, Long subProductId, int imageNumber) {
+        String[] exts = {".jpg", ".png", ".gif"};
+        for (String ext : exts) {
+            String fileName = "subproduct_" + subProductId + "_" + imageNumber + ext;
+            Path p = getUploadsDir().resolve(folderName).resolve(fileName);
+            if (Files.exists(p)) {
+                return "/uploads/products/" + folderName + "/" + fileName;
+            }
+        }
+        return null;
+    }
+
+    private void deleteSubProductImageSlot(Long productId, Long subProductId, int imageNumber) {
+        String folderName = "product_" + productId;
+        String[] exts = {".jpg", ".png", ".gif"};
+        
+        String userDir = System.getProperty("user.dir");
+        Path projectRoot = Paths.get(userDir);
+        if (Files.exists(projectRoot.resolve("ProyectoMDAI"))) {
+            projectRoot = projectRoot.resolve("ProyectoMDAI");
+        }
+
+        for (String ext : exts) {
+            String fileName = "subproduct_" + subProductId + "_" + imageNumber + ext;
+            try {
+                // Delete from src
+                Path srcPath = projectRoot.resolve("src/main/resources/uploads/products/").resolve(folderName).resolve(fileName);
+                Files.deleteIfExists(srcPath);
+                
+                // Delete from target
+                Path targetPath = projectRoot.resolve("target/classes/uploads/products/").resolve(folderName).resolve(fileName);
+                Files.deleteIfExists(targetPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title th:text="${course.name} + ' · Curso'">Detalle del curso</title>
-    <link rel="icon" href="img/logo.png" type="image/png" sizes="32x32" />
-    <link rel="apple-touch-icon" href="img/logo.png" />
-    <link rel="stylesheet" href="/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="icon" th:href="@{/img/logo.png}" href="img/logo.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" th:href="@{/img/logo.png}" href="img/logo.png" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" th:href="@{/css/main.css}" href="/css/main.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   </head>
   <body>
@@ -254,41 +254,12 @@
     >
       <input type="hidden" name="inscriptionId" id="cancelInscriptionId" />
     </form>
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/main.js" defer></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Delete Course Logic
-        var confirmDeleteBtn = document.getElementById("confirmDeleteCourseBtn");
-        if (confirmDeleteBtn) {
-            confirmDeleteBtn.addEventListener("click", function () {
-                var f = document.getElementById("deleteCourseForm");
-                if (f) f.submit();
-            });
-        }
-
-        var modal = document.getElementById("cancelInscriptionModal");
-        var cancelInput = document.getElementById("cancelInscriptionId");
-        var confirmBtn = document.getElementById("confirmCancelInscriptionBtn");
-        if (!modal) return;
-        modal.addEventListener("show.bs.modal", function (ev) {
-          var btn = ev.relatedTarget;
-          if (!btn) return;
-          var insId = btn.getAttribute("data-inscription-id") || "";
-          if (cancelInput) cancelInput.value = insId;
-        });
-        if (confirmBtn)
-          confirmBtn.addEventListener("click", function () {
-            var f = document.getElementById("cancelInscriptionForm");
-            if (f) f.submit();
-          });
-      });
-    </script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/course-details.js}" src="/js/course-details.js" defer></script>
     <footer class="text-center py-4 text-muted small">
       <div class="container">
         Proyecto académico — FabLab Mérida. Asignatura: MDAI 2025-26. UEx Mérida
       </div>
     </footer>
   </body>
-  <script th:src="@{/js/main.js}" src="/js/main.js" defer></script>
 </html>

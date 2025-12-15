@@ -42,9 +42,29 @@ public class MachinesController {
      * @return nombre de la vista
      */
     @GetMapping("/machines")
-    public String machines(HttpSession session, Model model, @RequestParam(value = "q", required = false) String q) {
+    public String machines(HttpSession session, Model model, 
+                           @RequestParam(value = "q", required = false) String q,
+                           @RequestParam(value = "date", required = false) String dateStr,
+                           @RequestParam(value = "time", required = false) String timeStr) {
         boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
-        var list = machineService.searchByName(q);
+        
+        java.util.List<Machine> list;
+        if (dateStr != null && !dateStr.isBlank() && timeStr != null && !timeStr.isBlank()) {
+             try {
+                java.time.LocalDate date = java.time.LocalDate.parse(dateStr);
+                // Asegurar formato HH:mm
+                if(timeStr.length() == 5) timeStr += ":00";
+                java.time.LocalTime time = java.time.LocalTime.parse(timeStr);
+                list = machineService.findAvailableMachines(date, time);
+                model.addAttribute("filterDate", dateStr);
+                model.addAttribute("filterTime", timeStr);
+             } catch (Exception e) {
+                 list = machineService.searchByName(q);
+             }
+        } else {
+            list = machineService.searchByName(q);
+        }
+
         model.addAttribute("machines", list);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("q", q == null ? "" : q);
@@ -85,11 +105,11 @@ public class MachinesController {
         }
         String[] exts = {".jpg", ".png", ".gif"};
         for (String ext : exts) {
-            // Ruta física dentro del módulo resources: .../static/img/machines
+            // Ruta física dentro del módulo resources: .../uploads/machines
             java.nio.file.Path p = getUploadsDir().resolve("machine-" + id + ext);
             if (java.nio.file.Files.exists(p)) {
-                // URL pública: /img/machines/...
-                return "/img/machines/machine-" + id + ext;
+                // URL pública: /uploads/machines/...
+                return "/uploads/machines/machine-" + id + ext;
             }
         }
         return "/img/maquina.png";
@@ -300,12 +320,12 @@ public class MachinesController {
 
     private Path getUploadsDir() {
         // Ruta preferida: módulo del proyecto
-        Path moduleDir = Path.of("ProyectoMDAI", "src", "main", "resources", "static", "img", "machines");
+        Path moduleDir = Path.of("ProyectoMDAI", "src", "main", "resources", "uploads", "machines");
         if (Files.exists(moduleDir.getParent() != null ? moduleDir.getParent().getParent() : moduleDir)) {
             return moduleDir;
         }
         // Alternativa: cuando el cwd ya es el módulo
-        Path localDir = Path.of("src", "main", "resources", "static", "img", "machines");
+        Path localDir = Path.of("src", "main", "resources", "uploads", "machines");
         return localDir;
     }
 }
