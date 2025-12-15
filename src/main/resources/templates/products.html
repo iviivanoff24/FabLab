@@ -26,7 +26,7 @@
           <div class="product-search-bar p-0">
             <div class="input-group">
               <input id="productSearch" class="form-control" type="search" placeholder="Buscar productos por nombre..." aria-label="Buscar productos">
-              <select id="productTypeFilter" class="form-select" aria-label="Filtrar por tipo" style="max-width: 200px;">
+              <select id="productTypeFilter" class="form-select" aria-label="Filtrar por tipo">
                   <option value="">Todos los tipos</option>
                   <option th:each="type : ${#lists.sort(#lists.toList(#sets.toSet(products.![type])))}" 
                           th:value="${type}" 

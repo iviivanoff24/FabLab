@@ -26,14 +26,14 @@
           <div class="course-search-bar p-0">
             <div class="input-group">
               <input id="courseSearch" class="form-control" type="search" placeholder="Buscar cursos por nombre o descripción..." aria-label="Buscar cursos">
-              <select id="courseStatusFilter" class="form-select" aria-label="Filtrar por estado" style="max-width: 180px;">
+              <select id="courseStatusFilter" class="form-select" aria-label="Filtrar por estado">
                   <option value="">Todos los estados</option>
                   <option value="Disponible">Disponible</option>
                   <option value="Plazas_completas">Plazas completas</option>
                   <option value="No_disponible">No disponible</option>
                   <option value="Inscrito" th:if="${session.USER_ID != null}">Inscrito</option>
               </select>
-              <select id="coursePriceFilter" class="form-select" aria-label="Filtrar por precio" style="max-width: 150px;">
+              <select id="coursePriceFilter" class="form-select" aria-label="Filtrar por precio">
                   <option value="">Cualquier precio</option>
                   <option value="free">Gratis</option>
                   <option value="paid">De pago</option>
