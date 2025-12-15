@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.uex.fablab.data.model.Booking;
 import com.uex.fablab.data.model.BookingStatus;
+import com.uex.fablab.data.model.Cart;
+import com.uex.fablab.data.model.CartItem;
+import com.uex.fablab.data.model.CartItemKey;
 import com.uex.fablab.data.model.Course;
 import com.uex.fablab.data.model.CourseStatus;
 import com.uex.fablab.data.model.Inscription;
@@ -27,17 +30,27 @@ import com.uex.fablab.data.model.InscriptionStatus;
 import com.uex.fablab.data.model.Machine;
 import com.uex.fablab.data.model.MachineStatus;
 import com.uex.fablab.data.model.PaymentMethod;
+import com.uex.fablab.data.model.Product;
+import com.uex.fablab.data.model.ProductType;
 import com.uex.fablab.data.model.Receipt;
+import com.uex.fablab.data.model.ReceiptProduct;
+import com.uex.fablab.data.model.ReceiptProductKey;
 import com.uex.fablab.data.model.ReceiptStatus;
 import com.uex.fablab.data.model.Shift;
 import com.uex.fablab.data.model.ShiftStatus;
+import com.uex.fablab.data.model.SubProduct;
 import com.uex.fablab.data.model.User;
 import com.uex.fablab.data.repository.BookingRepository;
+import com.uex.fablab.data.repository.CartItemRepository;
+import com.uex.fablab.data.repository.CartRepository;
 import com.uex.fablab.data.repository.CourseRepository;
 import com.uex.fablab.data.repository.InscriptionRepository;
 import com.uex.fablab.data.repository.MachineRepository;
+import com.uex.fablab.data.repository.ProductRepository;
+import com.uex.fablab.data.repository.ReceiptProductRepository;
 import com.uex.fablab.data.repository.ReceiptRepository;
 import com.uex.fablab.data.repository.ShiftRepository;
+import com.uex.fablab.data.repository.SubProductRepository;
 import com.uex.fablab.data.repository.UserRepository;
 
 @DataJpaTest
@@ -52,6 +65,11 @@ class FablabUseCasesTest {
     @Autowired private CourseRepository courseRepository;
     @Autowired private InscriptionRepository inscriptionRepository;
     @Autowired private ReceiptRepository receiptRepository;
+    @Autowired private ProductRepository productRepository;
+    @Autowired private SubProductRepository subProductRepository;
+    @Autowired private CartRepository cartRepository;
+    @Autowired private CartItemRepository cartItemRepository;
+    @Autowired private ReceiptProductRepository receiptProductRepository;
     
     // Helpers
     private User newUser(String name, String email) {
@@ -93,6 +111,23 @@ class FablabUseCasesTest {
         c.setPrecio(25.0);
         c.setEstado(CourseStatus.Activo);
         return c;
+    }
+
+    private Product newProduct(String name) {
+        Product p = new Product();
+        p.setName(name);
+        p.setDescription("Desc " + name);
+        p.setType(ProductType.Material);
+        return p;
+    }
+
+    private SubProduct newSubProduct(Product p, String subName, double price, int stock) {
+        SubProduct sp = new SubProduct();
+        sp.setProduct(p);
+        sp.setSubName(subName);
+        sp.setPrice(price);
+        sp.setStock(stock);
+        return sp;
     }
 
     // --- USUARIO ---
@@ -231,9 +266,58 @@ class FablabUseCasesTest {
         assertThat(saved.getUser().getEmail()).isEqualTo("diego@example.com");
     }
 
-    // --- RECIBOS ---
+    // --- PRODUCTOS y SUBPRODUCTOS ---
     @Test
     @Order(8)
+    @DisplayName("Producto: crear producto y subproductos")
+    @Transactional
+    void productoYSubproductos() {
+        Product p = productRepository.save(newProduct("Filamento PLA"));
+        
+        SubProduct sp1 = newSubProduct(p, "Rojo", 20.0, 20);
+        SubProduct sp2 = newSubProduct(p, "Azul", 20.0, 30);
+        
+        subProductRepository.save(sp1);
+        subProductRepository.save(sp2);
+        
+        List<SubProduct> subs = subProductRepository.findByProduct(p);
+        assertThat(subs).hasSize(2);
+        assertThat(subs.get(0).getProduct().getName()).isEqualTo("Filamento PLA");
+    }
+
+    // --- CARRITO ---
+    @Test
+    @Order(9)
+    @DisplayName("Carrito: añadir items al carrito")
+    @Transactional
+    void carritoItems() {
+        User u = userRepository.save(newUser("Maria", "maria@example.com"));
+        Product p = productRepository.save(newProduct("Arduino Uno"));
+        SubProduct sp = subProductRepository.save(newSubProduct(p, "Estándar", 25.0, 10));
+        
+        Cart cart = new Cart();
+        cart.setUser(u);
+        cart = cartRepository.save(cart);
+        
+        CartItem item = new CartItem();
+        item.setId(new CartItemKey());
+        item.setCart(cart);
+        item.setSubProduct(sp);
+        item.setQuantity(2);
+        cartItemRepository.save(item);
+        
+        Cart foundCart = cartRepository.findByUser(u).orElse(null);
+        assertThat(foundCart).isNotNull();
+        
+        List<CartItem> items = cartItemRepository.findByCart(foundCart);
+        assertThat(items).hasSize(1);
+        assertThat(items.get(0).getSubProduct().getProduct().getName()).isEqualTo("Arduino Uno");
+        assertThat(items.get(0).getQuantity()).isEqualTo(2);
+    }
+
+    // --- RECIBOS y PRODUCTOS DE RECIBO ---
+    @Test
+    @Order(10)
     @DisplayName("Recibo: crear con estados y método de pago")
     void reciboCrear() {
         User u = userRepository.save(newUser("Eva", "eva@example.com"));
@@ -252,7 +336,38 @@ class FablabUseCasesTest {
     }
 
     @Test
-    @Order(9)
+    @Order(11)
+    @DisplayName("Recibo: con productos asociados")
+    @Transactional
+    void reciboConProductos() {
+        User u = userRepository.save(newUser("Luis", "luis@example.com"));
+        Product p = productRepository.save(newProduct("Sensor DHT11"));
+        SubProduct sp = subProductRepository.save(newSubProduct(p, "Estándar", 5.0, 100));
+        
+        Receipt r = new Receipt();
+        r.setUser(u);
+        r.setTotalPrice(10.00);
+        r.setFechaEmision(LocalDate.now());
+        r.setMetodoPago(PaymentMethod.Efectivo);
+        r.setEstadoRecibo(ReceiptStatus.Pagado);
+        r = receiptRepository.save(r);
+        
+        ReceiptProduct rp = new ReceiptProduct();
+        rp.setId(new ReceiptProductKey());
+        rp.setReceipt(r);
+        rp.setSubProduct(sp);
+        rp.setQuantity(2);
+        rp.setUnitPrice(5.0);
+        receiptProductRepository.save(rp);
+        
+        List<ReceiptProduct> products = receiptProductRepository.findByReceipt(r);
+        assertThat(products).hasSize(1);
+        assertThat(products.get(0).getSubProduct().getProduct().getName()).isEqualTo("Sensor DHT11");
+        assertThat(products.get(0).getUnitPrice()).isEqualTo(5.0);
+    }
+
+    @Test
+    @Order(12)
     @DisplayName("Recibo: actualizar estado a Pagado")
     void reciboActualizarEstado() {
         User u = userRepository.save(newUser("Fran", "fran@example.com"));
@@ -271,7 +386,7 @@ class FablabUseCasesTest {
 
     // --- CASCADAS ADICIONALES Y CASOS NEGATIVOS ---
     @Test
-    @Order(10)
+    @Order(13)
     @DisplayName("Cascada: eliminar Máquina borra sus Turnos")
     @Transactional
     void eliminarMaquinaBorraTurnos() {
@@ -291,7 +406,7 @@ class FablabUseCasesTest {
     }
 
     @Test
-    @Order(11)
+    @Order(14)
     @DisplayName("Cascada: eliminar Turno borra sus Reservas")
     @Transactional
     void eliminarTurnoBorraReservas() {
@@ -312,7 +427,7 @@ class FablabUseCasesTest {
     }
 
     @Test
-    @Order(12)
+    @Order(15)
     @DisplayName("Cascada: eliminar Curso borra sus Inscripciones")
     @Transactional
     void eliminarCursoBorraInscripciones() {
@@ -331,7 +446,7 @@ class FablabUseCasesTest {
     }
 
     @Test
-    @Order(13)
+    @Order(16)
     @DisplayName("Cascada: eliminar Usuario borra Inscripciones y Recibos")
     @Transactional
     void eliminarUsuarioBorraInscripcionesYRecibos() {
@@ -359,9 +474,29 @@ class FablabUseCasesTest {
         assertThat(inscriptionRepository.findById(insId)).isEmpty();
         assertThat(receiptRepository.findById(rId)).isEmpty();
     }
+    
+    @Test
+    @Order(17)
+    @DisplayName("Cascada: eliminar Producto borra Subproductos")
+    @Transactional
+    void eliminarProductoBorraSubproductos() {
+        Product p = productRepository.save(newProduct("Kit Electronica"));
+        SubProduct sp = newSubProduct(p, "Componente A", 30.0, 10);
+        sp = subProductRepository.save(sp);
+        
+        // Sincronizar relación bidireccional para CascadeType.ALL
+        p.getSubProducts().add(sp);
+        
+        Long spId = sp.getId();
+        
+        productRepository.delete(p);
+        productRepository.flush();
+        
+        assertThat(subProductRepository.findById(spId)).isEmpty();
+    }
 
     @Test
-    @Order(14)
+    @Order(18)
     @DisplayName("Consultas: negativos (sin resultados)")
     void consultasNegativas() {
         Machine m = machineRepository.save(newMachine("Cortadora Vinilo"));
@@ -374,7 +509,7 @@ class FablabUseCasesTest {
     }
 
     @Test
-    @Order(15)
+    @Order(19)
     @DisplayName("Recibo: fecha por defecto se establece si no se especifica")
     void reciboFechaPorDefecto() {
         User u = userRepository.save(newUser("Laura", "laura@example.com"));
