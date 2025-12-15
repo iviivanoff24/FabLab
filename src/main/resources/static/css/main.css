@@ -701,10 +701,97 @@ footer {
 
 .hero-search-container {
     background: var(--hero-bg);
-    border-radius: 0 0 15px 15px;
+    border-radius: 0 0 20px 20px;
     padding: 0 2rem 2.5rem 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
-    text-align: center;
+    margin-bottom: 3rem;
+    box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+}
+
+/* === ENHANCED SEARCH BAR STYLES === */
+.hero-search-container .input-group {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    border-radius: 50px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 6px;
+    transition: all 0.3s ease;
+    max-width: 100%;
+    width: 100%;
+}
+
+.hero-search-container .input-group:hover,
+.hero-search-container .input-group:focus-within {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    border-color: var(--hero-border);
+    transform: translateY(-2px);
+}
+
+.hero-search-container .form-control {
+    border: none !important;
+    background: transparent !important;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    color: var(--text-color);
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+.hero-search-container .form-select {
+    border: none !important;
+    background-color: transparent !important; /* Only transparent color, keep image */
+    padding: 0.8rem 2.5rem 0.8rem 1.5rem; /* Extra padding for arrow */
+    font-size: 1rem;
+    color: var(--text-color);
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background-position: right 1rem center;
+}
+
+/* Separators */
+.hero-search-container .form-control:not(:last-child),
+.hero-search-container .form-select:not(:last-child) {
+    border-right: 1px solid var(--border-color) !important;
+}
+
+.hero-search-container .btn-action-search {
+    border-radius: 50px !important;
+    margin-left: 5px;
+    padding: 0.6rem 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, var(--hero-border) 0%, #f0b100 100%);
+    border: none;
+    color: #2C3E50; /* Always dark text for contrast on yellow button */
+    box-shadow: 0 4px 10px rgba(248, 188, 30, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-search-container .btn-action-search:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(248, 188, 30, 0.5);
+    filter: brightness(1.05);
+}
+
+.hero-search-container .btn-action-search:active {
+    transform: translateY(0);
+}
+
+/* Dark mode adjustments for search */
+[data-theme="dark"] .hero-search-container .input-group {
+    background: var(--input-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .hero-search-container .form-control,
+[data-theme="dark"] .hero-search-container .form-select {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .hero-search-container .form-control::placeholder {
+    color: var(--text-muted);
 }
 

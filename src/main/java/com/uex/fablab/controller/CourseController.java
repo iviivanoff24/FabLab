@@ -58,13 +58,11 @@ public class CourseController {
     private final CourseService courseService;
     private final InscriptionService inscriptionService;
     private final UserService userService;
-    private final ReceiptRepository receiptRepository;
 
     public CourseController(CourseService courseService, InscriptionService inscriptionService, UserService userService, ReceiptRepository receiptRepository) {
         this.courseService = courseService;
         this.inscriptionService = inscriptionService;
         this.userService = userService;
-        this.receiptRepository = receiptRepository;
     }
 
     @GetMapping("/api/courses")

@@ -54,47 +54,12 @@
     box-shadow: none;
     padding: 0;
     margin: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
-/* Estilo del INPUT y SELECT dentro de la barra */
-.product-search-bar .form-control,
-.product-search-bar .form-select {
-    border-radius: 8px 0 0 8px; 
-    border-color: var(--hero-border); 
-    transition: border-color 0.3s, box-shadow 0.3s;
-    background-color: var(--input-bg); /* Revertir a fondo de input normal */
-    color: var(--input-text);
-}
-
-.product-search-bar .form-select {
-    border-radius: 0; 
-    border-left: 1px solid var(--hero-border);
-}
-
-.product-search-bar .form-control:focus,
-.product-search-bar .form-select:focus {
-    border-color: #e0a800; 
-    box-shadow: 0 0 0 0.25rem rgba(248, 188, 30, 0.25);
-    background-color: var(--input-bg);
-    color: var(--input-text);
-}
-
-/* Estilo del BOTÓN de Buscar (SÓLIDO AMARILLO) */
-.product-search-bar .btn-action-search {
-    background-color: var(--hero-border); 
-    border-color: var(--hero-border);
-    color: var(--hero-text); /* Texto oscuro para el contraste */
-    font-weight: 600;
-    
-    border-radius: 0 8px 8px 0; 
-    transition: background-color 0.3s, border-color 0.3s;
-}
-
-.product-search-bar .btn-action-search:hover {
-    background-color: #e0a800;
-    border-color: #e0a800;
-    color: var(--hero-text);
-}
+/* Estilos de input, select y botón movidos a main.css bajo .hero-search-container */
 
 
 /* === GRID LAYOUT === */

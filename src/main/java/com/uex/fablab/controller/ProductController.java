@@ -165,7 +165,6 @@ public class ProductController {
             
             return "/uploads/products/" + folderName + "/" + fileName;
         } catch (IOException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -229,7 +228,6 @@ public class ProductController {
             FileSystemUtils.deleteRecursively(targetPath);
 
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -313,7 +311,6 @@ public class ProductController {
                 Path targetPath = projectRoot.resolve("target/classes/uploads/products/").resolve(folderName).resolve(fileName);
                 Files.deleteIfExists(targetPath);
             } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
