@@ -800,6 +800,23 @@ footer {
     color: var(--text-muted);
 }
 
+/* === TOAST DARK MODE === */
+[data-theme="dark"] .toast {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .toast-header {
+    background-color: var(--header-bg);
+    color: var(--text-color);
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .toast-body {
+    color: var(--text-color);
+}
+
 /* Responsive Search Bar for Mobile */
 @media (max-width: 768px) {
     .hero-search-container .input-group {

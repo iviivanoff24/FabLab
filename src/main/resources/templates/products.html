@@ -86,10 +86,13 @@
                 <form action="/cart/add" method="post" class="add-to-cart-form" th:if="${session.USER_ID != null}">
                     <div class="input-group">
                         <select class="form-select product-variant-select" name="subProductId" required onchange="updateMaxStock(this)">
+                             <option value="" selected>Opciones</option>
                              <option th:each="sp : ${p.subProducts}" 
                                      th:value="${sp.id}" 
                                      th:text="|${sp.subName} (${#numbers.formatDecimal(sp.price,1,2)}€)|"
                                      th:data-stock="${sp.stock}"
+                                     th:data-image="${sp.image1}"
+                                     th:data-image2="${sp.image2}"
                                      th:disabled="${sp.stock <= 0}">
                              </option>
                         </select>
