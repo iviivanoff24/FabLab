@@ -41,6 +41,9 @@ public class FablabApplication {
                 String url = conn.getMetaData().getURL();
                 String user = conn.getMetaData().getUserName();
                 log.info("Conexión establecida a BD -> URL: {}  usuario: {}", url, user);
+                log.info("----------------------------------------------------------");
+                log.info("Accede a la aplicación en: http://localhost:8081");
+                log.info("----------------------------------------------------------");
 
             } catch (SQLException e) {
                 log.error("No se pudo conectar a la BD: {}", e.getMessage());
