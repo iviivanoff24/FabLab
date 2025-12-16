@@ -15,6 +15,9 @@ import com.uex.fablab.data.repository.CartRepository;
 import com.uex.fablab.data.repository.SubProductRepository;
 import com.uex.fablab.data.repository.UserRepository;
 
+/**
+ * Servicio para la gestión del carrito de compras.
+ */
 @Service
 public class CartService {
 
@@ -23,6 +26,13 @@ public class CartService {
     private final UserRepository userRepository;
     private final CartItemRepository cartItemRepository;
 
+    /**
+     * Constructor.
+     * @param cartRepository repositorio de carritos
+     * @param subProductRepository repositorio de subproductos
+     * @param userRepository repositorio de usuarios
+     * @param cartItemRepository repositorio de items del carrito
+     */
     public CartService(CartRepository cartRepository, SubProductRepository subProductRepository, UserRepository userRepository, CartItemRepository cartItemRepository) {
         this.cartRepository = cartRepository;
         this.subProductRepository = subProductRepository;
@@ -30,6 +40,11 @@ public class CartService {
         this.cartItemRepository = cartItemRepository;
     }
 
+    /**
+     * Obtiene el carrito de un usuario, creándolo si no existe.
+     * @param user usuario
+     * @return carrito del usuario
+     */
     @Transactional
     public Cart getCartByUser(User user) {
         return cartRepository.findByUser(user).orElseGet(() -> {
@@ -39,6 +54,12 @@ public class CartService {
         });
     }
 
+    /**
+     * Añade un producto al carrito.
+     * @param userId id del usuario
+     * @param subProductId id del subproducto
+     * @param quantity cantidad a añadir
+     */
     @Transactional
     public void addToCart(Long userId, Long subProductId, int quantity) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -63,6 +84,13 @@ public class CartService {
         cartRepository.save(cart);
     }
 
+    /**
+     * Actualiza la cantidad de un producto en el carrito.
+     * Si la cantidad es 0 o menor, elimina el producto.
+     * @param userId id del usuario
+     * @param subProductId id del subproducto
+     * @param quantity nueva cantidad
+     */
     @Transactional
     public void updateQuantity(Long userId, Long subProductId, int quantity) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -81,13 +109,26 @@ public class CartService {
         cartRepository.save(cart);
     }
 
+    /**
+     * Elimina un producto del carrito.
+     * @param userId id del usuario
+     * @param subProductId id del subproducto
+     */
     @Transactional
     public void removeFromCart(Long userId, Long subProductId) {
         updateQuantity(userId, subProductId, 0);
     }
 
+    /**
+     * Vacía el carrito de un usuario por su id.
+     * @param userId id del usuario
+     */
     @Transactional
     public void clearCart(Long userId) {
+    /**
+     * Vacía el carrito de un usuario.
+     * @param user usuario
+     */
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         clearCart(user);
     }

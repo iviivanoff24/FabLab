@@ -9,6 +9,10 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Entidad Producto en Recibo.
+ * Relaciona un recibo con un subproducto, guardando precio y cantidad históricos.
+ */
 @Entity
 @Table(name = "Recibo_Producto")
 public class ReceiptProduct {

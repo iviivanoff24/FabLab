@@ -13,6 +13,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Entidad Subproducto.
+ * Variante específica de un producto con precio y stock propios.
+ */
 @Entity
 @Table(name = "Subproducto")
 public class SubProduct {

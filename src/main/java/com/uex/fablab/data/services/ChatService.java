@@ -20,6 +20,10 @@ import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.output.Response;
 
+/**
+ * Servicio de chat con asistente virtual.
+ * Utiliza un modelo de lenguaje para responder preguntas sobre el FabLab.
+ */
 @Service
 public class ChatService {
 
@@ -28,6 +32,13 @@ public class ChatService {
     private final CourseRepository courseRepository;
     private final ProductRepository productRepository;
 
+    /**
+     * Constructor.
+     * @param chatLanguageModel modelo de lenguaje
+     * @param machineRepository repositorio de máquinas
+     * @param courseRepository repositorio de cursos
+     * @param productRepository repositorio de productos
+     */
     public ChatService(ChatLanguageModel chatLanguageModel, MachineRepository machineRepository, CourseRepository courseRepository, ProductRepository productRepository) {
         this.chatLanguageModel = chatLanguageModel;
         this.machineRepository = machineRepository;
@@ -35,6 +46,13 @@ public class ChatService {
         this.productRepository = productRepository;
     }
 
+    /**
+     * Procesa un mensaje de usuario y genera una respuesta.
+     * Incluye contexto actualizado de la base de datos en el prompt del sistema.
+     *
+     * @param chatMessage mensaje del usuario
+     * @return respuesta generada
+     */
     public ChatResponse processMessage(ChatMessage chatMessage) {
         try {
             // Obtener datos actualizados de la base de datos

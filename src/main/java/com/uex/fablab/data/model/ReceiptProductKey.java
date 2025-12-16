@@ -6,6 +6,9 @@ import java.util.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+/**
+ * Clave compuesta para {@link ReceiptProduct}.
+ */
 @Embeddable
 public class ReceiptProductKey implements Serializable {
 

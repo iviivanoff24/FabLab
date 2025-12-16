@@ -67,6 +67,11 @@ public class CourseController {
 
     @GetMapping("/api/courses")
     @ResponseBody
+    /**
+     * Obtiene la lista de todos los cursos en formato JSON.
+     *
+     * @return lista de cursos
+     */
     public List<Course> all() {
         return courseService.listAll();
     }

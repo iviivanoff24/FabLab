@@ -53,6 +53,13 @@ public class UserController {
     }
 
     @GetMapping({"/recibos","/recibos.html"})
+    /**
+     * Muestra la página de recibos del usuario actual.
+     *
+     * @param session sesión HTTP
+     * @param model modelo para la vista
+     * @return nombre de la vista de recibos
+     */
     public String viewRecibos(HttpSession session, Model model) {
         Object idObj = session.getAttribute("USER_ID");
         if (idObj == null) return "redirect:/login";
@@ -84,6 +91,13 @@ public class UserController {
     }
 
     @GetMapping({"/mis-cursos","/mis-cursos.html"})
+    /**
+     * Muestra la página de cursos del usuario actual.
+     *
+     * @param session sesión HTTP
+     * @param model modelo para la vista
+     * @return nombre de la vista de mis cursos
+     */
     public String viewMisCursos(HttpSession session, Model model) {
         Object idObj = session.getAttribute("USER_ID");
         if (idObj == null) return "redirect:/login";

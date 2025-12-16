@@ -15,6 +15,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+/**
+ * Entidad Carrito de compras.
+ * Asocia un usuario con una lista de items (subproductos).
+ */
 @Entity
 @Table(name = "Carrito")
 public class Cart {

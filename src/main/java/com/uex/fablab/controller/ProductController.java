@@ -23,16 +23,30 @@ import com.uex.fablab.data.services.ProductService;
 
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Controlador para la gestión de productos.
+ */
 @Controller
 public class ProductController {
 
     private final ProductService productService;
 
+    /**
+     * Constructor.
+     * @param productService servicio de productos
+     */
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
     @GetMapping("/products")
+    /**
+     * Muestra el listado de productos.
+     *
+     * @param session sesión HTTP
+     * @param model modelo para la vista
+     * @return nombre de la vista de productos
+     */
     public String products(HttpSession session, Model model) {
         boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("USER_ADMIN"));
         List<Product> list = productService.findAll();
@@ -47,12 +61,31 @@ public class ProductController {
     }
 
     @GetMapping("/admin/add-product")
+    /**
+     * Muestra el formulario para añadir un nuevo producto.
+     *
+     * @param model modelo para la vista
+     * @return nombre de la vista de añadir producto
+     */
     public String addProductPage(Model model) {
         model.addAttribute("types", ProductType.values());
         return "admin/add-product";
     }
 
     @PostMapping("/admin/products")
+    /**
+     * Crea un nuevo producto.
+     *
+     * @param name nombre del producto
+     * @param description descripción
+     * @param type tipo de producto
+     * @param price precio (opcional, crea subproducto estándar)
+     * @param stock stock (opcional)
+     * @param image1 imagen 1
+     * @param image2 imagen 2
+     * @param image3 imagen 3
+     * @return redirección a la modificación del producto creado
+     */
     public String createProduct(
             @RequestParam("name") String name,
             @RequestParam(value = "description", required = false) String description,
@@ -89,6 +122,18 @@ public class ProductController {
     }
 
     @PostMapping("/admin/subproducts/add")
+    /**
+     * Añade un subproducto a un producto existente.
+     *
+     * @param productId id del producto padre
+     * @param subName nombre del subproducto
+     * @param price precio
+     * @param stock stock
+     * @param image1 imagen 1
+     * @param image2 imagen 2
+     * @param image3 imagen 3
+     * @return redirección a la modificación del producto
+     */
     public String addSubProduct(
             @RequestParam("productId") Long productId,
             @RequestParam("subName") String subName,

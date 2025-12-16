@@ -18,18 +18,33 @@ import com.uex.fablab.data.services.UserService;
 
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Controlador para la gestión del carrito de compras.
+ */
 @Controller
 public class CartController {
 
     private final CartService cartService;
     private final UserService userService;
 
+    /**
+     * Constructor.
+     * @param cartService servicio de carrito
+     * @param userService servicio de usuarios
+     */
     public CartController(CartService cartService, UserService userService) {
         this.cartService = cartService;
         this.userService = userService;
     }
 
     @GetMapping("/cart")
+    /**
+     * Muestra la vista del carrito de compras.
+     *
+     * @param session sesión HTTP
+     * @param model modelo para la vista
+     * @return nombre de la vista del carrito
+     */
     public String viewCart(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("USER_ID");
         if (userId == null) {
@@ -63,6 +78,14 @@ public class CartController {
     }
 
     @PostMapping("/cart/add")
+    /**
+     * Añade un producto al carrito (desde formulario).
+     *
+     * @param subProductId id del subproducto
+     * @param quantity cantidad
+     * @param session sesión HTTP
+     * @return redirección al carrito
+     */
     public String addToCart(@RequestParam("subProductId") Long subProductId, 
                             @RequestParam(value = "quantity", defaultValue = "1") int quantity,
                             HttpSession session) {
@@ -76,6 +99,14 @@ public class CartController {
 
     @PostMapping("/cart/api/add")
     @ResponseBody
+    /**
+     * Añade un producto al carrito (API AJAX).
+     *
+     * @param subProductId id del subproducto
+     * @param quantity cantidad
+     * @param session sesión HTTP
+     * @return "ok" o mensaje de error
+     */
     public String addToCartApi(@RequestParam("subProductId") Long subProductId, 
                                @RequestParam(value = "quantity", defaultValue = "1") int quantity,
                                HttpSession session) {
@@ -92,6 +123,14 @@ public class CartController {
     }
 
     @PostMapping("/cart/update")
+    /**
+     * Actualiza la cantidad de un producto en el carrito.
+     *
+     * @param subProductId id del subproducto
+     * @param quantity nueva cantidad
+     * @param session sesión HTTP
+     * @return redirección al carrito
+     */
     public String updateQuantity(@RequestParam("subProductId") Long subProductId, 
                                  @RequestParam("quantity") int quantity,
                                  HttpSession session) {

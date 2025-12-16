@@ -1,5 +1,8 @@
 package com.uex.fablab.data.model;
 
+/**
+ * Modelo para respuesta de chat saliente.
+ */
 public class ChatResponse {
     private String response;
 

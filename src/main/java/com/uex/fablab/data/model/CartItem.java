@@ -11,6 +11,10 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Entidad Item del carrito.
+ * Relaciona un carrito con un subproducto y una cantidad.
+ */
 @Entity
 @Table(name = "Carrito_Producto")
 public class CartItem {

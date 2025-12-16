@@ -13,6 +13,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Entidad Producto.
+ * Representa un producto genérico que puede tener variantes (subproductos).
+ */
 @Entity
 @Table(name = "Producto")
 public class Product {

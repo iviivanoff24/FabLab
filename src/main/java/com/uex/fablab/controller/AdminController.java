@@ -42,6 +42,19 @@ public class AdminController {
     private final UserService userService;
     private final com.uex.fablab.data.services.ProductService productService;
 
+    /**
+     * Constructor del controlador de administración.
+     *
+     * @param adminService servicio de administración
+     * @param machineService servicio de máquinas
+     * @param bookingService servicio de reservas
+     * @param shiftService servicio de turnos
+     * @param courseService servicio de cursos
+     * @param inscriptionService servicio de inscripciones
+     * @param receiptService servicio de recibos
+     * @param userService servicio de usuarios
+     * @param productService servicio de productos
+     */
     public AdminController(AdminService adminService,
                            MachineService machineService,
                            BookingService bookingService,
@@ -63,6 +76,13 @@ public class AdminController {
     }
 
     @org.springframework.web.bind.annotation.GetMapping("/admin/modify-user")
+    /**
+     * Muestra la página de modificación de usuario.
+     *
+     * @param id identificador del usuario a modificar
+     * @param model modelo para la vista
+     * @return nombre de la vista de modificación o redirección si no existe
+     */
     public String modifyUserPage(@org.springframework.web.bind.annotation.RequestParam("id") Long id, org.springframework.ui.Model model) {
         var opt = userService.findById(id);
         if (opt.isEmpty()) {

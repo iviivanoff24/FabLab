@@ -1,5 +1,8 @@
 package com.uex.fablab.data.model;
 
+/**
+ * Modelo para mensaje de chat entrante.
+ */
 public class ChatMessage {
     private String message;
 
