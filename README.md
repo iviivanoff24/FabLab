@@ -132,9 +132,6 @@ La web ofrecerá también información práctica como los precios.
  ┣ 📜mvnw                     # Ejecutable de Maven Wrapper
  ┣ 📜pom.xml                  # Dependencias del proyecto
  ┗ 📜README.md                # Documentación
- ┗ 📜start-docker.bat         # Inicializa el Docker con la configuración necesaria
- ┗ 📜clean-docker.bat         # Limpia la configuración del Docker
- ┗ 📜start-app.bat            # Inicializa springboots
  ```
 ## 9. Docker: Creación de la Base de Datos
 
