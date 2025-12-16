@@ -100,36 +100,37 @@ La web ofrecerá también información práctica como los precios.
 ## 8. Estructura del Proyecto
 
 ```text
-📦docker
- ┣ 📂mysql
- ┃ ┣ 📂init
- ┃ ┃ ┣ 📂01_CREATE            # Creación de la base de datos
- ┃ ┃ ┣ 📂02_POPULATE          # Inserts de la base de datos
-📦ProyectoMDAI
- ┣ 📂src
- ┃ ┣ 📂main
- ┃ ┃ ┣ 📂java
- ┃ ┃ ┃ ┗ 📂com
- ┃ ┃ ┃ ┃ ┗ 📂uex
- ┃ ┃ ┃ ┃ ┃ ┗ 📂fablab
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller   # Controladores (Manejo de peticiones HTTP)
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂data
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂model      # Entidades JPA (Base de datos)
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂repository # Interfaces de acceso a datos (Repositories)
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂services     # Lógica de negocio
- ┃ ┃ ┣ 📂resources
- ┃ ┃ ┃ ┣ 📂templates          # Vistas HTML (Thymeleaf)
- ┃ ┃ ┃ ┃ ┣ 📂admin            # Páginas de administración
- ┃ ┃ ┃ ┃ ┣ 📂css              # Hojas de estilo (Bootstrap y propios)
- ┃ ┃ ┃ ┃ ┣ 📂fragments        # Componentes reutilizables (Header)
- ┃ ┃ ┃ ┃ ┣ 📂img              # Imágenes y subidas
- ┃ ┃ ┃ ┃ ┣ 📂js               # Scripts de funcionalidad (Calendario, etc.)
- ┃ ┃ ┃ ┃ ┗ 📂user             # Páginas públicas/usuario
- ┃ ┃ ┃ ┗ 📜application.properties # Configuración de BBDD y servidor
- ┃ ┗ 📂test                   # Tests unitarios y de integración
- ┣ 📜mvnw                     # Ejecutable de Maven Wrapper
- ┣ 📜pom.xml                  # Dependencias del proyecto
- ┗ 📜README.md                # Documentación
+📦Proyecto Final
+ ┣ 📂docker
+ ┃ ┣ 📂mysql
+ ┃ ┃ ┣ 📂init
+ ┃ ┃ ┃ ┣ 📜01_CREATE.sql      # Script de creación
+ ┃ ┃ ┃ ┗ 📜02_POPULATE.sql    # Script de población
+ ┣ 📂Documentacion            # Documentación del proyecto
+ ┣ 📂ProyectoMDAI
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┣ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂uex
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂fablab
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller   # Controladores (Manejo de peticiones HTTP)
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂data
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂model      # Entidades JPA (Base de datos)
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository # Interfaces de acceso a datos (Repositories)
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂services   # Lógica de negocio
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FablabApplication.java
+ ┃ ┃ ┃ ┣ 📂resources
+ ┃ ┃ ┃ ┃ ┣ 📂static           # Recursos estáticos (CSS, JS, Img)
+ ┃ ┃ ┃ ┃ ┣ 📂templates        # Vistas HTML (Thymeleaf)
+ ┃ ┃ ┃ ┃ ┗ 📜application.properties # Configuración
+ ┃ ┃ ┗ 📂test                 # Tests unitarios y de integración
+ ┃ ┣ 📜mvnw                   # Maven Wrapper
+ ┃ ┣ 📜pom.xml                # Dependencias
+ ┃ ┗ 📜README.md              # Documentación del código
+ ┣ 📜clean-docker.bat         # Script de limpieza
+ ┣ 📜start-app.bat            # Script de inicio de la app
+ ┗ 📜start-docker.bat         # Script de inicio de Docker
  ```
 ## 9. Docker: Creación de la Base de Datos
 
