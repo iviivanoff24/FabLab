@@ -1,0 +1,28 @@
+<div th:fragment="chatWidget" id="chat-widget-container">
+    <!-- Chat Icon -->
+    <div id="chat-icon" title="Chat con IA">
+        <i class="bi bi-chat-dots-fill"></i>
+    </div>
+
+    <!-- Chat Window -->
+    <div id="chat-window">
+        <div id="chat-header">
+            <span><i class="bi bi-robot me-2"></i>Asistente Fablab</span>
+            <i id="chat-close" class="bi bi-x-lg"></i>
+        </div>
+        <div id="chat-messages">
+            <div class="message bot">
+                ¡Hola! Soy el asistente virtual del Fablab. ¿En qué puedo ayudarte hoy?
+            </div>
+            <div id="typing-indicator" class="typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off">
+            <button id="chat-send">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </div>
+</div>
