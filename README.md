@@ -108,6 +108,7 @@ La web ofrecerá también información práctica como los precios.
  ┃ ┃ ┃ ┗ 📜02_POPULATE.sql    # Script de población
  ┣ 📂Documentacion            # Documentación del proyecto
  ┣ 📂ProyectoMDAI
+ ┃ ┣ 📂docker-config          # Configuración de Docker (SQLs)
  ┃ ┣ 📂src
  ┃ ┃ ┣ 📂main
  ┃ ┃ ┃ ┣ 📂java
@@ -125,12 +126,15 @@ La web ofrecerá también información práctica como los precios.
  ┃ ┃ ┃ ┃ ┣ 📂templates        # Vistas HTML (Thymeleaf)
  ┃ ┃ ┃ ┃ ┗ 📜application.properties # Configuración
  ┃ ┃ ┗ 📂test                 # Tests unitarios y de integración
+ ┃ ┣ 📜clean-docker.bat       # Script de limpieza
+ ┃ ┣ 📜start-app.bat          # Script de inicio de la app
+ ┃ ┣ 📜start-docker.bat       # Script de inicio de Docker
  ┃ ┣ 📜mvnw                   # Maven Wrapper
  ┃ ┣ 📜pom.xml                # Dependencias
  ┃ ┗ 📜README.md              # Documentación del código
- ┣ 📜clean-docker.bat         # Script de limpieza
- ┣ 📜start-app.bat            # Script de inicio de la app
- ┗ 📜start-docker.bat         # Script de inicio de Docker
+ ┣ 📜clean-docker.bat         # Script de limpieza (Raíz)
+ ┣ 📜start-app.bat            # Script de inicio de la app (Raíz)
+ ┗ 📜start-docker.bat         # Script de inicio de Docker (Raíz)
  ```
 ## 9. Docker: Creación de la Base de Datos
 
