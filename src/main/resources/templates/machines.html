@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" th:href="@{/css/main.css}" href="/css/main.css" />
     <link rel="stylesheet" th:href="@{/css/machines.css}" href="/css/machines.css" /> 
+    <link rel="stylesheet" th:href="@{/css/chat.css}" href="/css/chat.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   </head>
   <body>
@@ -120,5 +121,9 @@
 
     <script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/machines.js}" src="/js/machines.js" defer></script>
+
+    <!-- Chat Widget -->
+    <div th:replace="~{fragments/chat :: chatWidget}"></div>
+    <script th:src="@{/js/chat.js}" src="/js/chat.js"></script>
   </body>
 </html>
