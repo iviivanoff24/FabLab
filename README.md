@@ -104,18 +104,17 @@ La web ofrecerá también información práctica como los precios.
 ```text
 📦 Documentacion
  ┣ 📂 mysql
- ┃ ┣ 📜 01_CREATE.sql           # Script de creación de la base de datos
- ┃ ┣ 📜 02_POPULATE.sql         # Script de inserción de datos
- ┃ ┗ 📜 Acceso a mysql.txt      # Instrucciones de acceso
- ┗ 📜 Crear Docker.txt           # Guía para crear el entorno Docker
-
+ ┃ ┣ 01_CREATE.sql           # Script de creación de la base de datos
+ ┃ ┣ 02_POPULATE.sql         # Script de inserción de datos
+ ┃ ┗ Acceso a mysql.txt      # Instrucciones de acceso
+ ┃
 📦 ProyectoMDAI
  ┣ 📂 docker
  ┃ ┗ 📂 mysql
- ┃   ┣ 📂 backups               # Backups de la base de datos
+ ┃   ┣ 📂 backups            # Backups de la base de datos
  ┃   ┗ 📂 init
- ┃      ┣ 📜 01_CREATE.sql      # Script de creación (copia)
- ┃      ┗ 📜 02_POPULATE.sql    # Script de inserción (copia)
+ ┃      ┣ 01_CREATE.sql      # Script de creación (copia)
+ ┃      ┗ 02_POPULATE.sql    # Script de inserción (copia)
  ┣ 📂 src
  ┃ ┣ 📂 main
  ┃ ┃ ┣ 📂 java
@@ -125,17 +124,17 @@ La web ofrecerá también información práctica como los precios.
  ┃ ┃ ┃       ┣ 📂 controller    # Controladores (peticiones HTTP)
  ┃ ┃ ┃       ┣ 📂 data
  ┃ ┃ ┃       ┃ ┣ 📂 model       # Entidades JPA
- ┃ ┃ ┃       ┃ ┗ 📂 repository  # Repositorios de datos
- ┃ ┃ ┃       ┗ 📂 services      # Lógica de negocio
+ ┃ ┃ ┃       ┃ ┣ 📂 repository  # Repositorios de datos
+ ┃ ┃ ┃       ┃ ┗ 📂 services    # Lógica de negocio
  ┃ ┃ ┣ 📂 resources
- ┃ ┃ ┃ ┣ 📂 application.properties # Configuración
+ ┃ ┃ ┃ ┣ application.properties # Configuración
  ┃ ┃ ┃ ┣ 📂 static
  ┃ ┃ ┃ ┃ ┣ 📂 css              # Hojas de estilo
  ┃ ┃ ┃ ┃ ┣ 📂 img              # Imágenes
  ┃ ┃ ┃ ┃ ┣ 📂 js               # Scripts JS
  ┃ ┃ ┃ ┃ ┗ 📂 uploads          # Subidas de archivos
  ┃ ┃ ┃ ┣ 📂 templates
- ┃ ┃ ┃ ┃ ┣ 📜 *.html           # Vistas Thymeleaf
+ ┃ ┃ ┃ ┃ ┣ cart.html, login.html, ... # Vistas Thymeleaf
  ┃ ┃ ┃ ┃ ┣ 📂 admin            # Vistas de administración
  ┃ ┃ ┃ ┃ ┣ 📂 fragments        # Fragmentos reutilizables
  ┃ ┃ ┃ ┃ ┗ 📂 user             # Vistas de usuario
@@ -143,14 +142,14 @@ La web ofrecerá también información práctica como los precios.
  ┃   ┗ 📂 java
  ┃     ┗ 📂 com
  ┃       ┗ 📂 uex
- ┃         ┗ ...               # Tests unitarios/integración
- ┗ 📂 target                    # Archivos generados (compilación)
- ┣ 📜 clean-docker.bat          # Limpieza de contenedores Docker
- ┣ 📜 start-docker.bat          # Inicialización de Docker
- ┣ 📜 start-app.bat             # Arranque de la aplicación Spring Boot
- ┣ 📜 mvnw / mvnw.cmd           # Maven Wrapper
- ┣ 📜 pom.xml                   # Dependencias y configuración Maven
- ┗ 📜 README.md                 # Documentación del proyecto
+ ┃         ┗ 📂 fablab
+ ┃           ┣ 📂 repository   # Tests de repositorios
+ ┃           ┗ 📂 usecases     # Tests de casos de uso
+ ┣ 📂 target                   # Archivos generados (compilación)
+ ┣ clean-docker.bat            # Limpieza de contenedores Docker
+ ┣ start-docker.bat            # Inicialización de Docker
+ ┣ start-app.bat               # Arranque de la aplicación Spring Boot
+ ┗ README.md                   # Documentación del proyecto
 ```
 ## 9. Docker: Creación de la Base de Datos
 
