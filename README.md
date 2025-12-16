@@ -150,47 +150,56 @@ Abre la carpeta general ("Proyecto MDAI") y ejecuta los siguientes archivos en o
 El sistema ha sido diseñado para cubrir los principales flujos de trabajo del FabLab. A continuación se detallan las interacciones principales validadas en los tests de uso (`FablabUseCasesTest`).
 
 ### 10.1 Actor: Usuario (Estudiante/Miembro)
-Estos casos de uso describen las acciones que puede realizar un usuario estándar.
+Estos casos de uso describen las acciones que puede realizar un usuario estándar:
 
 * **Gestión de Cuenta:**
-    * **Registrarse:** Crear cuenta con nombre, email y contraseña.
+    * **Registrarse:** Crear una cuenta con nombre, email único y contraseña.
     * **Iniciar Sesión:** Acceso seguro mediante credenciales.
-    * **Modificar Perfil:** Actualización de datos personales.
+    * **Modificar Perfil:** Actualización de datos personales desde el panel de usuario.
 
 * **Reserva de Máquinas:**
-    * **Consultar Catálogo:** Ver máquinas disponibles (impresoras 3D, láser, CNC...) con características y precios.
-    * **Consultar Disponibilidad:** Verificación de turnos (*shifts*) libres.
-    * **Realizar Reserva:** Bloqueo de un turno de máquina para su uso.
-    * **Cancelar Reserva:** Anulación de una reserva existente.
+    * **Consultar Catálogo:** Visualización de máquinas disponibles (impresoras 3D, láser, CNC, etc.) con sus características y precios por hora.
+    * **Consultar Disponibilidad:** Verificación de turnos (*shifts*) libres para una máquina y fecha concreta.
+    * **Realizar Reserva:** Bloqueo de un turno de máquina, quedando vinculado al usuario.
+    * **Cancelar Reserva:** Posibilidad de anular reservas existentes.
 
 * **Cursos y Formación:**
-    * **Explorar Cursos:** Visualización de talleres ofertados.
-    * **Inscribirse en Curso:** Registro en una actividad (*inscription*).
-    * **Pagar Inscripción:** Generación del recibo (*receipt*).
+    * **Explorar Cursos:** Visualización de la oferta de talleres, descripciones, aforo y fechas.
+    * **Inscribirse en Curso:** Registro formal en una actividad formativa (*inscription*).
+    * **Pagar Inscripción:** Generación del recibo correspondiente para formalizar la plaza.
+
+* **Tienda y Productos:**
+    * **Catálogo de Productos:** Consulta de materiales y componentes disponibles.
+    * **Selección de Subproductos:** Elección de variantes específicas de un producto (ej. color de filamento o modelo de sensor).
+    * **Gestión del Carrito:** Añadir ítems al carrito de compra, ajustar cantidades y persistir la selección por usuario.
+    * **Recibos de Compra:** Generación de recibos detallados con productos, precios unitarios y total de la transacción.
 
 ### 10.2 Actor: Administrador
-El administrador tiene control total sobre los recursos.
+El administrador tiene control total sobre los recursos y la supervisión del centro:
 
 * **Gestión de Recursos (CRUD):**
-    * **Alta de Máquinas:** Registrar máquinas, definiendo ubicación, imagen y coste.
-    * **Gestión de Cursos:** Crear, modificar o eliminar cursos (fechas, aforo, precios).
+    * **Alta de Máquinas:** Registrar nuevo equipamiento definiendo ubicación, coste y estado.
+    * **Gestión de Cursos:** Crear, modificar o eliminar la oferta formativa (fechas, aforo, precios).
+    * **Gestión de Productos:** Administrar el catálogo de materiales y sus existencias (stock).
 
 * **Gestión de Usuarios:**
-    * **Listar Usuarios:** Ver todos los miembros registrados.
-    * **Modificar Roles:** Asignar o revocar permisos de administrador.
-    * **Eliminar Usuarios:** Dar de baja cuentas.
+    * **Listar Usuarios:** Supervisión de todos los miembros registrados en la plataforma.
+    * **Modificar Roles:** Asignación o revocación de permisos de administración.
+    * **Eliminar Usuarios:** Baja de cuentas con borrado automático de sus reservas e inscripciones asociadas.
 
-* **Supervisión:**
-    * **Control de Reservas:** Ver reservas activas e históricas.
-    * **Gestión de Turnos:** Configurar horarios disponibles.
+* **Supervisión y Control:**
+    * **Gestión de Turnos:** Configurar y actualizar los horarios disponibles para cada máquina.
+    * **Control de Pagos:** Seguimiento y actualización del estado de los recibos (Pendiente/Pagado).
 
-### 10.3 Cobertura de Tests (`FablabUseCasesTest`)
-La integridad se garantiza verificando la interacción entre:
-* `UserRepository`: Persistencia de usuarios.
-* `MachineRepository`: Catálogo de recursos.
-* `BookingRepository` & `ShiftRepository`: Lógica de reservas y turnos.
-* `CourseRepository` & `InscriptionRepository`: Gestión académica.
-* `ReceiptRepository`: Registro de transacciones.
+### 10.3 Cobertura de Tests e Integridad (`FablabUseCasesTest`)
+La robustez del sistema se garantiza mediante la verificación de la persistencia y las relaciones en:
+* `UserRepository`: Gestión de miembros y seguridad.
+* `MachineRepository` & `ShiftRepository`: Disponibilidad y catálogo de maquinaria.
+* `BookingRepository`: Lógica de reservas de turnos.
+* `CourseRepository` & `InscriptionRepository`: Control académico y de plazas.
+* `ProductRepository` & `SubProductRepository`: Inventario detallado de materiales.
+* `CartRepository` & `CartItemRepository`: Flujo de compra y carrito.
+* `ReceiptRepository`: Trazabilidad de transacciones y estados de pago.
 
 ---
 
@@ -224,21 +233,24 @@ app.storage.location=src/main/resources/static/img/upload
     [https://github.com/calvarezju/ProyectoMDAI.git](https://github.com/calvarezju/ProyectoMDAI.git)
 
 ## 14. Script de población
+
 Para garantizar que la aplicación sea funcional y demostrable desde el primer momento, el proyecto incluye un mecanismo de **población de datos**.
 
-> Un **"script de población"** se interpreta en este contexto como el conjunto de instrucciones que llena o administra el contenido de la página web de manera dinámica o automatizada. Su objetivo es cargar contenido inicial desde la base de datos para que la interfaz muestre elementos reales (widgets, catálogos, perfiles) sin necesidad de entrada manual previa.
+> Un **"script de población"** se interpreta en este contexto como el conjunto de instrucciones que llena o administra el contenido de la página web de manera dinámica o automatizada. Su objetivo es cargar contenido inicial desde la base de datos para que la interfaz muestre elementos reales (catálogos, agendas, perfiles) sin necesidad de entrada manual previa.
 
 ### Implementación en el Proyecto
 
-Hemos automatizado este proceso mediante el archivo `Documentacion/insert.sql`. Al ejecutar este script en la base de datos Dockerizada, la aplicación web "cobra vida" instantáneamente con el siguiente contenido dinámico:
+Hemos automatizado este proceso mediante el archivo `docker/mysql/init/02_POPULATE.sql`. Al ejecutar este script en la base de datos dockerizada, la aplicación web "cobra vida" instantáneamente con el siguiente contenido dinámico:
 
-1.  **Usuarios y Roles:**
-    * Se generan usuarios predefinidos (`admin` y `user`) con contraseñas encriptadas (BCrypt) para probar los sistemas de login y seguridad.
-2.  **Catálogo de Máquinas:**
-    * Puebla la vista `/machines` con equipamiento real (Impresoras 3D, Láser, CNC) incluyendo descripciones, precios y estados.
-3.  **Agenda y Disponibilidad:**
-    * Genera turnos (*shifts*) dinámicos para los días siguientes a la fecha actual (usando funciones `CURDATE()`), permitiendo probar el **Calendario de Reservas** y la **Tabla de Disponibilidad** en la portada inmediatamente.
-4.  **Oferta Académica:**
-    * Carga cursos de ejemplo en la vista `/courses` para validar el flujo de inscripción y pago.
+1. **Usuarios y Roles:**
+    * Se generan usuarios predefinidos (`admin` y `user`) con contraseñas encriptadas para probar los sistemas de login, perfiles y niveles de acceso.
+2. **Catálogo de Máquinas:**
+    * Puebla la vista `/machines` con equipamiento real (Impresoras 3D, Láser, CNC) incluyendo descripciones, precios, ubicaciones e imágenes.
+3. **Agenda y Disponibilidad:**
+    * Genera turnos (*shifts*) dinámicos para los días siguientes a la fecha actual (usando funciones `CURDATE()`), permitiendo probar el **Calendario de Reservas** y la tabla de disponibilidad de forma inmediata.
+4. **Oferta Académica:**
+    * Carga cursos de ejemplo en la vista `/courses` para validar el flujo completo de exploración, inscripción y pago.
+5. **Inventario de Productos:**
+    * Carga el catálogo de materiales y componentes con sus respectivos subproductos (variantes de color, tamaño o tipo) para probar el sistema de **Carrito de Compra** y gestión de stock.
 
 
