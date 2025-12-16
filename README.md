@@ -20,8 +20,8 @@
 ## 2. Integrantes   
 | Nombre | DNI | Foto |
 | :--- | :---: | :---: |
-| **Iván Herculano García** | 80100837W | <img src="src/main/resources/templates/img/ivan.png" alt="Foto Iván" width="150"> |
-| **Carmen Álvarez Murillo** | 80230317S | <img src="src/main/resources/templates/img/carmen.png" alt="Foto Carmen" width="150"> |
+| **Iván Herculano García** | 80100837W | <img src="src/main/resources/static/img/ivan.png" alt="Foto Iván" width="150"> |
+| **Carmen Álvarez Murillo** | 80230317S | <img src="src/main/resources/static/img/carmen.png" alt="Foto Carmen" width="150"> |
 
 ---
 
