@@ -101,41 +101,37 @@ La web ofrecerá también información práctica como los precios.
 
 ```text
 📦Proyecto Final
- ┣ 📂docker
+ ┣ 📂Documentacion                  # Documentación y scripts SQL
  ┃ ┣ 📂mysql
- ┃ ┃ ┣ 📂init
- ┃ ┃ ┃ ┣ 📜01_CREATE.sql      # Script de creación
- ┃ ┃ ┃ ┗ 📜02_POPULATE.sql    # Script de población
- ┣ 📂Documentacion            # Documentación del proyecto
- ┣ 📂ProyectoMDAI
- ┃ ┣ 📂docker-config          # Configuración de Docker (SQLs)
+ ┃ ┃ ┣ 01_CREATE.sql
+ ┃ ┃ ┣ 02_POPULATE.sql
+ ┃ ┃ ┗ Acceso a mysql.txt
+ ┃ ┗ Crear Docker.txt
+ ┣ 📂ProyectoMDAI                   # Código fuente principal
+ ┃ ┣ 📂docker
+ ┃ ┃ ┗ 📂mysql
+ ┃ ┃   ┣ 📂backups
+ ┃ ┃   ┗ 📂init
+ ┃ ┃       ┣ 01_CREATE.sql
+ ┃ ┃       ┗ 02_POPULATE.sql
  ┃ ┣ 📂src
  ┃ ┃ ┣ 📂main
  ┃ ┃ ┃ ┣ 📂java
- ┃ ┃ ┃ ┃ ┣ 📂com
- ┃ ┃ ┃ ┃ ┃ ┣ 📂uex
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂fablab
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller   # Controladores (Manejo de peticiones HTTP)
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂data
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂model      # Entidades JPA (Base de datos)
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository # Interfaces de acceso a datos (Repositories)
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂services   # Lógica de negocio
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FablabApplication.java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃   ┗ 📂uex
  ┃ ┃ ┃ ┣ 📂resources
- ┃ ┃ ┃ ┃ ┣ 📂static           # Recursos estáticos (CSS, JS, Img)
- ┃ ┃ ┃ ┃ ┣ 📂templates        # Vistas HTML (Thymeleaf)
- ┃ ┃ ┃ ┃ ┗ 📜application.properties # Configuración
- ┃ ┃ ┗ 📂test                 # Tests unitarios y de integración
- ┃ ┣ 📜clean-docker.bat       # Script de limpieza
- ┃ ┣ 📜start-app.bat          # Script de inicio de la app
- ┃ ┣ 📜start-docker.bat       # Script de inicio de Docker
- ┃ ┣ 📜mvnw                   # Maven Wrapper
- ┃ ┣ 📜pom.xml                # Dependencias
- ┃ ┗ 📜README.md              # Documentación del código
- ┣ 📜clean-docker.bat         # Script de limpieza (Raíz)
- ┣ 📜start-app.bat            # Script de inicio de la app (Raíz)
- ┗ 📜start-docker.bat         # Script de inicio de Docker (Raíz)
- ```
+ ┃ ┃ ┃ ┃ ┣ 📂static               # CSS, JS, imágenes
+ ┃ ┃ ┃ ┃ ┣ 📂templates            # Vistas Thymeleaf
+ ┃ ┃ ┃ ┃ ┣ 📂uploads              # Imágenes subidas
+ ┃ ┃ ┃ ┃ ┗ application.properties # Configuración
+ ┃ ┃ ┗ 📂test
+ ┃ ┣ 📜clean-docker.bat           # Script de limpieza de Docker
+ ┃ ┣ 📜start-app.bat              # Script de inicio de la app
+ ┃ ┣ 📜start-docker.bat           # Script de inicio de Docker
+ ┃ ┣ 📜mvnw / mvnw.cmd            # Maven Wrapper
+ ┃ ┣ 📜pom.xml                    # Dependencias y configuración Maven
+ ┃ ┗ 📜README.md                  # Documentación del código
+```
 ## 9. Docker: Creación de la Base de Datos
 
 Abre un nuevo terminal desde la carpeta general ("Proyecto Final") y ejecuta los siguientes comandos.
