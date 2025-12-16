@@ -47,8 +47,9 @@ La aplicación web del FabLab Mérida permitirá a los usuarios gestionar de for
 **Permitirá a los usuarios:**
 * Registrarse e iniciar sesión.
 * Ver los cursos disponibles.
-* Consultar el catálogo de máquinas.
+* Consultar el catálogo de máquinas, cursos y productos.
 * Ver la disponibilidad mediante un calendario y realizar reservas.
+* Realizar pagos
 
 La web ofrecerá también información práctica como los precios.
 
@@ -58,12 +59,16 @@ La web ofrecerá también información práctica como los precios.
 
 ### 6.1 Funcionalidades principales
 * **Gestión de usuarios:** Registro e inicio de sesión.
-* **Reservas:** Calendario y tabla para reservar máquinas.
+* **Reservas:** Calendario y tabla para reservar máquinas y cursos.
 * **Cursos y talleres:** Listado, inscripción y gestión de plazas.
 * **Información general:** Presentación del FabLab, normas, contacto y ubicación.
+* **Productos:** Catálogo online.
+* **Pagos:** Se prodece a realizar el pago en línea.
+* Historial de uso de máquinas y cursos para cada usuario.
+* Integración con redes sociales para difundir cursos y proyectos.
 
 ### 6.2 Requisitos
-* **Funcionales (RF):** Registro/Login, Consulta de máquinas, Reservas, Inscripción a cursos, Gestión por administradores.
+* **Funcionales (RF):** Registro/Login, Consulta de máquinas, Reservas, Productos, Inscripción a cursos, Gestión por administradores.
 * **No funcionales (RNF):** Interfaz clara y responsive, Seguridad de datos, Rapidez en la navegación.
 
 ### 6.3 Pliego de condiciones
@@ -74,10 +79,7 @@ La web ofrecerá también información práctica como los precios.
 *Entrega con código fuente, documentación y manual de usuario.
 
 ### 6.4 Funcionalidades opcionales, recomendables o futuribles 
-* Catálogo online de productos y materiales disponibles.
 * Notificaciones por correo sobre reservas, recordatorios de cursos o incidencias.
-* Historial de uso de máquinas y cursos para cada usuario.
-* Integración con redes sociales para difundir cursos y proyectos.
 * Sección de proyectos de usuarios donde compartir trabajos realizados en el FabLab.
 
 ---
@@ -130,43 +132,20 @@ La web ofrecerá también información práctica como los precios.
  ┣ 📜mvnw                     # Ejecutable de Maven Wrapper
  ┣ 📜pom.xml                  # Dependencias del proyecto
  ┗ 📜README.md                # Documentación
+ ┗ 📜start-docker.bat         # Inicializa el Docker con la configuración necesaria
+ ┗ 📜clean-docker.bat         # Limpia la configuración del Docker
+ ┗ 📜start-app.bat            # Inicializa springboots
  ```
 ## 9. Docker: Creación de la Base de Datos
 
-Abre un nuevo terminal desde la carpeta general ("Proyecto Final") y ejecuta los siguientes comandos.
+Abre la carpeta general ("Proyecto MDAI") y ejecuta los siguientes archivos en orden:
 
-**Para Windows (PowerShell):**
 ```powershell
-docker network create fablab_net
+ 📜start-docker.bat  # Inicializa el Docker con la configuración necesaria
+ 📜clean-docker.bat  # Limpia la configuración del Docker
+ 📜start-app.bat     # Inicializa springboots
+ ```
 
-$root = (Get-Location).Path
-docker run --name fablab-mysql `
-  --network fablab_net `
-  -e MYSQL_ROOT_PASSWORD=admin `
-  -e MYSQL_DATABASE=fablabdb `
-  -e MYSQL_USER=admin `
-  -e MYSQL_PASSWORD=admin `
-  -p 3307:3306 `
-  -v fablab_mysql_data:/var/lib/mysql `
-  -v "$root\docker\mysql\init:/docker-entrypoint-initdb.d:ro" `
-  -d mysql:8.0
-```
-
-**Para Linux / macOS (Bash):**
-```bash
-docker network create fablab_net
-
-docker run --name fablab-mysql \
-  --network fablab_net \
-  -e MYSQL_ROOT_PASSWORD=admin \
-  -e MYSQL_DATABASE=fablabdb \
-  -e MYSQL_USER=admin \
-  -e MYSQL_PASSWORD=admin \
-  -p 3307:3306 \
-  -v fablab_mysql_data:/var/lib/mysql \
-  -v "$(pwd)/docker/mysql/init:/docker-entrypoint-initdb.d:ro" \
-  -d mysql:8.0
-```
 ---
 
 ## 10. Batería de tests: Casos de uso
@@ -221,8 +200,7 @@ La integridad se garantiza verificando la interacción entre:
 ## 11. Guía de uso
 
 1.  **Base de datos:** Consultar punto 9.
-2.  **Arrancar la aplicación:** Ejecutar la clase principal en tu IDE:
-    `FablabApplication.java`
+2.  **Arrancar la aplicación:** Consultar punto 9.
 3.  **Acceder:** Abrir el navegador en la siguiente URL:
     [http://localhost:8081](http://localhost:8081)
 
