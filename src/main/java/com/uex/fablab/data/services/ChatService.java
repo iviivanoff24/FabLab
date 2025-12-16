@@ -5,11 +5,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.uex.fablab.data.model.Booking;
 import com.uex.fablab.data.model.ChatMessage;
 import com.uex.fablab.data.model.ChatResponse;
 import com.uex.fablab.data.model.Course;
 import com.uex.fablab.data.model.Machine;
 import com.uex.fablab.data.model.Product;
+import com.uex.fablab.data.repository.BookingRepository;
 import com.uex.fablab.data.repository.CourseRepository;
 import com.uex.fablab.data.repository.MachineRepository;
 import com.uex.fablab.data.repository.ProductRepository;
@@ -31,6 +33,7 @@ public class ChatService {
     private final MachineRepository machineRepository;
     private final CourseRepository courseRepository;
     private final ProductRepository productRepository;
+    private final BookingRepository bookingRepository;
 
     /**
      * Constructor.
@@ -38,12 +41,14 @@ public class ChatService {
      * @param machineRepository repositorio de máquinas
      * @param courseRepository repositorio de cursos
      * @param productRepository repositorio de productos
+     * @param bookingRepository repositorio de reservas
      */
-    public ChatService(ChatLanguageModel chatLanguageModel, MachineRepository machineRepository, CourseRepository courseRepository, ProductRepository productRepository) {
+    public ChatService(ChatLanguageModel chatLanguageModel, MachineRepository machineRepository, CourseRepository courseRepository, ProductRepository productRepository, BookingRepository bookingRepository) {
         this.chatLanguageModel = chatLanguageModel;
         this.machineRepository = machineRepository;
         this.courseRepository = courseRepository;
         this.productRepository = productRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     /**
@@ -59,6 +64,7 @@ public class ChatService {
             List<Machine> machines = machineRepository.findAll();
             List<Course> courses = courseRepository.findAll();
             List<Product> products = productRepository.findAll();
+            List<Booking> bookings = bookingRepository.findAll();
 
             String machinesInfo = machines.stream()
                 .map(m -> String.format("- %s (Estado: %s): %s", m.getName(), m.getStatus(), m.getDescription()))
@@ -70,6 +76,15 @@ public class ChatService {
 
             String productsInfo = products.stream()
                 .map(p -> String.format("- %s: %s", p.getName(), p.getDescription()))
+                .collect(Collectors.joining("\n"));
+
+            String bookingsInfo = bookings.stream()
+                .map(b -> String.format("- Reserva de %s el %s (%s-%s). Estado: %s", 
+                    b.getShift().getMachine().getName(),
+                    b.getShift().getDate(),
+                    b.getShift().getStartTime(),
+                    b.getShift().getEndTime(),
+                    b.getEstado()))
                 .collect(Collectors.joining("\n"));
 
             String userMessageText = chatMessage.getMessage();
@@ -86,6 +101,7 @@ public class ChatService {
                     "MÁQUINAS:\n" + machinesInfo + "\n\n" +
                     "CURSOS:\n" + coursesInfo + "\n\n" +
                     "PRODUCTOS/MATERIALES:\n" + productsInfo + "\n\n" +
+                    "RESERVAS EXISTENTES:\n" + bookingsInfo + "\n\n" +
                     "Sé amable, lo mas claro, breve, y conciso que puedad, y útil. Responde en el idioma que se utilice en el mensaje del usuario.";
 
             Response<AiMessage> response = chatLanguageModel.generate(
