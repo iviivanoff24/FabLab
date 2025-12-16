@@ -187,8 +187,8 @@ function mainAvailability() {
                 cell.title = 'Cerrado';
             } else {
                 const ratio = sumOcc / sumTot;
-                if (ratio <= 0.3) { cell.classList.add('avail-high'); cell.title = 'Libre'; }
-                else if (ratio <= 0.7) { cell.classList.add('avail-med'); cell.title = 'Media ocupación'; }
+                if (ratio <= 0.5) { cell.classList.add('avail-high'); cell.title = 'Libre'; }
+                else if (ratio <= 0.9) { cell.classList.add('avail-med'); cell.title = 'Media ocupación'; }
                 else { cell.classList.add('avail-low'); cell.title = 'Completo'; }
             }
         }
@@ -265,8 +265,8 @@ function applyAvailabilityColor(td, info) {
         return;
     }
     const ratio = occupied / total;
-    if (ratio <= 0.3) { td.className = 'avail-high'; td.title = `Libre (${occupied}/${total})`; }
-    else if (ratio <= 0.7) { td.className = 'avail-med'; td.title = `Media ocupación (${occupied}/${total})`; }
+    if (ratio <= 0.5) { td.className = 'avail-high'; td.title = `Libre (${occupied}/${total})`; }
+    else if (ratio <= 0.9) { td.className = 'avail-med'; td.title = `Media ocupación (${occupied}/${total})`; }
     else { td.className = 'avail-low'; td.title = `Completo (${occupied}/${total})`; }
 }
 

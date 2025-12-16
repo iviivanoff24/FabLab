@@ -215,6 +215,11 @@ header .bg-white {
     color: var(--input-text);
 }
 
+[data-theme="dark"] option {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
 [data-theme="dark"] .form-control::placeholder {
     color: #888;
 }
