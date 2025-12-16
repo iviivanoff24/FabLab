@@ -13,7 +13,7 @@
 ---
 
 ## 1. LOGO
-<img src="src/main/resources/templates/img/logo.png" width="200">
+<img src="src/main/resources/static/img/logo.png" width="200">
 
 ---
 
