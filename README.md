@@ -4,16 +4,22 @@
 
 ---
 <!-- Badges -->
+<div align="center">
+
 [![Project Status](https://img.shields.io/badge/status-acad%C3%A9mico-blue)](https://github.com/calvarezju/ProyectoMDAI)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen)](https://spring.io/projects/spring-boot)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-enabled-orange)](https://www.thymeleaf.org/)
 [![Maven](https://img.shields.io/badge/Maven-wrapper-yellow)](https://maven.apache.org/)
 [![Docker](https://img.shields.io/badge/Docker-ready-pink)](https://www.docker.com/)
 
+</div>
+
 ---
 
 ## 1. LOGO
+<div align="center">
 <img src="src/main/resources/static/img/logo.png" width="200">
+</div>
 
 ---
 
@@ -127,8 +133,10 @@ La web ofrecerá también información práctica como los precios.
  ```
 ## 9. Docker: Creación de la Base de Datos
 
-Abre un nuevo terminal desde la carpeta general ("Proyecto Final") y ejecuta los siguentes comandos:
-```bash
+Abre un nuevo terminal desde la carpeta general ("Proyecto Final") y ejecuta los siguientes comandos.
+
+**Para Windows (PowerShell):**
+```powershell
 docker network create fablab_net
 
 $root = (Get-Location).Path
@@ -141,7 +149,23 @@ docker run --name fablab-mysql `
   -p 3307:3306 `
   -v fablab_mysql_data:/var/lib/mysql `
   -v "$root\docker\mysql\init:/docker-entrypoint-initdb.d:ro" `
-  -d mysql:8.0 `
+  -d mysql:8.0
+```
+
+**Para Linux / macOS (Bash):**
+```bash
+docker network create fablab_net
+
+docker run --name fablab-mysql \
+  --network fablab_net \
+  -e MYSQL_ROOT_PASSWORD=admin \
+  -e MYSQL_DATABASE=fablabdb \
+  -e MYSQL_USER=admin \
+  -e MYSQL_PASSWORD=admin \
+  -p 3307:3306 \
+  -v fablab_mysql_data:/var/lib/mysql \
+  -v "$(pwd)/docker/mysql/init:/docker-entrypoint-initdb.d:ro" \
+  -d mysql:8.0
 ```
 ---
 
