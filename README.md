@@ -1,7 +1,29 @@
 
+
 # FabLab Mérida Web App
 
 ![Logo del FabLab](src/main/resources/static/img/logo.png)
+
+<div align="center">
+   <img src="Readme/Preview.png" alt="Vista previa de la app" width="600"/>
+   <br/>
+   <em>Vista previa de la aplicación FabLab Mérida</em>
+</div>
+---
+
+## 🖼️ Otras vistas
+
+<div align="center">
+   <img src="Readme/Preview_ia.png" alt="Idea generada por IA" width="600"/>
+   <br/>
+   <em>Idea de interfaz generada por IA (no implementada en la app actual)</em>
+</div>
+
+![Java](https://img.shields.io/badge/Java-21-blue?logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?logo=springboot)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?logo=mysql)
+![Docker](https://img.shields.io/badge/Docker-ready-blue?logo=docker)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 Aplicación web para la gestión de un laboratorio de fabricación digital (FabLab) en Mérida. Permite a usuarios y administradores gestionar reservas de máquinas, cursos, productos y pagos de forma sencilla y centralizada.
 
@@ -15,11 +37,11 @@ Aplicación web para la gestión de un laboratorio de fabricación digital (FabL
 - Inscripción y gestión de cursos/talleres
 - Carrito de compra y pagos online
 - Panel de administración para gestión de recursos y usuarios
-- Responsive y fácil de usar
+- Interfaz responsive y fácil de usar
 
 ---
 
-## 🛠️ Tecnologías
+## 🛠️ Tecnologías utilizadas
 
 - **Java 21**
 - **Spring Boot 3.5.6**
@@ -68,7 +90,7 @@ Aplicación web para la gestión de un laboratorio de fabricación digital (FabL
    git clone https://github.com/iviivanoff24/FabLab.git
    cd FabLab
    ```
-2. **Arranca la base de datos y la app:**
+2. **Arranca la base de datos y la aplicación:**
    ```powershell
    ./start-docker.bat   # Inicia MySQL en Docker
    ./start-app.bat      # Arranca la aplicación Spring Boot
@@ -91,11 +113,21 @@ spring.jpa.hibernate.ddl-auto=update
 app.storage.location=src/main/resources/static/img/upload
 ```
 
+Puedes modificar estos valores según tus necesidades.
+
 ---
 
 ## 🧪 Datos de prueba y scripts
 
-El script `docker/mysql/init/02_POPULATE.sql` carga datos de ejemplo: usuarios, máquinas, cursos, productos y reservas para que puedas probar la app desde el primer momento.
+El script [`docker/mysql/init/02_POPULATE.sql`](docker/mysql/init/02_POPULATE.sql) carga datos de ejemplo: usuarios, máquinas, cursos, productos y reservas para que puedas probar la app desde el primer momento.
+
+---
+
+## 🖥️ Scripts útiles
+
+- `start-docker.bat`: Inicia el contenedor de MySQL en Docker
+- `clean-docker.bat`: Elimina contenedores y volúmenes de Docker
+- `start-app.bat`: Arranca la aplicación Spring Boot
 
 ---
 
@@ -103,11 +135,17 @@ El script `docker/mysql/init/02_POPULATE.sql` carga datos de ejemplo: usuarios, 
 
 ¡Las contribuciones son bienvenidas! Puedes abrir issues o pull requests para sugerir mejoras, reportar bugs o añadir nuevas funcionalidades.
 
+1. Haz un fork del repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
+3. Realiza tus cambios y haz commit (`git commit -am 'Añade nueva funcionalidad'`)
+4. Haz push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abre un Pull Request
+
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo licencia MIT. Consulta el archivo LICENSE para más detalles.
+Este proyecto está bajo licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
 
 ---
 
