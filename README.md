@@ -2,22 +2,14 @@
 
 # FabLab Mérida Web App
 
-![Logo del FabLab](src/main/resources/static/img/logo.png)
-
 <div align="center">
+   <img src="src/main/resources/static/img/logo.png" alt="Logo del FabLab" />
+   <br/>
    <img src="Readme/Preview.png" alt="Vista previa de la app" width="600"/>
    <br/>
    <em>Vista previa de la aplicación FabLab Mérida</em>
 </div>
 ---
-
-## 🖼️ Otras vistas
-
-<div align="center">
-   <img src="Readme/Preview_ia.png" alt="Idea generada por IA" width="600"/>
-   <br/>
-   <em>Idea de interfaz generada por IA (no implementada en la app actual)</em>
-</div>
 
 ![Java](https://img.shields.io/badge/Java-21-blue?logo=java)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?logo=springboot)
